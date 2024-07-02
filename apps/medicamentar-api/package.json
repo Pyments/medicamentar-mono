@@ -1,0 +1,11 @@
+{
+  "name": "medicamentar-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "dotnet clean",
+    "build": "dotnet build -c Release",
+    "dev": "dotnet watch --project Medicamentar.API/Medicamentar.API.csproj",
+    "test": "dotnet test"
+  }
+}

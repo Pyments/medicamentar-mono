@@ -18,6 +18,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  apps/medicamentar-api: {}
+
   apps/medicamentar-native:
     dependencies:
       '@expo/vector-icons':
