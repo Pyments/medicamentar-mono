@@ -3,6 +3,7 @@ import SignIn from "./auth/SignIn";
 import Register from "./auth/Register";
 
 import { IRouterType } from "../types/router.types";
+import Home from "./Home";
 
 const pagesData: IRouterType[] = [
   {
@@ -19,6 +20,11 @@ const pagesData: IRouterType[] = [
     title: "Sign In", 
     path: "register", 
     element: <Register /> 
+  },
+  { 
+    title: "home", 
+    path: "home", 
+    element: <Home /> 
   },
 ];
 

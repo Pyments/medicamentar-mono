@@ -9,10 +9,11 @@ import Typography from "@mui/material/Typography";
 import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { common } from "@mui/material/colors";
 
 export default function SignIn() {
+  const navigate = useNavigate(); 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -20,6 +21,7 @@ export default function SignIn() {
       email: data.get("email"),
       password: data.get("password"),
     });
+    navigate("/home");
   };
 
   return (
