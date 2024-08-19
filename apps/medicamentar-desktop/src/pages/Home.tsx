@@ -1,53 +1,46 @@
-import { useNavigate } from "react-router-dom";
-import {Box, Button, Grid, Typography} from "@mui/material";
-import CardHome from "../components/CardHome";
+import { Box, Grid, Typography, AppBar, Toolbar } from "@mui/material";
+import CardHome from "../components/CardHome.tsx";
+import SideBar from "../components/SideBar.tsx";
 
 const Home = () => {
-    const navigate = useNavigate();
-    const handleBack = () =>{
-        navigate(-1);
-    }
-    return(
-        <Box sx={{
-            height:"100vh",
-            width:"100%",
-            backgroundColor:"grey.50",
-            display:"flex",
-            flexDirection:"column",
-            justifyContent:"center"
-       
-          }}>
+    return (
+        <Box sx={{ display: "flex", height: "100vh", flexDirection:"column"}}>
+            <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.main", zIndex: 1201 }}>
+                <Toolbar>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        MEDICAMENTAR
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
-            <Box sx ={{
-                marginTop:"75px",
-                alignItems:"center",
+            <SideBar/>
 
+            <Box
+                sx={{
+                    display: "flex",
+                    marginTop: "60px",
+                }}
+            >
+                <Box sx={{ paddingTop: 8}}>
+                    <Typography sx={{ color: "primary.dark", marginLeft:3}}>
+                        <h1>EVENTOS PRÓXIMOS</h1>
+                    </Typography>
 
-            }}>
-            <Typography sx = {{color:"primary.dark", marginLeft:3}}>
-                <h1>EVENTOS PRÓXIMOS</h1>
-            </Typography>
-
-            <Grid container spacing={3} sx ={{
-                maxWidth:1050,
-                alignItems:"center",
-                justifyContent:"center",
-                margin: "auto",
-
-
-            }}>
-            <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H"></CardHome>
-            <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H"></CardHome>
-            <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H"></CardHome>
-            <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H"></CardHome>
-            <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H"></CardHome>
-            <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 14H"></CardHome>
-
-            </Grid>
+                    <Grid container spacing={3} rowSpacing={8} sx={{
+                        maxWidth: 1150,
+                        margin: "auto",
+                    }}>
+                        <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H" />
+                        <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
+                        <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H" />
+                        <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
+                        <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
+                        <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 14H" />
+                    </Grid>
+                </Box>
             </Box>
-            
-            <Button variant="contained" color="primary" onClick={handleBack} sx = {{width:50, margin:5, padding:1}}> Voltar</Button>
         </Box>
     );
 }
+
 export default Home;
