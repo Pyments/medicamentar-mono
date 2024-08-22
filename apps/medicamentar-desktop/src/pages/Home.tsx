@@ -4,7 +4,11 @@ import SideBar from "../components/SideBar.tsx";
 
 const Home = () => {
     return (
-        <Box sx={{ display: "flex", height: "100vh", flexDirection:"column"}}>
+        <Box sx={{ 
+            display:"flex",
+            width:"100vw",
+            height:"100%",
+             }}>
             <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.main", zIndex: 1201 }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -12,34 +16,44 @@ const Home = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
-
             <SideBar/>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    marginTop: "60px",
-                }}
-            >
-                <Box sx={{ paddingTop: 8}}>
-                    <Typography sx={{ color: "primary.dark", marginLeft:3}}>
+                <Box 
+                sx={{ 
+                    margin:"3%",   
+                    marginTop:"4%"
+                }}>
+                    <Typography 
+                    sx={{ 
+                        color: "primary.dark", 
+                        marginBottom:"4%"
+                    }}>
                         <h1>EVENTOS PRÓXIMOS</h1>
                     </Typography>
 
-                    <Grid container spacing={3} rowSpacing={8} sx={{
-                        maxWidth: 1150,
-                        margin: "auto",
-                    }}>
-                        <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H" />
-                        <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
-                        <CardHome titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" dataHora="12/04 ÀS 14H" />
+                    <Box>
+                        <Grid container spacing={2} rowSpacing={8}>
+                            
+                        <CardHome 
+                        titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" 
+                        descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" 
+                        dataHora="12/04 ÀS 14H" />
+                        <CardHome 
+                        titulo="HORA DO MEDICAMENTO!" 
+                        descricao="IBUPROFENO 1 COMPRIMIDO" 
+                        dataHora="12/04 ÀS 11H" />
+                        <CardHome 
+                        titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" 
+                        descricao="CONSULTA MÉDICA - HMPA DR. LULINHA" 
+                        dataHora="12/04 ÀS 14H" />
+
                         <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
                         <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 11H" />
                         <CardHome titulo="HORA DO MEDICAMENTO!" descricao="IBUPROFENO 1 COMPRIMIDO" dataHora="12/04 ÀS 14H" />
                     </Grid>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+
     );
 }
 
