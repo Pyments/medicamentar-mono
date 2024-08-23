@@ -1,21 +1,19 @@
 import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { CssBaseline, ThemeProvider } from "@mui/material";
 import Router from "./pages/router.tsx";
-
-//  @ts-expect-error js-untyped-file
-import theme from "./constants/theme/theme.js";
+import { CssBaseline } from "@mui/material";
+import { BrowserRouter } from "react-router-dom";
+import { ThemeContextProvider } from "./constants/theme/ThemeContextProvider.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <CssBaseline>
-      <ThemeProvider theme={theme}>
+      <ThemeContextProvider>
         <BrowserRouter>
           <Router />
         </BrowserRouter>
-      </ThemeProvider>
+      </ThemeContextProvider>
     </CssBaseline>
   </React.StrictMode>
 );
