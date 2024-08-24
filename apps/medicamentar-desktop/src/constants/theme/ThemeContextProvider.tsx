@@ -14,13 +14,13 @@ export const ThemeContext = createContext<ThemeContextType>({
   theme: createTheme(),
 });
 
-export const useThemeContext = () => {
-  return useContext(ThemeContext);
-};
-
 export const ThemeContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const value = useColorTheme();
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
+};
+
+export const useThemeContext = () => {
+  return useContext(ThemeContext);
 };

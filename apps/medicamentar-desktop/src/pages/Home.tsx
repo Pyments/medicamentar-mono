@@ -9,7 +9,7 @@ const Home = () => {
             width:"100vw",
             height:"100%",
              }}>
-            <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.main", zIndex: 1201 }}>
+            <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.light", zIndex: 1201 }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         MEDICAMENTAR

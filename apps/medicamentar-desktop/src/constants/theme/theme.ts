@@ -74,24 +74,26 @@ export const getDesignTokens = (mode: PaletteMode) => ({
       : {
         // Paleta para tema escuro
         primary: {
-          deepest: "#103952",
-          deep: "#0078B6",
-          darkest: "#002f4a",
-          darker: "#336988",
-          dark: "#0f5c94",
-          main: "#1a8bca",
-          light: "#5ac6f0",
-          lighter: "#91C7EF",
-          lightest: "#D4EDFF",
-          pale: "#E4F4FF",
-          faint: "#F4FAFE",
+          deepest: "#333333",
+          deep: "#333333",
+          darkest: "#333333",
+          darker: "#333333",
+          dark: "#333333",
+          main: "#333333",
+          light: "#333333",
+          lighter: "#333333",
+          lightest: "#333333",
+          pale: "#333333",
+          faint: "#333333",
         },
         secondary: {
-          main: "#00446b",
-          dark: "#002f4a",
-          light: "#336988",
+          main: "#333333",
+          dark: "#333333",
+          light: "#333333",
         },
-      }),
+      }
+    ),
+
   },
 });
 

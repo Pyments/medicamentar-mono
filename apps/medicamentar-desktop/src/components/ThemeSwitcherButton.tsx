@@ -12,15 +12,14 @@ const DarkModeToggle = () => {
       onClick={toggleColorMode}
       sx={{
         display: "flex",
-        border: "1px solid",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       {mode === "dark" ? (
-        <Box component="img" border={"#000000"} src={BrighttnessSun} />
+        <Box component="img" src={BrighttnessSun} />
       ) : (
-        <Box component="img" color={"#000000"} src={BrighttnessMoon} />
+        <Box component="img" src={BrighttnessMoon} />
       )}
     </Button>
   );

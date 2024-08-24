@@ -8,17 +8,17 @@ export const useColorTheme = () => {
     const toggleColorMode = () =>
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
 
-    // const modifiedTheme = React.useMemo(
-    //   () =>
-    //     createTheme({
-    //       ...theme,
-    //       palette: {
-    //         ...theme.palette,
-    //         mode,
-    //       },
-    //     }),
-    //   [mode]
-    // );
+    /* const modifiedTheme = React.useMemo(
+        () =>
+            createTheme({
+                ...theme,
+                palette: {
+                    ...theme.palette,
+                    mode,
+                },
+            }),
+        [mode]
+    ); */
 
     const modifiedTheme = React.useMemo(
         () => createTheme(getDesignTokens(mode)),
