@@ -1,7 +1,7 @@
 import { Box, Grid, Typography, AppBar, Toolbar } from "@mui/material";
 import CardHome from "../components/CardHome.tsx";
 import SideBar from "../components/SideBar.tsx";
-
+import ThemeSwitcherButton from "../components/ThemeSwitcherButton.tsx"
 const Home = () => {
     return (
         <Box sx={{ 
@@ -9,11 +9,12 @@ const Home = () => {
             width:"100vw",
             height:"100%",
              }}>
-            <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.main", zIndex: 1201 }}>
+            <AppBar position="fixed" sx={{ top: 0, left: 0, width: '100%', backgroundColor: "primary.light", zIndex: 1201 }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         MEDICAMENTAR
                     </Typography>
+                    <ThemeSwitcherButton />
                 </Toolbar>
             </AppBar>
             <SideBar/>
