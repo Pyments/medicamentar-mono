@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.controller;
+package com.medicamentar.medicamentar_api.api.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
