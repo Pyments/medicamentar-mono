@@ -1,16 +1,20 @@
 import React from 'react';
 import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { Timer, Assignment, Medication, MedicalServicesOutlined, PersonOutline, Settings, ExitToApp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import Timer_Icon from '../../public/assets/icons/Timer_Icon';
+import Stethoscope_Icon from '../../public/assets/icons/Stethoscope_Icon';
+import Pill_Icon from '../../public/assets/icons/Pill_Icon';
+import Profile_Icon from '../../public/assets/icons/Profile_Icon';
+import Config_Icon from '../../public/assets/icons/Config_Icon';
+import Logout_Icon from '../../public/assets/icons/Logout_Icon';
 
 const items = [
-    { text: 'EVENTOS PRÓXIMOS', icon: <Timer /> },
-    { text: 'CONSULTAS E EXAMES', icon: <Assignment /> },
-    { text: 'MEDICAMENTOS', icon: <Medication /> },
-    { text: 'EMERGÊNCIA', icon: <MedicalServicesOutlined /> },
-    { text: 'PERFIL', icon: <PersonOutline /> },
-    { text: 'CONFIGURAÇÕES', icon: <Settings /> },
-    { text: 'SAIR', icon: <ExitToApp />, action: 'logout' },
+    { text: 'EVENTOS PRÓXIMOS', icon: <Timer_Icon /> },
+    { text: 'CONSULTAS E EXAMES', icon: <Stethoscope_Icon /> },
+    { text: 'MEDICAMENTOS', icon: <Pill_Icon /> },
+    { text: 'PERFIL', icon: <Profile_Icon /> },
+    { text: 'CONFIGURAÇÕES', icon: <Config_Icon /> },
+    { text: 'SAIR', icon: <Logout_Icon />, action: 'logout' },
 ];
 
 const drawerStyles = {
@@ -60,7 +64,7 @@ const Sidebar: React.FC = () => {
                         </ListItemIcon>
                         <ListItemText
                             primary={text}
-                            primaryTypographyProps={{ sx: { fontSize: '14px', fontWeight: 'medium' } }}
+                            primaryTypographyProps={{ sx: { fontSize: '14px', fontWeight: '500'} }}
                             sx={{ flex: 1, marginLeft: '12px',}}
                         />
                     </ListItemButton>
