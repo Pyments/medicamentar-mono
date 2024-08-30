@@ -8,6 +8,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Header from "../../components/Header";
 
 import { Link, useNavigate } from "react-router-dom";
 import { common } from "@mui/material/colors";
@@ -26,6 +27,7 @@ export default function SignIn() {
 
   return (
     <Container component="main" maxWidth="sm">
+      <Header />
       <Paper
         sx={{
           display: "flex",

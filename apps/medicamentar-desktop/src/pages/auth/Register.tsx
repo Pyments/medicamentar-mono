@@ -8,6 +8,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Header from "../../components/Header";
 
 import { Link } from "react-router-dom";
 
@@ -23,6 +24,7 @@ export default function Register() {
 
   return (
     <Container component="main" maxWidth="sm">
+      <Header />
       <Paper
         sx={{
           display: "flex",
