@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.application.DTOs.AuthDto;
+package com.medicamentar.medicamentar_api.application.dtos.AuthDto;
 
 public record RegisterRequest(
   String name,
