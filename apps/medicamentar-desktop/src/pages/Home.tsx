@@ -21,18 +21,20 @@ const Home = () => {
                 <Box 
                 sx={{ 
                     margin:"3%",   
-                    marginTop:"4%"
+                    marginTop:"4%",
                 }}>
                     <Typography 
                     sx={{ 
                         color: "primary.dark", 
-                        marginBottom:"4%"
+                        marginBottom:"4%",
+                        marginLeft:"2%"
+                        
                     }}>
                         <h1>EVENTOS PRÓXIMOS</h1>
                     </Typography>
 
                     <Box>
-                        <Grid container spacing={2} rowSpacing={8}>
+                        <Grid container spacing={2}>
                             
                         <CardHome 
                         titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!" 
