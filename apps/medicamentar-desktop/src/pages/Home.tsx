@@ -30,7 +30,7 @@ const Home = () => {
         </Typography>
 
         <Box>
-          <Grid container spacing={2} rowSpacing={8}>
+          <Grid container spacing={2}>
             <CardHome
               titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
               descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"

@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.application.DTOs;
+package com.medicamentar.medicamentar_api.application.dtos;
 
 import org.springframework.http.HttpStatus;
 

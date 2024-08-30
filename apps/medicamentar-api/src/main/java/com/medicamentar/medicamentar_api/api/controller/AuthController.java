@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.DTOs.ServiceResponse;
-import com.medicamentar.medicamentar_api.application.DTOs.AuthDto.LoginRequest;
-import com.medicamentar.medicamentar_api.application.DTOs.AuthDto.RegisterRequest;
+import com.medicamentar.medicamentar_api.application.dtos.ServiceResponse;
+import com.medicamentar.medicamentar_api.application.dtos.AuthDto.LoginRequest;
+import com.medicamentar.medicamentar_api.application.dtos.AuthDto.RegisterRequest;
 import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.repositories.UserRepository;
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
