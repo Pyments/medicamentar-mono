@@ -1,6 +1,7 @@
 package com.medicamentar.medicamentar_api.application.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +22,22 @@ public class ExamService {
         return (allExams);
     }
 
-    public  String registerExam(ExamRequest data){
+    public String updateExam(ExamRequest data){
+       Optional<Exam> optionalExam = this.repository.findById(data.id());
+        if (optionalExam.isPresent()){
+            Exam exam = optionalExam.get();
+            exam.setDate(data.date());
+            exam.setName(data.name());
+            exam.setLocal(data.local());
+            exam.setDescription(data.description());
+            this.repository.save(exam);
+            return ("Exam successfuly update");
+        }else {
+            return ("Exam failed to update");
+        }
+    }
+
+    public String registerExam(ExamRequest data){
         Exam newExam = new Exam();
         newExam.setDate(data.date());
         newExam.setName(data.name());
@@ -36,6 +52,5 @@ public class ExamService {
         this.repository.deleteById(id);
         return ("Exam Delete Successfully");
     }
-
-
+    
 }
