@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.application.dtos.MedicationDto;
+package com.medicamentar.medicamentar_api.application.dtos.medicationDto;
 import java.util.Date;
 
 public record UpdateRequest (
