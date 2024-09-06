@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.dtos.ExamDto.ExamRequest;
+import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamRequest;
 import com.medicamentar.medicamentar_api.application.services.ExamService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

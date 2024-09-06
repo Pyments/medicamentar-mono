@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.medicamentar.medicamentar_api.application.dtos.ServiceResponse;
-import com.medicamentar.medicamentar_api.application.dtos.ConsultationDto.ConsultationRequest;
-import com.medicamentar.medicamentar_api.application.dtos.ConsultationDto.ConsultationResponse;
+import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
+import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 
