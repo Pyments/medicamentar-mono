@@ -52,7 +52,7 @@ public class MedicationController {
     }
 
     @Operation(summary = "Exclui o medicamento.", method = "DELETE")
-    @DeleteMapping()
+    @DeleteMapping("{/id}")
     public ResponseEntity deleteMedication(String id){
         var response = this.medService.deleteMedication(id);
 
