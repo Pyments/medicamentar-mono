@@ -1,23 +1,19 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.dtos.ServiceResponse;
-import com.medicamentar.medicamentar_api.application.dtos.AuthDto.LoginRequest;
-import com.medicamentar.medicamentar_api.application.dtos.AuthDto.RegisterRequest;
-import com.medicamentar.medicamentar_api.domain.entities.User;
-import com.medicamentar.medicamentar_api.domain.repositories.UserRepository;
-import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
+import com.medicamentar.medicamentar_api.application.dtos.authDto.LoginRequest;
+import com.medicamentar.medicamentar_api.application.dtos.authDto.RegisterRequest;
+import com.medicamentar.medicamentar_api.application.services.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,54 +21,26 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Auth")
 @RequiredArgsConstructor
 public class AuthController {
-  private final UserRepository repository;
-  private final PasswordEncoder passwordEncoder;
-  private final TokenService tokenService;
+  private final AuthService authService;
 
+  @Operation(summary = "Autentica o usuário", method = "POST")
   @PostMapping("/login")
-  public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
-    ServiceResponse<String> response = new ServiceResponse<String>();
+  public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
 
-    User user = this.repository.findByEmail(loginRequest.email())
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
-    if (passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-      String token = this.tokenService.generateToken(user);
-      response.setData(token);
-      response.setMessage("Login successful");
-      response.setStatus(HttpStatus.ACCEPTED);
-      return ResponseEntity.ok(response);
-    }
-    return ResponseEntity.badRequest().build();
+    var response = this.authService.login(loginRequest);
+    return response.getStatus() == HttpStatus.OK
+        ? ResponseEntity.ok(response)
+        : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
+  @Operation(summary = "Registra um usuário", method = "POST")
   @PostMapping("/register")
-  public ResponseEntity register(@RequestBody RegisterRequest request) {
-    ServiceResponse<String> response = new ServiceResponse<String>();
+  public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
 
-    if (!request.password().equals(request.confirmPassword())) {
-      response.setMessage(("Password do not match"));
-      response.setStatus(HttpStatus.BAD_REQUEST);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    Optional<User> user = this.repository.findByEmail(request.email());
-    if (user.isPresent()) {
-      response.setMessage("Email already in use");
-      response.setStatus(HttpStatus.BAD_REQUEST);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    User newUser = new User();
-    newUser.setPassword(passwordEncoder.encode(request.password()));
-    newUser.setEmail(request.email());
-    newUser.setName(request.name());
-    this.repository.save(newUser);
-
-    response.setMessage("User registered successfully");
-    response.setStatus(HttpStatus.CREATED);
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    var response = this.authService.register(registerRequest);
+    return response.getStatus() == HttpStatus.OK
+        ? ResponseEntity.ok(response)
+        : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 }
 
