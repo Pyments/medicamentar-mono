@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.application.dtos.ExamDto;
+package com.medicamentar.medicamentar_api.application.dtos.examDto;
 
 import java.util.Date;
 import java.util.UUID;

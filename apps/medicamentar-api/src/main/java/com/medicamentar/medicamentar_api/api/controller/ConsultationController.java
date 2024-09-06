@@ -3,7 +3,7 @@ package com.medicamentar.medicamentar_api.api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.dtos.ConsultationDto.ConsultationRequest;
+import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
 import com.medicamentar.medicamentar_api.application.services.ConsultationService;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package com.medicamentar.medicamentar_api.application.dtos.ConsultationDto;
+package com.medicamentar.medicamentar_api.application.dtos.consultationDto;
 
 import java.util.Date;
 
