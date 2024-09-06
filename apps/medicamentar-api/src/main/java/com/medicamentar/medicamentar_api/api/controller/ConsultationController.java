@@ -42,7 +42,7 @@ public class ConsultationController {
     }
     
     @Operation(summary = "Remova a consulta", method = "DELETE")
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteConsultation(String id){
         var response = this.consultationService.deleteConsultation(id);
 
