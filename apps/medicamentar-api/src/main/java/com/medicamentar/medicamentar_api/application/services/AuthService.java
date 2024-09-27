@@ -32,12 +32,12 @@ public class AuthService {
       String token = this.tokenService.generateToken(user);
       response.setData(token);
       response.setMessage("Login successful");
-      response.setStatus(HttpStatus.ACCEPTED);
+      response.setStatus(HttpStatus.OK);
       return response;
     }
 
-    response.setMessage("Login successfully");
-    response.setStatus((HttpStatus.ACCEPTED));
+    response.setMessage("Bad request");
+    response.setStatus((HttpStatus.BAD_REQUEST));
 
     return response;
   }
