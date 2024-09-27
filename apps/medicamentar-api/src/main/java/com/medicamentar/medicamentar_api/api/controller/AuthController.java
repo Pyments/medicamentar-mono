@@ -29,7 +29,7 @@ public class AuthController {
 
     var response = this.authService.login(loginRequest);
     return response.getStatus() == HttpStatus.OK
-        ? ResponseEntity.ok(response)
+        ? ResponseEntity.status(HttpStatus.OK).body(response)
         : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
@@ -38,8 +38,8 @@ public class AuthController {
   public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
 
     var response = this.authService.register(registerRequest);
-    return response.getStatus() == HttpStatus.OK
-        ? ResponseEntity.ok(response)
+    return response.getStatus() == HttpStatus.CREATED
+        ? ResponseEntity.status(HttpStatus.CREATED).body(response)
         : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 }
