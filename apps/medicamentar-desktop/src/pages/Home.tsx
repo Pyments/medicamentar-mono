@@ -6,32 +6,37 @@ import Header from "../components/Header.tsx";
 const Home = () => {
   return (
     <Box
+    sx={{
+      display: "flex",
+      width: "100vw",
+      height: "100vh",
+    }}
+  >
+    <Header />
+    <SideBar />
+    <Box
       sx={{
-        display: "flex",
-        width: "100vw",
-        height: "100%",
+        margin: "3%",
+        flex: 1,
+        marginTop: "170px",
+        padding:1,
+        height: "80%",
+        overflow: "hidden",
+        maxWidth: "100%",
+        overflowY:"auto",
+        scrollbarWidth: "none", 
       }}
     >
-      <Header />
-      <SideBar />
-      <Box
+      <Typography
         sx={{
-          margin: "3%",
-          marginTop: "4%",
-        }}
-      >
-        <Typography
-          sx={{
-            color: "primary.dark",
-            marginBottom: "4%",
-          }}
-        >
-          <h1>EVENTOS PRÓXIMOS</h1>
-        </Typography>
+          color: "primary.dark",
+          marginBottom: "4%",
+        }}>
 
-        <Box>
+        <h1>EVENTOS PRÓXIMOS</h1>
+      </Typography>
           <Grid container spacing={2}>
-            <CardHome
+          <CardHome
               titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
               descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
               dataHora="12/04 ÀS 14H"
@@ -46,8 +51,7 @@ const Home = () => {
               descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
               dataHora="12/04 ÀS 14H"
             />
-
-            <CardHome
+          <CardHome
               titulo="HORA DO MEDICAMENTO!"
               descricao="IBUPROFENO 1 COMPRIMIDO"
               dataHora="12/04 ÀS 11H"
@@ -64,8 +68,7 @@ const Home = () => {
             />
           </Grid>
         </Box>
-      </Box>
-    </Box>
+      </Box> 
   );
 };
 
