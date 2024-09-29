@@ -1,9 +1,10 @@
 import App from "../App";
 import SignIn from "./auth/SignIn";
 import Register from "./auth/Register";
+import Home from "./Home";
+import Medicine from "./Medicine";
 
 import { IRouterType } from "../types/router.types";
-import Home from "./Home";
 
 const pagesData: IRouterType[] = [
   {
@@ -17,14 +18,19 @@ const pagesData: IRouterType[] = [
     element: <SignIn /> 
   },
   { 
-    title: "Sign In", 
+    title: "Register", 
     path: "register", 
     element: <Register /> 
   },
   { 
-    title: "home", 
+    title: "Home", 
     path: "home", 
     element: <Home /> 
+  },
+  { 
+    title: "Medicine",
+    path: "medicine",
+    element: <Medicine />
   },
 ];
 
