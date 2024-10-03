@@ -2,10 +2,10 @@ import { Box, Button } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "../constants/theme/useTheme";
 
-import BrighttnessSun from "../../public/assets/icons/BrightnessSun.svg";
-import BrighttnessMoon from "../../public/assets/icons/BrightnessMoon.svg";
-import BrighttnessSunBlue from "../../public/assets/icons/BrightnessSunBlue.svg";
-import BrighttnessMoonBlue from "../../public/assets/icons/BrightnessMoonBlue.svg";
+import BrighttnessSun from "../assets/icons/BrightnessSun.svg";
+import BrighttnessMoon from "../assets/icons/BrightnessMoon.svg";
+import BrighttnessSunBlue from "../assets/icons/BrightnessSunBlue.svg";
+import BrighttnessMoonBlue from "../assets/icons/BrightnessMoonBlue.svg";
 
 const DarkModeToggle = () => {
   const location = useLocation().pathname;

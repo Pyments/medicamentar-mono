@@ -1,6 +1,6 @@
 import { Box, AppBar } from "@mui/material";
-import logoWhite from "../../public/assets/icons/logoWhite.svg";
-import logoBlue from "../../public/assets/icons/logoBlue.svg";
+import logoWhite from "../assets/icons/logoWhite.svg";
+import logoBlue from "../assets/icons/logoBlue.svg";
 import { useLocation } from "react-router-dom";
 import DarkModeToggle from "./ThemeSwitcherButton";
 
