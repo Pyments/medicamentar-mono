@@ -9,11 +9,11 @@ import Config_Icon from '../../public/assets/icons/Config_Icon';
 import Logout_Icon from '../../public/assets/icons/Logout_Icon';
 
 const items = [
-    { text: 'EVENTOS PRÓXIMOS', icon: <Timer_Icon /> },
-    { text: 'CONSULTAS E EXAMES', icon: <Stethoscope_Icon /> },
-    { text: 'MEDICAMENTOS', icon: <Pill_Icon /> },
+    { text: 'EVENTOS PRÓXIMOS', icon: <Timer_Icon />, action: 'events' },
+    { text: 'CONSULTAS E EXAMES', icon: <Stethoscope_Icon />},
+    { text: 'MEDICAMENTOS', icon: <Pill_Icon />, action: 'medicine' },
     { text: 'PERFIL', icon: <Profile_Icon /> },
-    { text: 'CONFIGURAÇÕES', icon: <Config_Icon /> },
+    { text: 'CONFIGURAÇÕES', icon: <Config_Icon />},
     { text: 'SAIR', icon: <Logout_Icon />, action: 'logout' },
 ];
 
@@ -47,6 +47,12 @@ const Sidebar: React.FC = () => {
     const handleItemClick = (action: string | undefined) => {
         if (action === 'logout') {
             navigate('/signin');
+        }else if (action == 'events'){
+            navigate('/home');
+        }else if (action === 'medicine') {
+            navigate('/medicine');
+        }else if (action) {
+            navigate(`/${action}`);
         }
     };
 
