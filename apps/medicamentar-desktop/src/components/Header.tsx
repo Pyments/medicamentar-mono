@@ -14,10 +14,11 @@ function Header() {
   return (
     <AppBar
       position="fixed"
+      elevation={0}
       sx={{
         width: "100vw",
         height: "100px",
-        backgroundColor: darkMode ? "primary.main" : "primary.darker",
+        backgroundColor: darkMode ? "primary.darker" : "primary.main",
         background: condition ? "none" : "solid",
         padding: "27px 45px",
         justifyContent: "space-between",
