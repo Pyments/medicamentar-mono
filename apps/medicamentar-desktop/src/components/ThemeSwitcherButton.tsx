@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { useTheme } from "../constants/theme/ThemeContext";
+import { useTheme } from "../constants/theme/useTheme";
 
 import BrighttnessSun from "../../public/assets/icons/BrightnessSun.svg";
 import BrighttnessMoon from "../../public/assets/icons/BrightnessMoon.svg";

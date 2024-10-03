@@ -30,20 +30,20 @@ const lightTheme: CustomThemeOptions = {
   palette: {
     mode: "light",
     primary: {
-      lighter: "#91C7EF",
-      light: "#42a5f5",
+      lighter: "#D4EDFF",
+      light: "#91C7EF",
       main: "#1A8BCA",
       dark: "#1565c0",
       darker: "#0078B6"
     },
-    secondary: {
+/*  secondary: {
       main: "#dc004e",
       light: "#ff4081",
       dark: "#c51162",
-    },
+    }, */
     background: {
       default: "#ffffff",
-      paper: "#f5f5f5",
+      paper: "#EFF0F3",
     },
     text: {
       primary: "#333333",
@@ -56,17 +56,17 @@ const darkTheme: CustomThemeOptions = {
   palette: {
     mode: "dark",
     primary: {
-      lighter: "#007EC1",
-      light: "#0078B6",
+      lighter: "#91C7EF",
+      light: "#1A8BCA",
       main: "#103952",
       dark: "#0A2739",
       darker: "#092332"
     },
-    secondary: {
+/*  secondary: {
       main: "#f48fb1",
       light: "#ffc1e3",
       dark: "#bf5f82",
-    },
+    }, */
     background: {
       default: "#103952",
       paper: "#62636C",
