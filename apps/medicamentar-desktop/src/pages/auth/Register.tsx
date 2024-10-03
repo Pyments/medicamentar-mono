@@ -12,6 +12,8 @@ import Header from "../../components/Header";
 
 import { Link } from "react-router-dom";
 
+import { useTheme } from "../../constants/theme/useTheme";
+
 export default function Register() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,18 +24,32 @@ export default function Register() {
     });
   };
 
+  const { darkMode } = useTheme();
+
+  const page__root = {
+    p: 0,
+    m: 0,
+    minWidth: 1,
+    minHeight: 1,
+    display: "flex",
+    placeItems: "center",
+    justifyContent: "center",
+    backgroundColor: darkMode ? "primary.darker" : "common.white",
+  };
+
+  const card__wrapper = {
+    display: "flex",
+    maxWidth: "720px",
+    alignItems: "center",
+    p: "25px 30px 60px 30px ",
+    flexDirection: "column",
+    backgroundColor: darkMode ? "primary.dark" : "primary.light",
+  };
+
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" sx={page__root}>
       <Header />
-      <Paper
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          p: "30px 30px ",
-          flexDirection: "column",
-          backgroundColor: "primary.light",
-        }}
-      >
+      <Paper sx={card__wrapper}>
         <Typography
           component="h1"
           variant="h5"
