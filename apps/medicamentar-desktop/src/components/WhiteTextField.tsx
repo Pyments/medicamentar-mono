@@ -14,14 +14,17 @@ const WhiteTextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             "& .MuiOutlinedInput-notchedOutline": {
               borderColor: "common.white",
             },
-            "&.Mui-focused": {
-              "& .MuiOutlinedInput-notchedOutline": {
-                color: "common.white",
-                borderColor: "common.white",
-              },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "common.white",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "common.white",
             },
           },
           "& .MuiInputLabel-outlined": {
+            color: "common.white",
+          },
+          "& .MuiInputLabel-outlined.Mui-focused": {
             color: "common.white",
           },
         }}

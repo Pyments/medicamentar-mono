@@ -1,83 +1,128 @@
-import React from 'react';
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import Timer_Icon from '../../public/assets/icons/Timer_Icon';
-import Stethoscope_Icon from '../../public/assets/icons/Stethoscope_Icon';
-import Pill_Icon from '../../public/assets/icons/Pill_Icon';
-import Profile_Icon from '../../public/assets/icons/Profile_Icon';
-import Config_Icon from '../../public/assets/icons/Config_Icon';
-import Logout_Icon from '../../public/assets/icons/Logout_Icon';
+import React from "react";
 
-const items = [
-    { text: 'EVENTOS PRÓXIMOS', icon: <Timer_Icon />, action: 'events' },
-    { text: 'CONSULTAS E EXAMES', icon: <Stethoscope_Icon />},
-    { text: 'MEDICAMENTOS', icon: <Pill_Icon />, action: 'medicine' },
-    { text: 'PERFIL', icon: <Profile_Icon /> },
-    { text: 'CONFIGURAÇÕES', icon: <Config_Icon />},
-    { text: 'SAIR', icon: <Logout_Icon />, action: 'logout' },
-];
+import {
+  List,
+  Drawer,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from "@mui/material";
 
-const drawerStyles = {
-    flexShrink: 0,
-    width: 300,
-    '& .MuiDrawer-paper': {
-        width: 300,
-        boxSizing: 'border-box',
-        borderRight: 'none', 
-        backgroundColor: "#F4FAFE",
-        paddingTop: '128px',
-        zIndex: 1200,
-    },
-};
+import Pill_Icon from "../assets/icons/Pill_Icon";
+import Timer_Icon from "../assets/icons/Timer_Icon";
+import Config_Icon from "../assets/icons/Config_Icon";
+import Logout_Icon from "../assets/icons/Logout_Icon";
+import Profile_Icon from "../assets/icons/Profile_Icon";
+import Stethoscope_Icon from "../assets/icons/Stethoscope_Icon";
 
-const listItemStyles = {
-    display: 'flex',
-    alignItems: 'center',
-    '&:hover': { backgroundColor: 'rgba(212, 237, 255, 1)' },
-};
+import Dark_Pill_Icon from "../assets/icons/Dark_Pill_Icon.svg";
+import Dark_Timer_Icon from "../assets/icons/Dark_Timer_Icon.svg";
+import Dark_Config_Icon from "../assets/icons/Dark_Config_Icon.svg";
+import Dark_Logout_Icon from "../assets/icons/Dark_Logout_Icon.svg";
+import Dark_Profile_Icon from "../assets/icons/Dark_Profile_Icon.svg";
+import Dark_Stethoscope_Icon from "../assets/icons/Dark_Stethoscope_Icon.svg";
 
-const listItemIconStyles = {
-    display: 'flex',
-    justifyContent: 'center',
-};
+import { useNavigate } from "react-router-dom";
+
+import { useTheme } from "../constants/theme/useTheme";
 
 const Sidebar: React.FC = () => {
-    const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const navigate = useNavigate();
 
-    const handleItemClick = (action: string | undefined) => {
-        if (action === 'logout') {
-            navigate('/signin');
-        }else if (action == 'events'){
-            navigate('/home');
-        }else if (action === 'medicine') {
-            navigate('/medicine');
-        }else if (action) {
-            navigate(`/${action}`);
-        }
-    };
+  const items = [
+    {
+      text: "EVENTOS PRÓXIMOS",
+      icon: darkMode ? <img src={Dark_Timer_Icon} /> : <Timer_Icon />,
+      action: "events",
+    },
+    {
+      text: "CONSULTAS E EXAMES",
+      icon: darkMode ? (
+        <img src={Dark_Stethoscope_Icon} />
+      ) : (
+        <Stethoscope_Icon />
+      ),
+    },
+    {
+      text: "MEDICAMENTOS",
+      icon: darkMode ? <img src={Dark_Pill_Icon} /> : <Pill_Icon />,
+      action: "medicine",
+    },
+    {
+      text: "PERFIL",
+      icon: darkMode ? <img src={Dark_Profile_Icon} /> : <Profile_Icon />,
+    },
+    {
+      text: "CONFIGURAÇÕES",
+      icon: darkMode ? <img src={Dark_Config_Icon} /> : <Config_Icon />,
+    },
+    {
+      text: "SAIR",
+      icon: darkMode ? <img src={Dark_Logout_Icon} /> : <Logout_Icon />,
+      action: "logout",
+    },
+  ];
+  const drawerStyles = {
+    width: 300,
+    flexShrink: 0,
+    "& .MuiDrawer-paper": {
+      width: 300,
+      zIndex: 1200,
+      borderRight: "none",
+      paddingTop: "128px",
+      boxSizing: "border-box",
+      backgroundColor: darkMode ? "primary.dark" : "gray.100",
+    },
+  };
 
-    return (
-        <Drawer variant="permanent" anchor="left" sx={drawerStyles}>
-            <List>
-                {items.map(({ text, icon, action }) => (
-                    <ListItemButton
-                        key={text}
-                        sx={listItemStyles}
-                        onClick={() => handleItemClick(action)}
-                    >
-                        <ListItemIcon sx={listItemIconStyles}>
-                            {icon}
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={text}
-                            primaryTypographyProps={{ sx: { fontSize: '14px', fontWeight: '500'} }}
-                            sx={{ flex: 1, marginLeft: '12px',}}
-                        />
-                    </ListItemButton>
-                ))}
-            </List>
-        </Drawer>
-    );
+  const listItemStyles = {
+    display: "flex",
+    alignItems: "center",
+    "&:hover": {
+      backgroundColor: darkMode ? "primary.main" : "primary.lighter",
+    },
+  };
+
+  const listItemIconStyles = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const handleItemClick = (action: string | undefined) => {
+    if (action === "logout") {
+      navigate("/signin");
+    } else if (action == "events") {
+      navigate("/home");
+    } else if (action === "medicine") {
+      navigate("/medicine");
+    } else if (action) {
+      navigate(`/${action}`);
+    }
+  };
+
+  return (
+    <Drawer variant="permanent" anchor="left" sx={drawerStyles}>
+      <List>
+        {items.map(({ text, icon, action }) => (
+          <ListItemButton
+            key={text}
+            sx={listItemStyles}
+            onClick={() => handleItemClick(action)}
+          >
+            <ListItemIcon sx={listItemIconStyles}>{icon}</ListItemIcon>
+            <ListItemText
+              primary={text}
+              primaryTypographyProps={{
+                sx: { fontSize: "14px", fontWeight: "500" },
+              }}
+              sx={{ flex: 1, marginLeft: "12px" }}
+            />
+          </ListItemButton>
+        ))}
+      </List>
+    </Drawer>
+  );
 };
 
 export default Sidebar;

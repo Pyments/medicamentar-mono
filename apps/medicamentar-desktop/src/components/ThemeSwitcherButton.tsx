@@ -1,33 +1,37 @@
 import { Box, Button } from "@mui/material";
-import { useThemeContext } from "../constants/theme/ThemeContextProvider";
 import { useLocation } from "react-router-dom";
+import { useTheme } from "../constants/theme/useTheme";
 
-import BrighttnessSun from "../../public/assets/icons/BrightnessSun.svg";
-import BrighttnessMoon from "../../public/assets/icons/BrightnessMoon.svg";
-import BrighttnessSunBlue from "../../public/assets/icons/BrightnessSunBlue.svg";
-import BrighttnessMoonBlue from "../../public/assets/icons/BrightnessMoonBlue.svg";
+import BrighttnessSun from "../assets/icons/BrightnessSun.svg";
+import BrighttnessMoon from "../assets/icons/BrightnessMoon.svg";
+import BrighttnessSunBlue from "../assets/icons/BrightnessSunBlue.svg";
+import BrighttnessMoonBlue from "../assets/icons/BrightnessMoonBlue.svg";
 
 const DarkModeToggle = () => {
-  const { mode, toggleColorMode } = useThemeContext();
   const location = useLocation().pathname;
   const condition = location == "/signin" || location == "/register";
+  const { darkMode, toggleTheme } = useTheme();
   return (
     <Button
-      onClick={toggleColorMode}
+      onClick={toggleTheme}
       sx={{
         display: "flex",
+        borderRadius: "50%",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      {mode === "dark" && condition ? (
-        <Box component="img" src={BrighttnessSunBlue} />
-      ) : mode === "dark" && !condition ? (
-        <Box component="img" src={BrighttnessSun} />
-      ): mode === "light" && condition ? (
-        <Box component="img" src={BrighttnessMoonBlue} />
-      ) : <Box component="img" src={BrighttnessMoon} />
-      }
+      {darkMode ? (
+        <Box
+          component="img"
+          src={condition ? BrighttnessSunBlue : BrighttnessSun}
+        />
+      ) : (
+        <Box
+          component="img"
+          src={condition ? BrighttnessMoonBlue : BrighttnessMoon}
+        />
+      )}
     </Button>
   );
 };
