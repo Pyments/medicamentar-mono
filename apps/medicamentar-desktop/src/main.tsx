@@ -6,7 +6,7 @@ import { CssBaseline } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.querySelector("body")!).render(
   <React.StrictMode>
     <CssBaseline>
       <ThemeProvider>
