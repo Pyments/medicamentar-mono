@@ -118,7 +118,7 @@ export default function Register() {
             fullWidth
             type="submit"
             variant="contained"
-            sx={{ mb: 4, py: 1.5 }}
+            sx={{ mb: 4, py: 1.5, backgroundColor: "#0078B6" }}
           >
             {"CADASTRAR-SE"}
           </Button>
