@@ -1,15 +1,4 @@
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-
 import { useAuth } from '../hooks/useAuth';
-
-
-import {
-  List,
-  Drawer,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
-} from "@mui/material";
 
 import Pill_Icon from "../assets/icons/Pill_Icon";
 import Timer_Icon from "../assets/icons/Timer_Icon";
@@ -28,6 +17,7 @@ import Dark_Stethoscope_Icon from "../assets/icons/Dark_Stethoscope_Icon.svg";
 import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "../constants/theme/useTheme";
+import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 const Sidebar: React.FC = () => {
   const { logout } = useAuth();
