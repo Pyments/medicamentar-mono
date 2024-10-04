@@ -1,12 +1,12 @@
 import React from 'react';
 import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import Timer_Icon from '../../public/assets/icons/Timer_Icon';
 import Stethoscope_Icon from '../../public/assets/icons/Stethoscope_Icon';
 import Pill_Icon from '../../public/assets/icons/Pill_Icon';
 import Profile_Icon from '../../public/assets/icons/Profile_Icon';
 import Config_Icon from '../../public/assets/icons/Config_Icon';
 import Logout_Icon from '../../public/assets/icons/Logout_Icon';
+import { useAuth } from '../hooks/useAuth';
 
 const items = [
     { text: 'EVENTOS PRÓXIMOS', icon: <Timer_Icon /> },
@@ -42,11 +42,13 @@ const listItemIconStyles = {
 };
 
 const Sidebar: React.FC = () => {
-    const navigate = useNavigate();
+    const { logout } = useAuth();
 
-    const handleItemClick = (action: string | undefined) => {
+    const handleItemClick = async (action: string | undefined) => {
         if (action === 'logout') {
-            navigate('/signin');
+            window.electron.store.delete("email");
+            window.electron.store.delete("password");
+            await logout();
         }
     };
 

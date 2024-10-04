@@ -10,20 +10,87 @@ import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Header from "../../components/Header";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { common } from "@mui/material/colors";
-
+import axios from "axios";
+import { useAuth } from "../../hooks/useAuth";
 export default function SignIn() {
-  const navigate = useNavigate(); 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { login } = useAuth();
+  const [error, setError] = React.useState<null | string>(null);
+  const [remember, setRemember] = React.useState(false);
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+
+  const validateEmailAndPassword = (
+    email: string,
+    password: string
+  ): boolean => {
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (email === "" || password === "") {
+      setError("Preencha todos os campos");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setError("Insira um email válido");
+      return false;
+    }
+    return true;
+  };
+
+  const loginUser = async (email: string, password: string) => {
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email,
+        password,
+      });
+
+      const token = response.data;
+      if (token) {
+        if (remember) {
+          window.electron.store.set("email", email);
+          window.electron.store.set("password", password);
+        }
+        await login({ token });
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || "Ocorreu um erro no login");
+      } else {
+        setError("Ocorreu um erro inesperado");
+      }
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-    navigate("/home");
+
+    const email = (data.get("email") as string) ?? "";
+    const password = (data.get("password") as string) ?? "";
+
+    if (validateEmailAndPassword(email, password)) {
+      await loginUser(email, password);
+    }
   };
+
+  React.useEffect(() => {
+    const fetchStoredCredentials = async () => {
+      const storedEmail = (await window.electron.store.get("email")) as
+        | string
+        | undefined;
+      const storedPassword = (await window.electron.store.get("password")) as
+        | string
+        | undefined;
+
+      if (storedEmail && storedPassword) {
+        setEmail(storedEmail);
+        setPassword(storedPassword);
+        await loginUser(storedEmail, storedPassword);
+      }
+    };
+
+    fetchStoredCredentials();
+  }, []);
 
   return (
     <Container component="main" maxWidth="sm">
@@ -58,6 +125,8 @@ export default function SignIn() {
             label="Email"
             margin="normal"
             autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <WhiteTextField
             required
@@ -69,7 +138,14 @@ export default function SignIn() {
             margin="normal"
             variant="outlined"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
+          {error && (
+            <Typography sx={{ color: "common.white", textAlign: "center" }}>
+              {error}
+            </Typography>
+          )}
           <FormControlLabel
             label="Lembrar senha"
             sx={{ color: "common.white" }}
@@ -78,6 +154,7 @@ export default function SignIn() {
                 value="remember"
                 color="primary"
                 sx={{ color: "common.white" }}
+                onChange={(e) => setRemember(e.target.checked)}
               />
             }
           />
@@ -101,7 +178,12 @@ export default function SignIn() {
           </Link>
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              sx={{ color: "common.white", display: "inline-block", mt: 1, mr: 1 }}
+              sx={{
+                color: "common.white",
+                display: "inline-block",
+                mt: 1,
+                mr: 1,
+              }}
             >
               Precisando de uma conta?
             </Typography>

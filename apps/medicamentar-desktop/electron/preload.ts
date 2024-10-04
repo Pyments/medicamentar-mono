@@ -1,5 +1,17 @@
 import { ipcRenderer, contextBridge } from 'electron'
 
+declare global {
+  interface Window {
+    electron: {
+      store: {
+        get: (key: string) => void;
+        set: (key: string, val: string) => void;
+        delete: (key: string) => void;
+      };
+    };
+  }
+}
+
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {
@@ -22,3 +34,11 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('electron', {
+  store: {
+    get: (key: string) => ipcRenderer.invoke('electron-store-get', key),
+    set: (key: string, value: string) => ipcRenderer.invoke('electron-store-set', key, value),
+    delete: (key: string) => ipcRenderer.invoke('electron-store-delete', key)
+  },
+});
