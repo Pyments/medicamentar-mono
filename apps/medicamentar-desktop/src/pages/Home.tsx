@@ -1,15 +1,22 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import CardHome from "../components/CardHome.tsx";
 import SideBar from "../components/SideBar.tsx";
 import Header from "../components/Header.tsx";
 
+import { useTheme } from "../constants/theme/useTheme";
+
 const Home = () => {
+  const { darkMode } = useTheme();
+
   return (
-    <Box
+    <Container
       sx={{
-        display: "flex",
-        width: "100vw",
+        ml: 0,
+        mr: "auto",
         height: "100%",
+        display: "flex",
+        minWidth: "100%",
+        backgroundColor: darkMode ? "primary.main" : "common.white",
       }}
     >
       <Header />
@@ -17,7 +24,14 @@ const Home = () => {
       <Box
         sx={{
           margin: "3%",
-          marginTop: "4%",
+          flex: 1,
+          marginTop: "170px",
+          padding: 1,
+          height: "80%",
+          overflow: "hidden",
+          maxWidth: "100%",
+          overflowY: "auto",
+          scrollbarWidth: "none",
         }}
       >
         <Typography
@@ -26,46 +40,51 @@ const Home = () => {
             marginBottom: "4%",
           }}
         >
-          <h1>EVENTOS PRÓXIMOS</h1>
+          <Box
+            component="h1"
+            sx={{
+              p: 0,
+              mt: 0,
+              color: darkMode ? "common.white" : "primary.main",
+            }}
+          >
+            EVENTOS PRÓXIMOS
+          </Box>
         </Typography>
-
-        <Box>
-          <Grid container spacing={2}>
-            <CardHome
-              titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
-              descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
-              dataHora="12/04 ÀS 14H"
-            />
-            <CardHome
-              titulo="HORA DO MEDICAMENTO!"
-              descricao="IBUPROFENO 1 COMPRIMIDO"
-              dataHora="12/04 ÀS 11H"
-            />
-            <CardHome
-              titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
-              descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
-              dataHora="12/04 ÀS 14H"
-            />
-
-            <CardHome
-              titulo="HORA DO MEDICAMENTO!"
-              descricao="IBUPROFENO 1 COMPRIMIDO"
-              dataHora="12/04 ÀS 11H"
-            />
-            <CardHome
-              titulo="HORA DO MEDICAMENTO!"
-              descricao="IBUPROFENO 1 COMPRIMIDO"
-              dataHora="12/04 ÀS 11H"
-            />
-            <CardHome
-              titulo="HORA DO MEDICAMENTO!"
-              descricao="IBUPROFENO 1 COMPRIMIDO"
-              dataHora="12/04 ÀS 14H"
-            />
-          </Grid>
-        </Box>
+        <Grid container spacing={2}>
+          <CardHome
+            titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
+            descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
+            dataHora="12/04 ÀS 14H"
+          />
+          <CardHome
+            titulo="HORA DO MEDICAMENTO!"
+            descricao="IBUPROFENO 1 COMPRIMIDO"
+            dataHora="12/04 ÀS 11H"
+          />
+          <CardHome
+            titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
+            descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
+            dataHora="12/04 ÀS 14H"
+          />
+          <CardHome
+            titulo="HORA DO MEDICAMENTO!"
+            descricao="IBUPROFENO 1 COMPRIMIDO"
+            dataHora="12/04 ÀS 11H"
+          />
+          <CardHome
+            titulo="HORA DO MEDICAMENTO!"
+            descricao="IBUPROFENO 1 COMPRIMIDO"
+            dataHora="12/04 ÀS 11H"
+          />
+          <CardHome
+            titulo="HORA DO MEDICAMENTO!"
+            descricao="IBUPROFENO 1 COMPRIMIDO"
+            dataHora="12/04 ÀS 14H"
+          />
+        </Grid>
       </Box>
-    </Box>
+    </Container>
   );
 };
 
