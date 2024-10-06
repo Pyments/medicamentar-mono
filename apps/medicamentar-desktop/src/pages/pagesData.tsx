@@ -2,6 +2,7 @@ import App from "../App";
 import SignIn from "./auth/SignIn";
 import Register from "./auth/Register";
 import Home from "./Home";
+import Exam from "./Exam";
 import Medicine from "./Medicine";
 
 import { IRouterType } from "../types/router.types";
@@ -26,6 +27,11 @@ const pagesData: IRouterType[] = [
     title: "Home", 
     path: "home", 
     element: <Home /> 
+  },
+  { 
+    title: "Exam", 
+    path: "exam", 
+    element: <Exam /> 
   },
   { 
     title: "Medicine",
