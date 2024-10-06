@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class MedicationController {
 
     @Operation(summary = "Adiciona um novo medicamento", method = "POST")
     @PostMapping()
-    public ResponseEntity createMedication(@RequestBody MedicationRequest medicationRegisterDto){
+    public ResponseEntity createMedication(@Valid @RequestBody MedicationRequest medicationRegisterDto){
         var response = this.medService.createMedication(medicationRegisterDto);
         return ResponseEntity.ok(response);
     }
