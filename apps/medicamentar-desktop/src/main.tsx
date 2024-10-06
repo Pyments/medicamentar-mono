@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import Router from "./pages/router.tsx";
 import { CssBaseline } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./hooks/AuthContext.tsx";
 import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
 
 ReactDOM.createRoot(document.querySelector("body")!).render(
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.querySelector("body")!).render(
     <CssBaseline>
       <ThemeProvider>
         <BrowserRouter>
+        <AuthProvider>
           <Router />
+        </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>
