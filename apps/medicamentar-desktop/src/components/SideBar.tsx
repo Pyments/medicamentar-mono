@@ -37,6 +37,7 @@ const Sidebar: React.FC = () => {
       ) : (
         <Stethoscope_Icon />
       ),
+      action: 'exam'
     },
     {
       text: "MEDICAMENTOS",
