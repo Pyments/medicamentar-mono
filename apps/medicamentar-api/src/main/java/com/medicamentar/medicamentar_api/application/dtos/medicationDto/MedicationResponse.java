@@ -12,4 +12,8 @@ public record MedicationResponse (
     Date period,
     Date validate
 )
-{}
+{
+
+    public MedicationResponse(UUID id, String name) {
+    }
+}
