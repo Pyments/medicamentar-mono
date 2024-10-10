@@ -27,30 +27,30 @@ import lombok.RequiredArgsConstructor;
 
 public class ExamController {
 
-    private final  ExamService service;
+    private final  ExamService examService;
 
     @GetMapping
     public ResponseEntity getAllexams(){
-        var allExams = this.service.getAllexams();
+        var allExams = this.examService.getAllexams();
         return ResponseEntity.ok(allExams);
     }
 
     @PostMapping
     public  ResponseEntity registerExam(@RequestBody @Valid ExamRequest data){
-        this.service.registerExam(data);
+        this.examService.registerExam(data);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity updateExam(@RequestBody @Valid ExamRequest data){
-        this.service.updateExam(data);
+        this.examService.updateExam(data);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteExam(@PathVariable UUID id){
-        var response = this.service.deleteExam(id);
+        var response = this.examService.deleteExam(id);
         return ResponseEntity.ok(response);
     }
     
