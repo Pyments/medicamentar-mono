@@ -1,12 +1,12 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { createRequire } from 'node:module'
+// import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import Store from 'electron-store';
 
 import path from 'node:path'
 
 const store = new Store();
-const require = createRequire(import.meta.url)
+// const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 ipcMain.handle('electron-store-get', (_event, key) => {
