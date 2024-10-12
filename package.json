@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "dev:desk": "cd ./apps/medicamentar-desktop && pnpm run dev",
+    "dev:desk": "./run_desktop.sh",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
