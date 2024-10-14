@@ -51,6 +51,7 @@ const Sidebar: React.FC = () => {
     {
       text: "CONFIGURAÇÕES",
       icon: darkMode ? <img src={Dark_Config_Icon} /> : <Config_Icon />,
+      action: "config"
     },
     {
       text: "SAIR",
@@ -93,8 +94,8 @@ const Sidebar: React.FC = () => {
       navigate("/home");
     } else if (action === "medicine") {
       navigate("/medicine");
-    } else if (action) {
-      navigate(`/${action}`);
+    } else if (action == "config") {
+      navigate("/config");
     }
   };
 
