@@ -7,5 +7,8 @@
     "build": "mvn package",
     "dev": "mvn spring-boot:run",
     "test": "mvn test"
+  },
+  "dependencies": {
+    "medicamentar-api": "file:"
   }
 }
