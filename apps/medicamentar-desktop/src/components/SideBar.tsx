@@ -1,12 +1,4 @@
-import React from "react";
-
-import {
-  List,
-  Drawer,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
-} from "@mui/material";
+import { useAuth } from '../hooks/useAuth';
 
 import Pill_Icon from "../assets/icons/Pill_Icon";
 import Timer_Icon from "../assets/icons/Timer_Icon";
@@ -25,8 +17,10 @@ import Dark_Stethoscope_Icon from "../assets/icons/Dark_Stethoscope_Icon.svg";
 import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "../constants/theme/useTheme";
+import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 const Sidebar: React.FC = () => {
+  const { logout } = useAuth();
   const { darkMode } = useTheme();
   const navigate = useNavigate();
 
@@ -43,6 +37,7 @@ const Sidebar: React.FC = () => {
       ) : (
         <Stethoscope_Icon />
       ),
+      action: 'exam'
     },
     {
       text: "MEDICAMENTOS",
@@ -56,6 +51,7 @@ const Sidebar: React.FC = () => {
     {
       text: "CONFIGURAÇÕES",
       icon: darkMode ? <img src={Dark_Config_Icon} /> : <Config_Icon />,
+      action: "config"
     },
     {
       text: "SAIR",
@@ -89,15 +85,17 @@ const Sidebar: React.FC = () => {
     justifyContent: "center",
   };
 
-  const handleItemClick = (action: string | undefined) => {
+  const handleItemClick = async (action: string | undefined) => {
     if (action === "logout") {
-      navigate("/signin");
-    } else if (action == "events") {
+      await window.electron.store.delete("email");
+      await window.electron.store.delete("password");
+      await logout();
+    } else if (action === "events") {
       navigate("/home");
     } else if (action === "medicine") {
       navigate("/medicine");
-    } else if (action) {
-      navigate(`/${action}`);
+    } else if (action == "config") {
+      navigate("/config");
     }
   };
 
