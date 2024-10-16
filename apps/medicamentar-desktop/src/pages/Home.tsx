@@ -13,9 +13,10 @@ const Home = () => {
       sx={{
         ml: 0,
         mr: "auto",
-        height: "100%",
+        height: "100vh",
         display: "flex",
         minWidth: "100%",
+        overflow:"hidden",
         backgroundColor: darkMode ? "primary.main" : "common.white",
       }}
     >
@@ -31,7 +32,7 @@ const Home = () => {
           overflow: "hidden",
           maxWidth: "100%",
           overflowY: "auto",
-          scrollbarWidth: "none",
+          paddingBottom:"100px",
         }}
       >
         <Typography
