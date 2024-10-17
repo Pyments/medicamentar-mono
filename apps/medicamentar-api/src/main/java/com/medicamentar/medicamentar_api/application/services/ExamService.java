@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamRequest;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
+import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,42 +16,46 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ExamService {
-    private final  ExamRepository repository;
+    private final ExamRepository repository;
+    private final EventLogService eLogService;
 
-    public List<Exam> getAllexams(){
+    public List<Exam> getAllexams() {
         var allExams = this.repository.findAll();
         return (allExams);
     }
 
-    public String updateExam(ExamRequest data){
-       Optional<Exam> optionalExam = this.repository.findById(data.id());
-        if (optionalExam.isPresent()){
+    public String updateExam(ExamRequest data) {
+        Optional<Exam> optionalExam = this.repository.findById(data.id());
+        if (optionalExam.isPresent()) {
             Exam exam = optionalExam.get();
             exam.setDate(data.date());
             exam.setName(data.name());
             exam.setLocal(data.local());
             exam.setDescription(data.description());
             this.repository.save(exam);
+            this.eLogService.saveEvent(EventLogAction.Atualizado, exam);
+
             return ("Exam successfuly update");
-        }else {
+        } else {
             return ("Exam failed to update");
         }
     }
 
-    public String registerExam(ExamRequest data){
+    public String registerExam(ExamRequest data) {
         Exam newExam = new Exam();
         newExam.setDate(data.date());
         newExam.setName(data.name());
         newExam.setLocal(data.local());
         newExam.setDescription(data.description());
         this.repository.save(newExam);
+        this.eLogService.saveEvent(EventLogAction.Criado, newExam);
+
         return ("Exam Registered Successfully");
 
     }
 
-    public String deleteExam(UUID id){
+    public String deleteExam(UUID id) {
         this.repository.deleteById(id);
         return ("Exam Delete Successfully");
     }
-    
 }

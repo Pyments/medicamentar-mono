@@ -12,6 +12,7 @@ import com.medicamentar.medicamentar_api.application.dtos.medicationDto.Medicati
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.UpdateRequest;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
+import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
 
 
@@ -19,8 +20,10 @@ import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepositor
 public class MedicationService {
 
     private final MedicationRepository medicationRepo;
-    public MedicationService(MedicationRepository medicationRepo) {
+    private final EventLogService eLogService;
+    public MedicationService(MedicationRepository medicationRepo, EventLogService eLogService) {
         this.medicationRepo = medicationRepo;
+        this.eLogService = eLogService;
     }
     
     public ServiceResponse<String> createMedication(MedicationRequest medicationRegister){
@@ -36,6 +39,7 @@ public class MedicationService {
         entity.setValidate(medicationRegister.validate());
 
         this.medicationRepo.save(entity);
+        this.eLogService.saveEvent(EventLogAction.Criado, entity);
 
         response.setMessage("Medicine added!");
         response.setStatus(HttpStatus.CREATED);
@@ -101,6 +105,7 @@ public class MedicationService {
             }
 
             medicationRepo.save(medication);
+            this.eLogService.saveEvent(EventLogAction.Atualizado, medication);
 
             response.setMessage("Updated successfully!");
             response.setStatus(HttpStatus.ACCEPTED);
@@ -116,10 +121,12 @@ public class MedicationService {
     
         var medicationId = UUID.fromString(id);
     
-        var medicationExists = medicationRepo.existsById(medicationId);
+        var medication = medicationRepo.findById(medicationId);
     
-        if (medicationExists) {
+        if (medication.isPresent()) {
             medicationRepo.deleteById(medicationId);
+            this.eLogService.saveEvent(EventLogAction.Deletado, medication.get());
+
             response.setMessage("Medicine deleted successfully!");
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
