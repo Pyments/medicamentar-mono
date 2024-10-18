@@ -20,6 +20,7 @@ export default function SignIn() {
   const [remember, setRemember] = React.useState(false);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const { darkMode } = useTheme();
 
   const validateEmailAndPassword = (
     email: string,
@@ -92,21 +93,25 @@ export default function SignIn() {
     fetchStoredCredentials();
   }, []);
 
-  const { darkMode } = useTheme();
-
   const page__root = {
     p: 0,
     m: 0,
     minWidth: 1,
     minHeight: 1,
-    display: "flex",
-    placeItems: "center",
-    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: darkMode ? "primary.darker" : "common.white",
   };
 
   const card__wrapper = {
+    m: "auto",
+    transition: "ease-out 300ms margin-top",
+    mt: {
+      xs: "40px",
+      md: "70px",
+      lg: "120px",
+    },
     display: "flex",
+    maxWidth: "720px",
     alignItems: "center",
     p: "0 30px 30px 30px ",
     flexDirection: "column",
@@ -188,7 +193,9 @@ export default function SignIn() {
               textDecoration: "none",
             }}
           >
-            <Typography color={darkMode ? "primary.lighter" : "primary.main"}>Esqueci minha senha</Typography>
+            <Typography color={darkMode ? "primary.lighter" : "primary.main"}>
+              Esqueci minha senha
+            </Typography>
           </Link>
           <Box sx={{ textAlign: "center" }}>
             <Typography

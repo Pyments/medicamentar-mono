@@ -13,9 +13,9 @@ function Header() {
 
   return (
     <AppBar
-      position="fixed"
       elevation={0}
       sx={{
+        position: condition ? "static" : "fixed",
         width: "100vw",
         height: "100px",
         backgroundColor: darkMode ? "primary.darker" : "primary.main",
