@@ -1,9 +1,12 @@
-/* import { Box, Card, Grid, IconButton,Typography } from "@mui/material";
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import AccessAlarmOutlinedIcon from '@mui/icons-material/AccessAlarmOutlined';
+import { Box, Card, Grid, IconButton,Typography } from "@mui/material";
+import EditOutlinedIcon from '../assets/icons/EditOutlined';
+import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon";
+import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
 import ModalDelete from "./ModalDelete";
 import { useState } from "react";
+import { useTheme } from "../constants/theme/useTheme";
+
+
 
 const titleCard = {
     color: "#F4FAFE",
@@ -15,13 +18,11 @@ const titleCard = {
 
     
 };
-const iconStyle = {
-    color: "#F4FAFE",
-};
+
 const infoCard = {
     color:"#62636C",
     fontSize:"12px",
-    wordWrap: "break-word",
+    wordWrap: "break-all",
     
 
 }
@@ -34,23 +35,25 @@ const cardButton = {
     cursor:"pointer"
 };
 const CardMedicine = () => {
-
     const [isModalVisible , setIsModalVisible] = useState(false);
+    const { darkMode } = useTheme();
     return (
-        <Grid item xs={14} sm={6} md={4} sx={{minHeight:"261px"}}>
+        <Grid item xs={12} sm={6} md={4}>
             <Card
                 sx={{
-    
-                    width:"300px",
-                    maxWidth:"100%",
-                    height: "260px",
+                    width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
+                    minWidth:"130px",
+                    height: 260,
                     backgroundColor: "grey.200",
                     borderRadius:"5px",
+                    display:"flex",
+                    flexDirection:"column",
+                    justifyContent:"space-between"
                 }}
             >
                 <Box
                     sx={{
-                        backgroundColor: "primary.light",
+                        backgroundColor: darkMode ? "primary.dark" : "primary.light",
                         padding: "2px",
                         display: "flex",
                         justifyContent: "space-between",
@@ -58,13 +61,13 @@ const CardMedicine = () => {
             
                     }}>
                     <IconButton>
-                        <EditOutlinedIcon sx={iconStyle} />
+                        <EditOutlinedIcon/>
                     </IconButton>
                     <Typography sx={titleCard}>
                         IBUPROFENO
                     </Typography>
                     <IconButton onClick={()=>{setIsModalVisible(true)}}>
-                        <DeleteOutlineOutlinedIcon sx={iconStyle} />
+                        <DeleteOutlineOutlinedIcon></DeleteOutlineOutlinedIcon>
                     </IconButton>
                 </Box>
 
@@ -77,9 +80,11 @@ const CardMedicine = () => {
                         <Typography sx ={infoCard}>VENCIMENTO: 20/06/2024</Typography>
                     </Box>
 
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", width:"109px", marginTop:"6%"}}>
-                        <AccessAlarmOutlinedIcon sx={{width:"17px,", height:"16px"}}/>
-                        <Typography sx={{ fontWeight: "700", paddingLeft:"5px",fontSize:"12px",textAlign:"center" }}>20/06 ÀS 14H</Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop:"6%"}}>
+                        
+                        <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
+
+                        <Typography sx={{ fontWeight: "700", paddingLeft:"5px",fontSize:"12px",textAlign:"center",color: "common.black", }}>20/06 ÀS 14H</Typography>
                     </Box>
                 </Box>
                 <Box sx={cardButton}>
@@ -92,4 +97,4 @@ const CardMedicine = () => {
 };
 
 export default CardMedicine;
- */
+ 
