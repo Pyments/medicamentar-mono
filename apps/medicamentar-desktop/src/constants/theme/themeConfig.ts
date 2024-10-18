@@ -34,21 +34,28 @@ const CustomComponentProps = {
   MuiBox: {
     styleOverrides: {
       root: {
-        transition: "background-color 250ms ease-in-out",
+        transition: "background-color 250ms ease-out",
       },
     },
   },
   MuiTypography: {
     styleOverrides: {
       root: {
-        transition: "color 250ms ease-in-out",
+        transition: "color 250ms ease-out",
       },
     },
   },
   MuiContainer: {
     styleOverrides: {
       root: {
-        transition: "background-color 250ms ease-in-out",
+        transition: "background-color 250ms ease-out",
+      },
+    },
+  },
+  MuiAppBar: {
+    styleOverrides: {
+      root: {
+        transition: "background-color 250ms ease-out",
       },
     },
   },

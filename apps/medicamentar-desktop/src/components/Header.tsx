@@ -16,9 +16,8 @@ function Header() {
       elevation={0}
       sx={{
         position: condition ? "static" : "fixed",
-        width: "100vw",
+        width: "100%",
         height: "100px",
-        backgroundColor: darkMode ? "primary.darker" : "primary.main",
         background: condition ? "none" : "solid",
         padding: "27px 45px",
         justifyContent: "space-between",
@@ -27,6 +26,7 @@ function Header() {
         alignItems: "center",
         zIndex: 1201,
         boxShadow: condition ? 0 : 3,
+        backgroundColor: darkMode ? "primary.darker" : "primary.main",
       }}
     >
       <Box sx={{ flex: condition ? 1 : 0 }} />
