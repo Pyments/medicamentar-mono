@@ -47,6 +47,11 @@ export default function Register() {
       return;
     }
 
+    if (password.length < 6 || password.length > 12 || confirmPassword.length < 6 || confirmPassword.length > 12) {
+      setError("As senhas devem ter entre 6 e 12 dígitos");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:8080/auth/register", {name: name, email: email, password: password, confirmPassword: confirmPassword})
       
@@ -60,7 +65,6 @@ export default function Register() {
         await login({ token });
       }
       setError(null);
-      console.log(response)
       
       return response;
     } catch (error: unknown) {
