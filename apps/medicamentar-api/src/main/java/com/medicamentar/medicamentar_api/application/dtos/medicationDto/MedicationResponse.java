@@ -11,5 +11,4 @@ public record MedicationResponse (
     String unity,
     Date period,
     Date validate
-)
-{}
+){ }
