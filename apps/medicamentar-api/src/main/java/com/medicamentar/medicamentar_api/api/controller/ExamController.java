@@ -24,43 +24,43 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/exam")
-@Tag(name = "Exam")
+@Tag(name = "exam")
 @RequiredArgsConstructor
-
 public class ExamController {
 
     private final ExamService examService;
 
-    @Operation(summary= "Obtém todos os exames", method= "GET")
+    @Operation(summary = "Lista de Exames", method = "GET")
     @GetMapping
-    public ResponseEntity<?> getAllExams() {
+    public ResponseEntity<?> getAllexams() {
         var allExams = this.examService.getAllexams();
         return ResponseEntity.ok(allExams);
     }
-
-    @Operation(summary= "Registra os exames", method= "POST")
+    @Operation(summary = "Adiciona um Exame", method = "POST")
     @PostMapping
-    public ResponseEntity<?> registerExam(@RequestBody @Valid ExamRequest data) {
-        this.examService.registerExam(data);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> registerExam(@Valid @RequestBody ExamRequest data) {
+        var response = this.examService.registerExam(data);
+        return response.getStatus()== HttpStatus.CREATED
+            ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+            : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @Operation(summary= "Edita os exames", method= "PUT")
+    @Operation(summary = "Edita um Exame", method = "PUT")
     @PutMapping
     @Transactional
-    public ResponseEntity<?> updateExam(@RequestBody @Valid ExamRequest data) {
-        this.examService.updateExam(data);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> updateExam(UUID examID,@Valid  @RequestBody  ExamRequest examRequest) {
+        var response = this.examService.updateExam(examID, examRequest);
+        return response.getStatus() == HttpStatus.ACCEPTED
+            ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
+            : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @Operation(summary= "Exclui os exames", method= "DELETE")
+    @Operation(summary = "Exclui um Exame", method = "DELETE")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteExam(@PathVariable UUID id) {
         var response = this.examService.deleteExam(id);
-        return response != null
-            ? ResponseEntity.ok(response)
-            : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exam not found");
+        return response.getStatus() == HttpStatus.ACCEPTED
+            ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
+            : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
-    
-    
