@@ -1,33 +1,43 @@
 import { Box, AppBar } from "@mui/material";
-import logoWhite from "../../public/assets/icons/logoWhite.svg";
-import logoBlue from "../../public/assets/icons/logoBlue.svg";
+import logoWhite from "../assets/icons/logoWhite.svg";
+import logoBlue from "../assets/icons/logoBlue.svg";
 import { useLocation } from "react-router-dom";
 import DarkModeToggle from "./ThemeSwitcherButton";
 
+import { useTheme } from "../constants/theme/useTheme";
+
 function Header() {
+  const { darkMode } = useTheme();
   const location = useLocation().pathname;
   const condition = location == "/signin" || location == "/register";
+
   return (
     <AppBar
-      position="fixed"
+      elevation={0}
       sx={{
-        width: "100vw",
+        position: condition ? "static" : "fixed",
+        width: "100%",
         height: "100px",
-        backgroundColor: condition
-          ? "transparent"
-          : (theme) => theme.palette.primary.light,
+        background: condition ? "none" : "solid",
         padding: "27px 45px",
         justifyContent: "space-between",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         zIndex: 1201,
-        boxShadow: condition ? 0 : 3
+        boxShadow: condition ? 0 : 3,
+        backgroundColor: darkMode ? "primary.darker" : "primary.main",
       }}
     >
-
       <Box sx={{ flex: condition ? 1 : 0 }} />
-      <Box sx={{ flex: 1, display: "flex", justifyContent: condition ? "center" : "normal", alignItems: "center" }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          justifyContent: condition ? "center" : "normal",
+          alignItems: "center",
+        }}
+      >
         <img
           style={{ width: "255px", height: "46px" }}
           src={condition ? logoBlue : logoWhite}
