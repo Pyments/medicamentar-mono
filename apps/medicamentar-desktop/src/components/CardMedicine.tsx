@@ -2,7 +2,7 @@ import { Box, Card, Grid, IconButton,Typography } from "@mui/material";
 import EditOutlinedIcon from '../assets/icons/EditOutlined';
 import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon";
 import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
-import ModalDelete from "./ModalDelete";
+import ModalDelete from "./Modals/ModalDelete";
 import { useState } from "react";
 import { useTheme } from "../constants/theme/useTheme";
 
