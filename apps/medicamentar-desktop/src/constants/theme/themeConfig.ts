@@ -1,7 +1,11 @@
 // themeConfig.ts
-import { ThemeOptions, PaletteOptions,PaletteColorOptions } from '@mui/material/styles';
+import {
+  ThemeOptions,
+  PaletteOptions,
+  PaletteColorOptions,
+} from "@mui/material/styles";
 
-declare module '@mui/material/styles' {
+declare module "@mui/material/styles" {
   interface PaletteColor {
     lighter?: string;
     darker?: string;
@@ -26,6 +30,30 @@ interface CustomThemeOptions extends ThemeOptions {
   palette?: PaletteOptions;
 }
 
+const CustomComponentProps = {
+  MuiBox: {
+    styleOverrides: {
+      root: {
+        transition: "background-color 250ms ease-in-out",
+      },
+    },
+  },
+  MuiTypography: {
+    styleOverrides: {
+      root: {
+        transition: "color 250ms ease-in-out",
+      },
+    },
+  },
+  MuiContainer: {
+    styleOverrides: {
+      root: {
+        transition: "background-color 250ms ease-in-out",
+      },
+    },
+  },
+};
+
 const lightTheme: CustomThemeOptions = {
   palette: {
     mode: "light",
@@ -34,13 +62,8 @@ const lightTheme: CustomThemeOptions = {
       light: "#91C7EF",
       main: "#1A8BCA",
       dark: "#1565c0",
-      darker: "#0078B6"
+      darker: "#0078B6",
     },
-/*  secondary: {
-      main: "#dc004e",
-      light: "#ff4081",
-      dark: "#c51162",
-    }, */
     background: {
       default: "#ffffff",
       paper: "#EFF0F3",
@@ -50,6 +73,7 @@ const lightTheme: CustomThemeOptions = {
       secondary: "#666666",
     },
   },
+  components: CustomComponentProps,
 };
 
 const darkTheme: CustomThemeOptions = {
@@ -60,13 +84,8 @@ const darkTheme: CustomThemeOptions = {
       light: "#1A8BCA",
       main: "#103952",
       dark: "#0A2739",
-      darker: "#092332"
+      darker: "#092332",
     },
-/*  secondary: {
-      main: "#f48fb1",
-      light: "#ffc1e3",
-      dark: "#bf5f82",
-    }, */
     background: {
       default: "#103952",
       paper: "#62636C",
@@ -76,6 +95,7 @@ const darkTheme: CustomThemeOptions = {
       secondary: "#CDCED7",
     },
   },
+  components: CustomComponentProps,
 };
 
 export { lightTheme, darkTheme };
