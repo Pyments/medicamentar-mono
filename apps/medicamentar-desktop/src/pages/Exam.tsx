@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
 import CardHome from '../components/CardHome.tsx';
 import SideBar from '../components/SideBar.tsx';
 import Header from '../components/Header.tsx';
-import ExamModal from '../components/ExamModal';
+import ExamModal from '../components/Modals/ExamModal.tsx';
 
 const Exam = () => {
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
