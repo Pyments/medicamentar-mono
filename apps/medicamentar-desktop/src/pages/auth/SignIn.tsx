@@ -186,7 +186,7 @@ export default function SignIn() {
             {"ENTRAR"}
           </Button>
           <Link
-            to="#"
+            to="/forgot-password"
             style={{
               textAlign: "center",
               color: "common.black",

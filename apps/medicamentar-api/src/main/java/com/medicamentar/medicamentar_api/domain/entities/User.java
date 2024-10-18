@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.domain.entities;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -26,10 +27,16 @@ public class User {
 
   @Column(nullable = false)
   private String name;
-  
+
   @Column(nullable = false, unique = true)
   private String email;
-  
+
   @Column(nullable = false)
   private String password;
+
+  @Column(nullable = true)
+  private String resetToken;
+
+  @Column(nullable = true)
+  private LocalDateTime resetTokenExpiry;
 }
