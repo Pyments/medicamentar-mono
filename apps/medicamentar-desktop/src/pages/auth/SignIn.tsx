@@ -103,13 +103,11 @@ export default function SignIn() {
   };
 
   const card__wrapper = {
+    w: 1,
     m: "auto",
+    minMarginTop: "70px",
+    mt: { xs: "100px", md: "180px", lg: "220px" },
     transition: "ease-out 300ms margin-top",
-    mt: {
-      xs: "40px",
-      md: "70px",
-      lg: "120px",
-    },
     display: "flex",
     maxWidth: "720px",
     alignItems: "center",
@@ -140,7 +138,7 @@ export default function SignIn() {
         >
           {"FAÇA LOGIN"}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" width={"90%"} onSubmit={handleSubmit} noValidate>
           <WhiteTextField
             required
             fullWidth
