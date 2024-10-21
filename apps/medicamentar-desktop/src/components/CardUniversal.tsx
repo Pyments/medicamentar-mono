@@ -3,7 +3,7 @@ import EditOutlinedIcon from '../assets/icons/EditOutlined';
 import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon";
 import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
 import { useTheme } from "../constants/theme/useTheme";
-import ModalDelete from "./ModalDelete";
+import ModalDelete from "./Modals/ModalDelete";
 import { useState } from "react";
 
 
