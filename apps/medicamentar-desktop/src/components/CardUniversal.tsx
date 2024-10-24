@@ -4,6 +4,7 @@ import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon
 import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
 import { useTheme } from "../constants/theme/useTheme";
 import ModalDelete from "./Modals/ModalDelete";
+import ModalEditMedicine from "./Modals/ModalEditMedicine";
 import { useState } from "react";
 
 
@@ -21,19 +22,22 @@ interface CardUniversalProps{
 
 const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose,qtpDose,period,expirationDate,dateTime,description})=>{
     const { darkMode } = useTheme();
-    const [isModalVisible , setIsModalVisible] = useState(false);
+    const [isModalDeleteVisible , setIsModalDeleteVisible] = useState(false);
+    const [isModalEditVisible, setIsModalEditVisible] = useState(false);
     const isMedication = type ==="medication";
     const isEvents = type ==="events";
-    const onEdit = ()=> console.log("Editar Medicamento");
-    const onDelet =()=>{setIsModalVisible(true)};
+    const onEdit = ()=> {setIsModalEditVisible(true)};
+    const onDelete =()=>{setIsModalDeleteVisible(true)};
 
 
     const titleCard = {
         fontSize: "12px",
         textAlign: "center",
         fontWeight: "bold",
-        wordBreak: "break-all",  
-        
+        wordWrap: "break-word",   
+        minWidth:"30%", 
+        maxHeigth:"50px",
+        marginInline:"5%"        
     };
     const cardButton = {
         height:"30px",
@@ -46,7 +50,7 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
     
     const infoCard = {  
         fontSize:"12px",
-        wordWrap: "break-all",
+        wordWrap: "break-word",
         color:darkMode?"common.black":"common.black",
         }
 
@@ -72,6 +76,8 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        maxHeight:"100px"
+                        
                         }}>
                     
                         <IconButton onClick={onEdit}>
@@ -82,7 +88,7 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                         {title}
                     </Typography>
                   
-                        <IconButton onClick={onDelet}>
+                        <IconButton onClick={onDelete}>
                             <DeleteOutlineOutlinedIcon/>
                         </IconButton>
                    
@@ -139,14 +145,22 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                 </Box>
             </Card>
         )}
-        {isModalVisible?<ModalDelete isOpen={isModalVisible} onClose={()=>{setIsModalVisible(false)}}></ModalDelete>:null}
+         {isModalEditVisible?<ModalEditMedicine 
+         isOpen={isModalEditVisible} onClose={()=>{setIsModalEditVisible(false)}}>
+         </ModalEditMedicine>:null}
+
+        {isModalDeleteVisible?<ModalDelete 
+        isOpen={isModalDeleteVisible} 
+        onClose={()=>{setIsModalDeleteVisible(false)}}>
+        </ModalDelete>:null}
+
         {isEvents && (
             <Card sx={{
                 height: 175,
                 margin: "auto",
                 display: "flex",
                 flexDirection: "column",
-                backgroundColor: "grey.200",
+                backgroundColor: darkMode?"text.secondary":"background.paper",
                 width: { xs: "100%", sm: "95%", md: "90%", lg: "90%" },
             }}>
                 <Box sx={{
