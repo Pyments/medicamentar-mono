@@ -1,7 +1,8 @@
+import { useLocation } from "react-router-dom";
+
 import { Box, AppBar } from "@mui/material";
 import logoWhite from "../assets/icons/logoWhite.svg";
 import logoBlue from "../assets/icons/logoBlue.svg";
-import { useLocation } from "react-router-dom";
 import DarkModeToggle from "./ThemeSwitcherButton";
 
 import { useTheme } from "../constants/theme/useTheme";
@@ -11,15 +12,22 @@ function Header() {
   const location = useLocation().pathname;
 
   const condition =
-    location == "/signin" ||
-    location == "/register" ||
-    location == "/reset-password" ||
-    location == "/forgot-password";
+    location === "/" ||
+    location === "/signin" ||
+    location === "/register" ||
+    location === "/reset-password" ||
+    location === "/forgot-password";
 
   const mainBg = () => {
     if (condition) return "transparent";
     if (darkMode) return "primary.darker";
     return "primary.main";
+  };
+
+  const logoTheme = () => {
+    if (condition && darkMode) return logoWhite
+    if (condition) return logoBlue
+    return logoWhite;
   };
 
   return (
@@ -51,7 +59,7 @@ function Header() {
       >
         <img
           style={{ width: "255px", height: "46px" }}
-          src={condition ? logoBlue : logoWhite}
+          src={logoTheme()}
           alt="medicamentar logo"
         />
       </Box>
