@@ -1,10 +1,9 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
-import CardHome from "../components/CardHome.tsx";
-import SideBar from "../components/SideBar.tsx";
 import Header from "../components/Header.tsx";
+import SideBar from "../components/SideBar.tsx";
+import CardUniversal from "../components/CardUniversal.tsx";
 
 import { useTheme } from "../constants/theme/useTheme";
-import CardUniversal from "../components/CardUniversal.tsx";
 
 const Home = () => {
   const { darkMode } = useTheme();
@@ -54,32 +53,25 @@ const Home = () => {
           </Box>
         </Typography>
         <Grid container spacing={2}>
-          <CardHome
-            titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
-            descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
-            dataHora="12/04 ÀS 14H"
-          />
-          <CardHome
-            titulo="HORA DO MEDICAMENTO!"
-            descricao="IBUPROFENO 1 COMPRIMIDO"
-            dataHora="12/04 ÀS 11H"
-          />
-          <CardHome
-            titulo="VOCÊ TEM UM EVENTO SE APROXIMANDO!"
-            descricao="CONSULTA MÉDICA - HMPA DR. LULINHA"
-            dataHora="12/04 ÀS 14H"
-          />
-          <CardHome
-            titulo="HORA DO MEDICAMENTO!"
-            descricao="IBUPROFENO 1 COMPRIMIDO"
-            dataHora="12/04 ÀS 11H"
-          />
-          <CardHome
-            titulo="HORA DO MEDICAMENTO!"
-            descricao="IBUPROFENO 1 COMPRIMIDO"
-            dataHora="12/04 ÀS 11H"
-          />
-          <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"}></CardUniversal>
+        <CardUniversal type={"events"} title={"VOCÊ TEM UM EVENTO SE APROXIMANDO!"} description={"CONSULTA MÉDICA - HMPA DR. LULINHA"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"VOCÊ TEM UM MEDICAMENTO SE APROXIMANDO!"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"VOCÊ TEM UM MEDICAMENTO SE APROXIMANDO!"} description={"CONSULTA MÉDICA - HMPA DR. LULINHA"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO!"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO!"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+        <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"} />
+
         </Grid>
       </Box>
     </Container>
