@@ -4,6 +4,7 @@ import SideBar from "../components/SideBar.tsx";
 import Header from "../components/Header.tsx";
 
 import { useTheme } from "../constants/theme/useTheme";
+import CardUniversal from "../components/CardUniversal.tsx";
 
 const Home = () => {
   const { darkMode } = useTheme();
@@ -30,7 +31,7 @@ const Home = () => {
           padding: 1,
           height: "80%",
           overflow: "hidden",
-          maxWidth: "100%",
+          maxWidth: "1100px",
           overflowY: "auto",
           paddingBottom:"100px",
         }}
@@ -78,11 +79,7 @@ const Home = () => {
             descricao="IBUPROFENO 1 COMPRIMIDO"
             dataHora="12/04 ÀS 11H"
           />
-          <CardHome
-            titulo="HORA DO MEDICAMENTO!"
-            descricao="IBUPROFENO 1 COMPRIMIDO"
-            dataHora="12/04 ÀS 14H"
-          />
+          <CardUniversal type={"events"} title={"HORA DO MEDICAMENTO"} description={"IBUPROFENO 1 COMPRIMIDO"} dateTime={"12/04 ÀS 11H"}></CardUniversal>
         </Grid>
       </Box>
     </Container>

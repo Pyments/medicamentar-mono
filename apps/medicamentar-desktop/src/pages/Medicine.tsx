@@ -4,7 +4,7 @@ import Header from "../components/Header.tsx";
 import Add_Icon from "../assets/icons/Add_Icon.tsx";
 import CardMedicine from "../components/CardMedicine.tsx";
 import { useTheme } from "../constants/theme/useTheme";
-import NewMedication from "../components/Modals/NewMedication.tsx";
+import CardUniversal from "../components/CardUniversal.tsx";
 
 
 const Medicine = () => {
@@ -18,9 +18,8 @@ const { darkMode } = useTheme();
       overflow:"hidden",
       backgroundColor: darkMode ? "primary.main" : "common.white",
     }}>
-      <NewMedication/>
       <Header />
-      <SideBar />
+        <SideBar />
       <Box sx={{
         width:"100%",
         margin: "3%",
@@ -47,7 +46,7 @@ const { darkMode } = useTheme();
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#91C7EF",
+            backgroundColor: darkMode?"primary.dark":"primary.light",
             fontWeight: "bold",
             padding: "14px",
             boxShadow: "none",
@@ -78,19 +77,16 @@ const { darkMode } = useTheme();
            
       </Box>
       <Box sx ={{
-          flex: 1,
-          padding: 1,
           paddingBottom:"100px",
           height: "80%",
           overflow: "hidden",
-          maxWidth: "100%",
+          maxWidth: "1100px",
           overflowY: "auto",
-
         }}>
-          <Grid container spacing={5}>  
-            <CardMedicine/> 
-            <CardMedicine/> 
-            <CardMedicine/> 
+          <Grid container spacing={3}>  
+          <CardMedicine></CardMedicine>
+          <CardUniversal type={"medication"} continuousUse={"SIM"} qtpDose={"10 COMPRIMIDOS"} dose={"1 COMPRIMIDO"} title={"CARD UNIVERSAL"} period={"20/06/2024 A 27/06/2024"} expirationDate={"20/06/2024"}dateTime={"20/06 ÀS 14H"}></CardUniversal>
+          
         </Grid>
       </Box>
       </Box>
