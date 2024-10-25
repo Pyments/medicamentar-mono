@@ -4,6 +4,7 @@ import Header from "../components/Header.tsx";
 import Add_Icon from "../assets/icons/Add_Icon.tsx";
 import CardMedicine from "../components/CardMedicine.tsx";
 import { useTheme } from "../constants/theme/useTheme";
+import NewMedication from "../components/Modals/NewMedication.tsx";
 
 
 const Medicine = () => {
@@ -17,6 +18,7 @@ const { darkMode } = useTheme();
       overflow:"hidden",
       backgroundColor: darkMode ? "primary.main" : "common.white",
     }}>
+      <NewMedication/>
       <Header />
       <SideBar />
       <Box sx={{
