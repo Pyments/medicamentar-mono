@@ -53,16 +53,18 @@ public class MedicationController {
     @PutMapping()
     public ResponseEntity updateMedication(String id,@RequestBody @Valid UpdateRequest updateMedication){
         var response = this.medService.updateMedication(id, updateMedication);
-
-        return ResponseEntity.ok(response);
+        return response.getStatus() == HttpStatus.CREATED
+                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @Operation(summary = "Exclui o medicamento.", method = "DELETE")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteMedication(@PathVariable String id){
         var response = this.medService.deleteMedication(id);
-
-        return ResponseEntity.ok(response);
+        return response.getStatus() == HttpStatus.CREATED
+                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
 }
