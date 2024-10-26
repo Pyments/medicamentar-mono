@@ -5,12 +5,12 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
-  Stack,
 } from "@mui/material";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import { useState } from "react";
 import { useTheme } from "../constants/theme/useTheme";
+import { SectionContainer } from "../components/SectionContainer";
 
 const Config = () => {
   const { darkMode, toggleTheme } = useTheme();
@@ -27,7 +27,6 @@ const Config = () => {
     <Container
       sx={{
         display: "flex",
-        paddingTop: "175px",
         backgroundColor: darkMode ? "primary.main" : "common.white",
         height: "100vh",
         minWidth: "100%",
@@ -35,7 +34,7 @@ const Config = () => {
     >
       <Header />
       <Sidebar />
-      <Stack sx={{ width: "320px", alignItems: "center" }} spacing="67px">
+      <SectionContainer>
         <Box
           component="h1"
           sx={{ color: darkMode ? "text.primary" : "primary.darker" }}
@@ -84,7 +83,7 @@ const Config = () => {
             />
           </FormGroup>
         </FormControl>
-      </Stack>
+      </SectionContainer>
     </Container>
   );
 };

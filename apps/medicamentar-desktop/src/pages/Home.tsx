@@ -4,6 +4,7 @@ import SideBar from "../components/SideBar.tsx";
 import Header from "../components/Header.tsx";
 
 import { useTheme } from "../constants/theme/useTheme";
+import { SectionContainer } from "../components/SectionContainer.tsx";
 
 const Home = () => {
   const { darkMode } = useTheme();
@@ -22,19 +23,7 @@ const Home = () => {
     >
       <Header />
       <SideBar />
-      <Box
-        sx={{
-          margin: "3%",
-          flex: 1,
-          marginTop: "170px",
-          padding: 1,
-          height: "80%",
-          overflow: "hidden",
-          maxWidth: "100%",
-          overflowY: "auto",
-          paddingBottom:"100px",
-        }}
-      >
+      <SectionContainer>
         <Typography
           sx={{
             color: "primary.dark",
@@ -84,7 +73,7 @@ const Home = () => {
             dataHora="12/04 ÀS 14H"
           />
         </Grid>
-      </Box>
+        </SectionContainer>
     </Container>
   );
 };
