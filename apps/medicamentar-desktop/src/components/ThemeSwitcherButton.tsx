@@ -9,8 +9,14 @@ import BrighttnessMoonBlue from "../assets/icons/BrightnessMoonBlue.svg";
 
 const DarkModeToggle = () => {
   const location = useLocation().pathname;
-  const condition = location == "/signin" || location == "/register";
+  const condition =
+    location === "/" ||
+    location === "/signin" ||
+    location === "/register" ||
+    location === "/reset-password" ||
+    location === "/forgot-password";
   const { darkMode, toggleTheme } = useTheme();
+
   return (
     <Button
       onClick={toggleTheme}
