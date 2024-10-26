@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   FormControl,
   FormGroup,
   FormControlLabel,
@@ -11,6 +10,7 @@ import Sidebar from "../components/SideBar";
 import { useState } from "react";
 import { useTheme } from "../constants/theme/useTheme";
 import { SectionContainer } from "../components/SectionContainer";
+import { ContainerUniversal } from "../components/ContainerUniversal";
 
 const Config = () => {
   const { darkMode, toggleTheme } = useTheme();
@@ -24,14 +24,7 @@ const Config = () => {
     });
   };
   return (
-    <Container
-      sx={{
-        display: "flex",
-        backgroundColor: darkMode ? "primary.main" : "common.white",
-        height: "100vh",
-        minWidth: "100%",
-      }}
-    >
+    <ContainerUniversal>
       <Header />
       <Sidebar />
       <SectionContainer>
@@ -84,7 +77,7 @@ const Config = () => {
           </FormGroup>
         </FormControl>
       </SectionContainer>
-    </Container>
+    </ContainerUniversal>
   );
 };
 

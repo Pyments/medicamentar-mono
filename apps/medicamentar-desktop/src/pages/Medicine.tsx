@@ -1,187 +1,148 @@
-import { Box, Typography, Button, Grid } from "@mui/material";
+import { Box, Typography, Button, Grid, Stack } from "@mui/material";
 import Header from "../components/Header.tsx";
 import SideBar from "../components/SideBar.tsx";
-import Add_Icon from "../assets/icons/Add_Icon.tsx";
 import { useTheme } from "../constants/theme/useTheme";
 import { SectionContainer } from "../components/SectionContainer.tsx";
 import CardUniversal from "../components/CardUniversal.tsx";
+import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
 
 const Medicine = () => {
   const { darkMode } = useTheme();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        backgroundColor: darkMode ? "primary.main" : "common.white",
-      }}
-    >
+    <ContainerUniversal>
       <Header />
       <SideBar />
 
       <SectionContainer>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            alignItems: { xs: "flex-start", sm: "flex-start" },
-            justifyContent: { xs: "flex-start", sm: "space-between" },
-            width: "100%",
-          }}
+        <Stack
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
           <Typography
             sx={{
-              color: darkMode ? "common.white" : "primary.main",
-              marginRight: { sm: "15px" },
-            }}
-          >
-            <h1>MEDICAMENTOS</h1>
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#91C7EF",
-              fontWeight: "bold",
-              padding: "14px",
-              boxShadow: "none",
-              display: "flex",
-              alignItems: "center",
-              marginTop: "10px",
-              marginBottom: { xs: "19px" },
-              width: { md: "auto", sm: "auto", xs: "100%" },
-              height: "50px",
-              overflow: "hidden",
+              color: "primary.dark",
             }}
           >
             <Box
+              component="h1"
               sx={{
-                marginRight: "8px",
-                marginTop: "5px",
-                width: "24px",
-                height: "24px",
+                p: 0,
+                mt: 0,
+                color: darkMode ? "common.white" : "primary.main",
               }}
             >
-              <Add_Icon />
+              MEDICAMENTOS
             </Box>
-            <Typography
-              sx={{
-                fontWeight: "bold",
-                fontSize: "13px",
-                wordBreak: "break-word",
-                overflow: "hidden",
-              }}
-            >
-              ADICIONAR MEDICAMENTO
-            </Typography>
+          </Typography>
+
+          <Button
+            sx={{
+              backgroundColor: darkMode ? "primary.dark" : "primary.light",
+              fontWeight: "bold",
+              padding: "14px",
+              color: "white",
+              fontSize: "14px",
+            }}
+          >
+            + ADICIONAR MEDICAMENTO
           </Button>
-        </Box>
-        <Box
-          sx={{
-            paddingBottom: "100px",
-            height: "80%",
-            overflow: "hidden",
-            maxWidth: "1100px",
-            overflowY: "auto",
-          }}
-        >
-          <Grid container spacing={3}>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-            <CardUniversal
-              type={"medication"}
-              continuousUse={"SIM"}
-              qtpDose={"10 COMPRIMIDOS"}
-              dose={"1 COMPRIMIDO"}
-              title={"CARD UNIVERSAL"}
-              period={"20/06/2024 A 27/06/2024"}
-              expirationDate={"20/06/2024"}
-              dateTime={"20/06 ÀS 14H"}
-            ></CardUniversal>
-          </Grid>
-        </Box>
+        </Stack>
+        <Grid container spacing={3} pb="75px">
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+          <CardUniversal
+            type={"medication"}
+            continuousUse={"SIM"}
+            qtpDose={"10 COMPRIMIDOS"}
+            dose={"1 COMPRIMIDO"}
+            title={"CARD UNIVERSAL"}
+            period={"20/06/2024 A 27/06/2024"}
+            expirationDate={"20/06/2024"}
+            dateTime={"20/06 ÀS 14H"}
+          ></CardUniversal>
+        </Grid>
       </SectionContainer>
-    </Box>
+    </ContainerUniversal>
   );
 };
 
