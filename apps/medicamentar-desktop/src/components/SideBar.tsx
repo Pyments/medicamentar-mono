@@ -99,6 +99,8 @@ const Sidebar: React.FC = () => {
       navigate("/config");
     } else if (action == "profile"){
       navigate("/profile");
+    } else if (action == "exam") {
+      navigate("/exam")
     }
   };
 
