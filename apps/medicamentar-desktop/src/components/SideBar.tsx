@@ -96,6 +96,8 @@ const Sidebar: React.FC = () => {
       navigate("/medicine");
     } else if (action == "config") {
       navigate("/config");
+    } else if (action == "exam") {
+      navigate("/exam")
     }
   };
 
