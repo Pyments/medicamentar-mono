@@ -5,6 +5,7 @@ import Home from "./Home";
 import Exam from "./Exam";
 import Medicine from "./Medicine";
 import Config from "./Config";
+import Profile from "./Profile";
 
 import { IRouterType } from "../types/router.types";
 import ForgotPassword from "./auth/ForgotPassword";
@@ -55,6 +56,11 @@ const pagesData: IRouterType[] = [
     title: "Config",
     path: "config",
     element: <Config />
+  },
+  { 
+    title: "Profile",
+    path: "profile",
+    element: <Profile />
   }
 ];
 
