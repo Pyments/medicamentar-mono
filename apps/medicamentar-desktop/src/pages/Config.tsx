@@ -6,11 +6,14 @@ import {
   FormControlLabel,
   Switch,
   Stack,
+  IconButton
 } from "@mui/material";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import { useState } from "react";
 import { useTheme } from "../constants/theme/useTheme";
+import { useNavigate } from "react-router-dom";
+import Arrow from "../assets/icons/Arrow.svg"
 
 const Config = () => {
   const { darkMode, toggleTheme } = useTheme();
@@ -23,6 +26,7 @@ const Config = () => {
       [event.target.name]: event.target.checked,
     });
   };
+  const navigate = useNavigate();
   return (
     <Container
       sx={{
@@ -40,16 +44,17 @@ const Config = () => {
           component="h1"
           sx={{ color: darkMode ? "text.primary" : "primary.darker" }}
         >
-          Configurações
+          CONFIGURAÇÕES
         </Box>
         <FormControl component="fieldset" variant="standard">
-          <FormGroup sx={{ gap: "20px" }}>
+          <FormGroup sx={{ gap: "20px", width: "300px" }}>
             <FormControlLabel
               control={
                 <Switch
                   checked={darkMode}
                   onChange={toggleTheme}
                   name="temaEscuro"
+                  aria-label="Tema Escuro"
                 />
               }
               label="TEMA ESCURO"
@@ -60,7 +65,7 @@ const Config = () => {
                   : "background.paper",
                 borderRadius: "5px",
                 padding: "11px 30px",
-                gap: "41px",
+                justifyContent: "space-between"
               }}
             />
             <FormControlLabel
@@ -69,6 +74,7 @@ const Config = () => {
                   checked={switchStates.letrasGigantes}
                   onChange={handleChange}
                   name="letrasGigantes"
+                  aria-label="Letras Gigantes"
                 />
               }
               label="LETRAS GIGANTES"
@@ -79,7 +85,27 @@ const Config = () => {
                   : "background.paper",
                 borderRadius: "5px",
                 padding: "11px 30px",
-                gap: "18px",
+                justifyContent: "space-between"
+              }}
+            />
+            <FormControlLabel
+              control={
+                <IconButton 
+                aria-label="Histórico" 
+                sx={{ pr: "25px"}}
+                onClick={() => navigate("/history")}
+                >
+                  <img src={Arrow}/>
+                </IconButton>}
+              label="HISTÓRICO"
+              labelPlacement="start"
+              sx={{
+                backgroundColor: darkMode
+                  ? "text.secondary"
+                  : "background.paper",
+                borderRadius: "5px",
+                padding: "11px 30px",
+                justifyContent: "space-between",
               }}
             />
           </FormGroup>
