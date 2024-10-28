@@ -1,62 +1,57 @@
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
-import { Box, Container, Grid, Stack } from "@mui/material";
+import { Box, Grid, Stack } from "@mui/material";
 import { useTheme } from "../constants/theme/useTheme";
 import GridItem from "../components/GridItem";
-import { gridItemTypes } from "../components/GridItem";
+// import { gridItemTypes } from "../components/GridItem";
+import { SectionContainer } from "../components/SectionContainer.tsx";
+import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
 
-const historyObject: gridItemTypes = {
-    title: "",
-    actionType: "",
-    action: "",
-    date: "",
-    medic: ""
-};
+// const historyObject: gridItemTypes = {
+//     title: "",
+//     actionType: "",
+//     action: "",
+//     date: "",
+//     medic: ""
+// };
 
-const displayHistoryCards = () => {
-    const gridArray = [];
-    const historyQuantity: number = 0; // pegar a quantidade de eventos do back-end
+// const displayHistoryCards = () => {
+//     const gridArray = [];
+//     const historyQuantity: number = 0; // pegar a quantidade de eventos do back-end
 
-    for(let i = 0; i <= historyQuantity; i++){
-        historyObject.action = "" // pegar novo dado do back-end
-        historyObject.actionType = "" // pegar novo dado do back-end
-        historyObject.action = "" // pegar novo dado do back-end
-        historyObject.date = "" // pegar novo dado do back-end
-        historyObject.medic = "" // pegar novo dado do back-end
-        gridArray.push(
-            <Grid item>
-                <GridItem 
-                title={historyObject.title}
-                actionType={historyObject.actionType}
-                action={historyObject.action}
-                date={historyObject.date}
-                medic={historyObject.medic}
-                />      
-            </Grid>
-        );
-    }
-    return (gridArray);
-}
+//     for(let i = 0; i <= historyQuantity; i++){
+//         historyObject.action = "" // pegar novo dado do back-end
+//         historyObject.actionType = "" // pegar novo dado do back-end
+//         historyObject.action = "" // pegar novo dado do back-end
+//         historyObject.date = "" // pegar novo dado do back-end
+//         historyObject.medic = "" // pegar novo dado do back-end
+//         gridArray.push(
+//             <Grid item>
+//                 <GridItem 
+//                 title={historyObject.title}
+//                 actionType={historyObject.actionType}
+//                 action={historyObject.action}
+//                 date={historyObject.date}
+//                 medic={historyObject.medic}
+//                 />      
+//             </Grid>
+//         );
+//     }
+//     return (gridArray);
+// }
 
 const History = () => {
     const { darkMode } = useTheme();
     return (
-        <Container
-        sx={{
-            display: "flex",
-            paddingTop: "175px",
-            backgroundColor: darkMode ? "primary.main" : "common.white",
-            height: "100vh",
-            minWidth: "100%",
-        }}
-        >
+        <ContainerUniversal>
             <Header />
             <Sidebar />
-            <Stack sx={{ alignItems: "center", margin: "0 50px" }} spacing="67px">
+            <SectionContainer>
+            <Stack sx={{ alignItems: "center" }} spacing="67px">
                 <Box component="h1" sx={{ color: darkMode ? "text.primary" : "primary.darker", alignSelf: "start" }}>
                         HISTÓRICO
                 </Box>
-                <Grid container spacing={2} sx={{ maxWidth: "fit-content",}}> 
+                <Grid container spacing={2}> 
                     {/* componentes abaixo servem apenas de demonstração e placeholding */}
                     <Grid item>
                         <GridItem 
@@ -85,7 +80,8 @@ const History = () => {
                     </Grid>
                 </Grid>
             </Stack>
-        </Container>       
+            </SectionContainer>
+        </ContainerUniversal>       
     );
 }
 
