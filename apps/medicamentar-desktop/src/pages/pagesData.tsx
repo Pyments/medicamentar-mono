@@ -5,6 +5,7 @@ import Home from "./Home";
 import Exam from "./Exam";
 import Medicine from "./Medicine";
 import Config from "./Config";
+import History from "./History";
 
 import { IRouterType } from "../types/router.types";
 
@@ -43,6 +44,11 @@ const pagesData: IRouterType[] = [
     title: "Config",
     path: "config",
     element: <Config />
+  },
+  {
+    title: "History",
+    path: "history",
+    element: <History />
   }
 ];
 
