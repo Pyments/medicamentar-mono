@@ -1,4 +1,5 @@
 import { Box, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { useTheme } from "../../constants/theme/useTheme";
 
 interface ModalDeleteProps{
     isOpen:boolean;
@@ -6,6 +7,7 @@ interface ModalDeleteProps{
 }
 
 const ModalDelete: React.FC<ModalDeleteProps> = ({isOpen, onClose})=>{
+    const { darkMode } = useTheme();
     const styleContentBox={ 
         cursor:"pointer",
         width:"100%", 
@@ -13,12 +15,11 @@ const ModalDelete: React.FC<ModalDeleteProps> = ({isOpen, onClose})=>{
         display:"flex",
         alignItems:"center", 
         justifyContent:"center",
-        marginTop:"6px" 
     }
     return(
         <Dialog open={isOpen} onClose={onClose}>
-            <DialogTitle>
-                <Typography sx={{fontWeight:"500", color:"#62636C", paddingLeft:"30px",paddingRight:"30px"}}>
+            <DialogTitle sx={{backgroundColor: darkMode?"#1E1F24":""}}>
+                <Typography sx={{fontWeight:"500", color: darkMode?" secondary.text":" primary.text", paddingLeft:"30px",paddingRight:"30px"}}>
                     DELETAR MEDICAMENTO
                 </Typography>
             </DialogTitle>

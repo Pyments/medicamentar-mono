@@ -20,6 +20,7 @@ export default function SignIn() {
   const [remember, setRemember] = React.useState(false);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const { darkMode } = useTheme();
 
   const validateEmailAndPassword = (
     email: string,
@@ -92,21 +93,23 @@ export default function SignIn() {
     fetchStoredCredentials();
   }, []);
 
-  const { darkMode } = useTheme();
-
   const page__root = {
     p: 0,
     m: 0,
     minWidth: 1,
     minHeight: 1,
-    display: "flex",
-    placeItems: "center",
-    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: darkMode ? "primary.darker" : "common.white",
   };
 
   const card__wrapper = {
+    w: 1,
+    m: "auto",
+    minMarginTop: "70px",
+    mt: { xs: "100px", md: "180px", lg: "220px" },
+    transition: "ease-out 300ms margin-top",
     display: "flex",
+    maxWidth: "720px",
     alignItems: "center",
     p: "0 30px 30px 30px ",
     flexDirection: "column",
@@ -135,7 +138,7 @@ export default function SignIn() {
         >
           {"FAÇA LOGIN"}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" width={"90%"} onSubmit={handleSubmit} noValidate>
           <WhiteTextField
             required
             fullWidth
@@ -181,14 +184,16 @@ export default function SignIn() {
             {"ENTRAR"}
           </Button>
           <Link
-            to="#"
+            to="/forgot-password"
             style={{
               textAlign: "center",
               color: "common.black",
               textDecoration: "none",
             }}
           >
-            <Typography color={darkMode ? "primary.lighter" : "primary.main"}>Esqueci minha senha</Typography>
+            <Typography color={darkMode ? "primary.lighter" : "primary.main"}>
+              Esqueci minha senha
+            </Typography>
           </Link>
           <Box sx={{ textAlign: "center" }}>
             <Typography

@@ -1,7 +1,8 @@
+import { useLocation } from "react-router-dom";
+
 import { Box, AppBar } from "@mui/material";
 import logoWhite from "../assets/icons/logoWhite.svg";
 import logoBlue from "../assets/icons/logoBlue.svg";
-import { useLocation } from "react-router-dom";
 import DarkModeToggle from "./ThemeSwitcherButton";
 
 import { useTheme } from "../constants/theme/useTheme";
@@ -9,16 +10,33 @@ import { useTheme } from "../constants/theme/useTheme";
 function Header() {
   const { darkMode } = useTheme();
   const location = useLocation().pathname;
-  const condition = location == "/signin" || location == "/register";
+
+  const condition =
+    location === "/" ||
+    location === "/signin" ||
+    location === "/register" ||
+    location === "/reset-password" ||
+    location === "/forgot-password";
+
+  const mainBg = () => {
+    if (condition) return "transparent";
+    if (darkMode) return "primary.darker";
+    return "primary.main";
+  };
+
+  const logoTheme = () => {
+    if (condition && darkMode) return logoWhite
+    if (condition) return logoBlue
+    return logoWhite;
+  };
 
   return (
     <AppBar
-      position="fixed"
       elevation={0}
       sx={{
-        width: "100vw",
+        position: "fixed",
+        width: "100%",
         height: "100px",
-        backgroundColor: darkMode ? "primary.darker" : "primary.main",
         background: condition ? "none" : "solid",
         padding: "27px 45px",
         justifyContent: "space-between",
@@ -27,6 +45,7 @@ function Header() {
         alignItems: "center",
         zIndex: 1201,
         boxShadow: condition ? 0 : 3,
+        backgroundColor: mainBg,
       }}
     >
       <Box sx={{ flex: condition ? 1 : 0 }} />
@@ -40,7 +59,7 @@ function Header() {
       >
         <img
           style={{ width: "255px", height: "46px" }}
-          src={condition ? logoBlue : logoWhite}
+          src={logoTheme()}
           alt="medicamentar logo"
         />
       </Box>

@@ -4,7 +4,7 @@ import pagesData from "./pagesData";
 import { ProtectedRoute } from "../hooks/ProtectedRoute";
 
 const Router = () => {
-  const publicRoutes = ['signin', 'register'];
+  const publicRoutes = ['signin', 'register', 'forgot-password', 'reset-password'];
   const pageRoutes = pagesData.map(({ path, title, element }: IRouterType) => {
     const isPublicRoute = publicRoutes.includes(path);
 

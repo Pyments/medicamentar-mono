@@ -20,11 +20,12 @@ export default function Register() {
   const { login } = useAuth();
   const [error, setError] = React.useState<null | string>(null);
   const [remember, setRemember] = React.useState(false);
+  const { darkMode } = useTheme();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    
+
     const name = data.get("name");
     const email = (data.get("email") as string) ?? "";
     const password = (data.get("password") as string) ?? "";
@@ -32,7 +33,12 @@ export default function Register() {
 
     const emailRegex = /\S+@\S+\.\S+/;
 
-    if (name === "" || email === "" || password === "" || confirmPassword === ""){
+    if (
+      name === "" ||
+      email === "" ||
+      password === "" ||
+      confirmPassword === ""
+    ) {
       setError("Preencha todos os campos");
       return;
     }
@@ -42,17 +48,32 @@ export default function Register() {
       return;
     }
 
-    if(password !== confirmPassword){
-      setError("As senhas devem ser iguais")
+    if (password !== confirmPassword) {
+      setError("As senhas devem ser iguais");
+      return;
+    }
+
+    if (
+      password.length < 6 ||
+      password.length > 12 ||
+      confirmPassword.length < 6 ||
+      confirmPassword.length > 12
+    ) {
+      setError("As senhas devem ter entre 6 e 12 dígitos");
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/register", {name: name, email: email, password: password, confirmPassword: confirmPassword})
-      
+      const response = await axios.post("http://localhost:8080/auth/register", {
+        name: name,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      });
+
       const token = response.data;
       if (token) {
-         if (remember) {
+        if (remember) {
           window.electron.store.set("email", email);
           window.electron.store.set("password", password);
         }
@@ -60,36 +81,36 @@ export default function Register() {
         await login({ token });
       }
       setError(null);
-      console.log(response)
-      
+
       return response;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || "Ocorreu um erro no registro");
+        setError(
+          error.response?.data?.message || "Ocorreu um erro no registro"
+        );
       } else {
         setError("Ocorreu um erro inesperado");
       }
-    } 
+    }
   };
-
-  const { darkMode } = useTheme();
 
   const page__root = {
     p: 0,
     m: 0,
     minWidth: 1,
     minHeight: 1,
-    display: "flex",
-    placeItems: "center",
-    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: darkMode ? "primary.darker" : "common.white",
   };
 
   const card__wrapper = {
+    m: "auto",
+    transition: "ease-out 300ms margin-top",
+    mt: { xs: "100px", md: "180px", lg: "220px" },
     display: "flex",
     maxWidth: "720px",
     alignItems: "center",
-    p: "25px 30px 60px 30px ",
+    p: "0 30px 30px 30px ",
     flexDirection: "column",
     backgroundColor: darkMode ? "primary.dark" : "primary.light",
   };
@@ -110,7 +131,7 @@ export default function Register() {
         >
           {"REGISTRE-SE"}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" width={"90%"} onSubmit={handleSubmit} noValidate>
           <WhiteTextField
             required
             fullWidth
@@ -152,8 +173,12 @@ export default function Register() {
             autoComplete="current-password"
           />
 
-          {error && <Typography sx={{ color: "common.white", textAlign: "center" }}>{error}</Typography>}
-          
+          {error && (
+            <Typography sx={{ color: "common.white", textAlign: "center" }}>
+              {error}
+            </Typography>
+          )}
+
           <FormControlLabel
             label="Lembrar senha"
             sx={{ color: "common.white" }}

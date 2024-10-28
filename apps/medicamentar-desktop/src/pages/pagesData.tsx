@@ -8,6 +8,8 @@ import Config from "./Config";
 import History from "./History";
 
 import { IRouterType } from "../types/router.types";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 
 const pagesData: IRouterType[] = [
   {
@@ -24,6 +26,16 @@ const pagesData: IRouterType[] = [
     title: "Register", 
     path: "register", 
     element: <Register /> 
+  },
+  { 
+    title: "Forgot", 
+    path: "forgot-password", 
+    element: <ForgotPassword /> 
+  },
+  { 
+    title: "Reset", 
+    path: "reset-password", 
+    element: <ResetPassword /> 
   },
   { 
     title: "Home", 

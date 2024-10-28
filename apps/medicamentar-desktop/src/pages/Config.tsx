@@ -1,17 +1,17 @@
 import {
   Box,
-  Container,
   FormControl,
   FormGroup,
   FormControlLabel,
   Switch,
-  Stack,
   IconButton
 } from "@mui/material";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import { useState } from "react";
 import { useTheme } from "../constants/theme/useTheme";
+import { SectionContainer } from "../components/SectionContainer";
+import { ContainerUniversal } from "../components/ContainerUniversal";
 import { useNavigate } from "react-router-dom";
 import Arrow from "../assets/icons/Arrow.svg"
 
@@ -28,18 +28,10 @@ const Config = () => {
   };
   const navigate = useNavigate();
   return (
-    <Container
-      sx={{
-        display: "flex",
-        paddingTop: "175px",
-        backgroundColor: darkMode ? "primary.main" : "common.white",
-        height: "100vh",
-        minWidth: "100%",
-      }}
-    >
+    <ContainerUniversal>
       <Header />
       <Sidebar />
-      <Stack sx={{ width: "320px", alignItems: "center" }} spacing="67px">
+      <SectionContainer>
         <Box
           component="h1"
           sx={{ color: darkMode ? "text.primary" : "primary.darker" }}
@@ -110,8 +102,8 @@ const Config = () => {
             />
           </FormGroup>
         </FormControl>
-      </Stack>
-    </Container>
+      </SectionContainer>
+    </ContainerUniversal>
   );
 };
 
