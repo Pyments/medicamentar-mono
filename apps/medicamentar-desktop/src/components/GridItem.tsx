@@ -1,18 +1,6 @@
 import { Paper, Typography, Stack } from "@mui/material";
-
-export type gridItemTypes = {
-    title: string,
-    actionType: string,
-    action: string,
-    date: string,
-    medic?: string
-};
-
-type actionTypes = 
-    "warning" |
-    "alarmAnswered" |
-    "deleted" |
-    "created";
+import { actionTypes } from "../types/actionTypes";
+import { gridItemTypes } from "../types/gridItemTypes";
 
 function runningActionColors(actionType: string) : string{
     const actionColors: Record<actionTypes, string> = {
@@ -30,7 +18,7 @@ const GridItem = ({ title, actionType, action, date, medic } : gridItemTypes) =>
         variant="outlined"
         square={false}
         sx={{
-            width: "450px",
+            width: "440px",
             height: "90px",
             backgroundColor: "background.paper",
             padding: "10px"
