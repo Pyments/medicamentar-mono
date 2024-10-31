@@ -49,7 +49,7 @@ const styleLabel = {
             color: darkMode ? "common.white" : "primary.main",
           }}
         >
-          NOVO MEDICAMENTO
+          EDITAR MEDICAMENTO
         </Typography>
         <FormGroup>
           <Grid container spacing={2}>
