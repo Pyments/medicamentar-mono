@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,7 +32,7 @@ public class MedicationController {
 
     @Operation(summary = "Adiciona um novo medicamento", method = "POST")
     @PostMapping()
-    public ResponseEntity createMedication(@RequestBody MedicationRequest medicationRegisterDto){
+    public ResponseEntity createMedication(@Valid @RequestBody MedicationRequest medicationRegisterDto){
         var response = this.medService.createMedication(medicationRegisterDto);
         return ResponseEntity.ok(response);
     }
@@ -53,7 +55,7 @@ public class MedicationController {
 
     @Operation(summary = "Exclui o medicamento.", method = "DELETE")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteMedication(String id){
+    public ResponseEntity deleteMedication(@PathVariable String id){
         var response = this.medService.deleteMedication(id);
 
         return ResponseEntity.ok(response);

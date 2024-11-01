@@ -9,4 +9,5 @@ import com.medicamentar.medicamentar_api.domain.entities.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
   Optional<User> findByEmail(String email);
+  Optional<User> findByResetToken(String token);
 }

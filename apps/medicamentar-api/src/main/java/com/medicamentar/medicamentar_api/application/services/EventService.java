@@ -1,11 +1,13 @@
 package com.medicamentar.medicamentar_api.application.services;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +65,8 @@ public class EventService {
                             M.getPeriod(),
                             M.getValidate()
                     ))
-                    .collect(Collectors.toList());
+                    .sorted(Comparator.comparing(MedicationResponse::period))
+                .collect(Collectors.toList());
 
             List<ExamResponse> examsResponses = pagedExams.stream()
                     .map(E -> new ExamResponse(
@@ -73,6 +76,7 @@ public class EventService {
                             E.getLocal(),
                             E.getDescription()
                     ))
+                .sorted(Comparator.comparing(ExamResponse::date))
                     .collect(Collectors.toList());
 
             List<ConsultationResponse> consultationsResponses = pagedConsultations.stream()
@@ -82,7 +86,9 @@ public class EventService {
                             C.getDoctorName(),
                             C.getLocal(),
                             C.getDescription()))
+                .sorted(Comparator.comparing(ConsultationResponse::date))
                     .collect(Collectors.toList());
+        
 
             if (medicationsResponses.isEmpty() && examsResponses.isEmpty() && consultationsResponses.isEmpty()) {
                 response.setMessage("No events found.");

@@ -1,9 +1,14 @@
 import App from "../App";
 import SignIn from "./auth/SignIn";
 import Register from "./auth/Register";
+import Home from "./Home";
+import Exam from "./Exam";
+import Medicine from "./Medicine";
+import Config from "./Config";
 
 import { IRouterType } from "../types/router.types";
-import Home from "./Home";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 
 const pagesData: IRouterType[] = [
   {
@@ -17,15 +22,40 @@ const pagesData: IRouterType[] = [
     element: <SignIn /> 
   },
   { 
-    title: "Sign In", 
+    title: "Register", 
     path: "register", 
     element: <Register /> 
   },
   { 
-    title: "home", 
+    title: "Forgot", 
+    path: "forgot-password", 
+    element: <ForgotPassword /> 
+  },
+  { 
+    title: "Reset", 
+    path: "reset-password", 
+    element: <ResetPassword /> 
+  },
+  { 
+    title: "Home", 
     path: "home", 
     element: <Home /> 
   },
+  { 
+    title: "Exam", 
+    path: "exam", 
+    element: <Exam /> 
+  },
+  { 
+    title: "Medicine",
+    path: "medicine",
+    element: <Medicine />
+  },
+  {
+    title: "Config",
+    path: "config",
+    element: <Config />
+  }
 ];
 
 export default pagesData;

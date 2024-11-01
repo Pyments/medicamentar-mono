@@ -1,5 +1,4 @@
 import ModalXCloseButton from "../../public/assets/icons/ModalXCloseButton.svg"
-import { getDesignTokens } from "../constants/theme/theme.ts";
 import { Modal, Box, Stack, IconButton, Typography, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
 import { useState } from "react";
 import { Select, SelectChangeEvent } from "@mui/material";
@@ -8,7 +7,6 @@ export default function MedicineTypeModal() {
   const [modal, setOpenModal] = useState(true);
   const [medicamento, setTipoMedicamento] = useState("");
 
-  const pallete = getDesignTokens("light");
   return (
     <Modal open={modal}>
       <Box
@@ -39,7 +37,7 @@ export default function MedicineTypeModal() {
             sx={{
               fontSize: 20,
               fontWeight: 600,
-              color: pallete.palette.primary.deep,
+              color: "primary.dark",
             }}
           >
             NOVO MEDICAMENTO

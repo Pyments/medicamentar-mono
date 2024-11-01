@@ -4,16 +4,19 @@ import ReactDOM from "react-dom/client";
 import Router from "./pages/router.tsx";
 import { CssBaseline } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeContextProvider } from "./constants/theme/ThemeContextProvider.tsx";
+import { AuthProvider } from "./hooks/AuthContext.tsx";
+import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.querySelector("body")!).render(
   <React.StrictMode>
     <CssBaseline>
-      <ThemeContextProvider>
+      <ThemeProvider>
         <BrowserRouter>
+        <AuthProvider>
           <Router />
+        </AuthProvider>
         </BrowserRouter>
-      </ThemeContextProvider>
+      </ThemeProvider>
     </CssBaseline>
   </React.StrictMode>
 );
