@@ -34,3 +34,7 @@ jobs:
           file: apps/medicamentar-api/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/medicamentar-api:latest, ${{ secrets.DOCKERHUB_USER }}/medicamentar-api:${{ github.sha }}
+
+      - name: Set Image URL
+        id: set_image_url
+        run: echo "IMAGE_URL=docker.io/${{ secrets.DOCKERHUB_USER }}/medicamentar-api:latest" >> $GITHUB_ENV
