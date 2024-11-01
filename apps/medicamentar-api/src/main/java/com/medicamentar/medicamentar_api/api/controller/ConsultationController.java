@@ -43,8 +43,8 @@ public class ConsultationController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteConsultation(@PathVariable String id){
         var response = this.consultationService.deleteConsultation(id);
-        return response.getStatus() == HttpStatus.CREATED
-                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return response.getStatus() == HttpStatus.ACCEPTED
+                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     

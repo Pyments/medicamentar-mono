@@ -53,8 +53,8 @@ public class MedicationController {
     @PutMapping()
     public ResponseEntity updateMedication(String id,@RequestBody @Valid UpdateRequest updateMedication){
         var response = this.medService.updateMedication(id, updateMedication);
-        return response.getStatus() == HttpStatus.CREATED
-                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return response.getStatus() == HttpStatus.ACCEPTED
+                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -62,8 +62,8 @@ public class MedicationController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteMedication(@PathVariable String id){
         var response = this.medService.deleteMedication(id);
-        return response.getStatus() == HttpStatus.CREATED
-                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return response.getStatus() == HttpStatus.ACCEPTED
+                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
