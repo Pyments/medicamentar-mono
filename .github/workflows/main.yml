@@ -7,9 +7,10 @@ on:
           description: 'Branch, tag or commit SHA1 to build'
           required: true
           type: string
+  push:
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
     paths:
       - '../apps/medicamentar-api'
 
@@ -32,4 +33,4 @@ jobs:
           context: apps/medicamentar-api
           file: apps/medicamentar-api/Dockerfile
           push: true
-          tags: medicamentar/medicamentar-api:latest, medicamentar/medicamentar-api:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/medicamentar-api:latest, ${{ secrets.DOCKERHUB_USER }}/medicamentar-api:${{ github.sha }}
