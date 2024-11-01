@@ -1,6 +1,12 @@
 name: Build Back-end API
 
 on:
+  workflow_dispatch:
+      inputs:
+        refToBuild:
+          description: 'Branch, tag or commit SHA1 to build'
+          required: true
+          type: string
   pull_request:
     branches:
       - main
