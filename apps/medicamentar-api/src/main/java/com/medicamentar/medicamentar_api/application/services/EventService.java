@@ -32,56 +32,76 @@ public class EventService {
     private final MedicationRepository medicationRepository;
 
     public ServiceResponse<EventResponse> getEvents(int page, int size) {
+        ServiceResponse<EventResponse> response = new ServiceResponse<>();
 
-        ServiceResponse<EventResponse> response = new ServiceResponse<EventResponse>();
+        if (page < 0) {
+            response.setMessage("Page number must be non-negative.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
+        if (size <= 0) {
+            response.setMessage("Page size must be greater than zero.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
 
-        Pageable pageable = PageRequest.of(page, size);
+        try {
+            Pageable pageable = PageRequest.of(page, size);
 
-        Page<Medication> pagedMedications = this.medicationRepository.findAll(pageable);
-        Page<Exam> pagedExams = this.examRepository.findAll(pageable);
-        Page<Consultation> pagedConsultations = this.consultationRepository.findAll(pageable);
+            Page<Medication> pagedMedications = this.medicationRepository.findAll(pageable);
+            Page<Exam> pagedExams = this.examRepository.findAll(pageable);
+            Page<Consultation> pagedConsultations = this.consultationRepository.findAll(pageable);
 
-        List<MedicationResponse> medicationsResponses = pagedMedications.stream()
-                .map(M -> new MedicationResponse(
-                        M.getId(),
-                        M.getName(),
-                        M.getType(),
-                        M.getDose(),
-                        M.getAmount(),
-                        M.getUnity(),
-                        M.getPeriod(),
-                        M.getValidate()
+            List<MedicationResponse> medicationsResponses = pagedMedications.stream()
+                    .map(M -> new MedicationResponse(
+                            M.getId(),
+                            M.getName(),
+                            M.getType(),
+                            M.getDose(),
+                            M.getAmount(),
+                            M.getUnity(),
+                            M.getPeriod(),
+                            M.getValidate()
+                    ))
+                    .collect(Collectors.toList());
 
-                ))
-                .collect(Collectors.toList());
+            List<ExamResponse> examsResponses = pagedExams.stream()
+                    .map(E -> new ExamResponse(
+                            E.getId(),
+                            E.getDate(),
+                            E.getName(),
+                            E.getLocal(),
+                            E.getDescription()
+                    ))
+                    .collect(Collectors.toList());
 
-        List<ExamResponse> examsResponses = pagedExams.stream()
-                .map(E -> new ExamResponse(
-                        E.getId(),
-                        E.getDate(),
-                        E.getName(),
-                        E.getLocal(),
-                        E.getDescription()
+            List<ConsultationResponse> consultationsResponses = pagedConsultations.stream()
+                    .map(C -> new ConsultationResponse(
+                            C.getId(),
+                            C.getDate(),
+                            C.getDoctorName(),
+                            C.getLocal(),
+                            C.getDescription()))
+                    .collect(Collectors.toList());
 
-                ))
-                .collect(Collectors.toList());
+            if (medicationsResponses.isEmpty() && examsResponses.isEmpty() && consultationsResponses.isEmpty()) {
+                response.setMessage("No events found.");
+                response.setStatus(HttpStatus.NOT_FOUND); 
+                return response;
+            }
 
-        List<ConsultationResponse> consultationsResponses = pagedConsultations.stream()
-                .map(C -> new ConsultationResponse(
-                        C.getId(),
-                        C.getDate(),
-                        C.getDoctorName(),
-                        C.getLocal(),
-                        C.getDescription()))
-                .collect(Collectors.toList());
+            EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses, examsResponses);
 
-        EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses, examsResponses);
+            response.setData(eventResponse);
+            response.setMessage("Events retrieved successfully.");
+            response.setStatus(HttpStatus.OK);
+            response.setGetTotalPages(pagedMedications.getTotalPages());
+            response.setGetTotalElements(pagedMedications.getTotalElements());
 
-        response.setData(eventResponse);
-        response.setMessage("Ok");
-        response.setStatus(HttpStatus.ACCEPTED);
-        response.setGetTotalPages(pagedMedications.getTotalPages());
-        response.setGetTotalElements(pagedMedications.getTotalElements());
+        } catch (Exception e) {
+            response.setMessage("An error occurred while retrieving events: " + e.getMessage());
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return response;
     }
