@@ -32,4 +32,4 @@ jobs:
           context: apps/medicamentar-api
           file: apps/medicamentar-api/Dockerfile
           push: true
-          tags: medicamentar-api:latest, medicamentar-api:${{ github.sha }}
+          tags: medicamentar/api:latest, medicamentar/api:${{ github.sha }}
