@@ -9,11 +9,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Render
     if: >
       github.event.workflow_run.conclusion == 'success' && 
       github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Render
         env:
           RENDER_API_TOKEN: ${{ secrets.RENDER_API_TOKEN }}
           IMAGE_URL: ${{ env.IMAGE_URL }}
