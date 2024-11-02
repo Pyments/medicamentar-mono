@@ -10,6 +10,7 @@ import com.medicamentar.medicamentar_api.application.dtos.consultationDto.Consul
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
+import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 public class ConsultationService {
 
     private final ConsultationRepository consultationRepo;
+    private final EventLogService eLogService;
 
-    public ServiceResponse<String> createConsultation(ConsultationRequest consultationRegister){
+    public ServiceResponse<String> createConsultation(ConsultationRequest consultationRegister) {
         ServiceResponse<String> response = new ServiceResponse<String>();
 
         var consultation = new Consultation();
@@ -30,26 +32,26 @@ public class ConsultationService {
         consultation.setDescription(consultationRegister.description());
 
         this.consultationRepo.save(consultation);
+        this.eLogService.saveEvent(EventLogAction.Criado, consultation);
 
         response.setMessage("appointment successfully scheduled!");
         response.setStatus(HttpStatus.CREATED);
         return response;
     }
 
-    public ServiceResponse<List<ConsultationResponse>> getConsultations(){
+    public ServiceResponse<List<ConsultationResponse>> getConsultations() {
         ServiceResponse<List<ConsultationResponse>> response = new ServiceResponse<>();
 
         List<Consultation> consultations = this.consultationRepo.findAll();
 
         List<ConsultationResponse> consultationResponses = consultations.stream()
-            .map(consultation -> new ConsultationResponse(
-                consultation.getId(),
-                consultation.getDate(),
-                consultation.getDoctorName(),
-                consultation.getLocal(),
-                consultation.getDescription()
-            ))
-            .collect(Collectors.toList());
+                .map(consultation -> new ConsultationResponse(
+                        consultation.getId(),
+                        consultation.getDate(),
+                        consultation.getDoctorName(),
+                        consultation.getLocal(),
+                        consultation.getDescription()))
+                .collect(Collectors.toList());
 
         response.setData(consultationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
@@ -58,14 +60,16 @@ public class ConsultationService {
         return response;
     }
 
-    public ServiceResponse<String> deleteConsultation(String id){
+    public ServiceResponse<String> deleteConsultation(String id) {
         ServiceResponse<String> response = new ServiceResponse<>();
 
         var consultationId = UUID.fromString(id);
-        var consultationExists = consultationRepo.existsById(consultationId);
+        var consultation = consultationRepo.findById(consultationId);
 
-        if (consultationExists) {
+        if (consultation.isPresent()) {
             consultationRepo.deleteById(consultationId);
+            this.eLogService.saveEvent(EventLogAction.Deletado, consultation.get());
+
             response.setMessage("consultation successfully removed.");
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
@@ -75,5 +79,5 @@ public class ConsultationService {
 
         return response;
     }
-    
+
 }
