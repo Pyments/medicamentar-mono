@@ -12,7 +12,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - '../apps/medicamentar-api'
+      - 'apps/medicamentar-api/**'
 
 jobs:
   build:
