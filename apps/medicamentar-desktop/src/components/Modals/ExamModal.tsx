@@ -53,7 +53,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
 
   const tabValues = ["exame", "consulta"];
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 

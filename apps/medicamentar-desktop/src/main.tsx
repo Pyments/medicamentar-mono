@@ -12,9 +12,9 @@ ReactDOM.createRoot(document.querySelector("body")!).render(
     <CssBaseline>
       <ThemeProvider>
         <BrowserRouter>
-        <AuthProvider>
-          <Router />
-        </AuthProvider>
+          <AuthProvider>
+            <Router />
+          </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>

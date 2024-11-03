@@ -1,4 +1,4 @@
-import ModalXCloseButton from "../../public/assets/icons/ModalXCloseButton.svg"
+import ModalXCloseButton from "../../assets/icons/ModalXCloseButton.svg"
 import { Modal, Box, Stack, IconButton, Typography, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
 import { useState } from "react";
 import { Select, SelectChangeEvent } from "@mui/material";
