@@ -3,12 +3,14 @@ package com.medicamentar.medicamentar_api.application.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamRequest;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
+import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
@@ -22,8 +24,25 @@ public class ExamService {
     private final ExamRepository repository;
     private final EventLogService eLogService;
 
-    public List<Exam> getAllexams() {
-        return this.repository.findAll();
+    public ServiceResponse<List<ExamResponse>> getAllexams() {
+        var response = new ServiceResponse<List<ExamResponse>>();
+
+        List<Exam> exams = this.repository.findAll();
+
+        List<ExamResponse> examsResponses = exams.stream()
+                .map(exam -> new ExamResponse(
+                        exam.getId(),
+                        exam.getDate(),
+                        exam.getName(),
+                        exam.getLocal(),
+                        exam.getDescription()))
+                .collect(Collectors.toList());
+
+        response.setData(examsResponses);
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setMessage("Exam successfully returned");
+
+        return response;
     }
 
     public ServiceResponse<ExamResponse> updateExam(UUID examId, ExamRequest examRequest) {
