@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./hooks/AuthContext.tsx";
 import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
 
-ReactDOM.createRoot(document.querySelector("body")!).render(
+ReactDOM.createRoot(document.querySelector("#root")!).render(
   <React.StrictMode>
     <CssBaseline>
       <ThemeProvider>
