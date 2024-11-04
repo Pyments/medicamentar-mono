@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import com.medicamentar.medicamentar_api.application.dtos.consultationDto.Consul
 import com.medicamentar.medicamentar_api.application.dtos.eventDto.EventResponse;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
-import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
@@ -33,8 +32,8 @@ public class EventService {
     private final ExamRepository examRepository;
     private final MedicationRepository medicationRepository;
 
-    public ServiceResponse<EventResponse> getEvents(int page, int size) {
-        ServiceResponse<EventResponse> response = new ServiceResponse<>();
+    public PaginatedResponse<EventResponse> getEvents(int page, int size) {
+        var response = new PaginatedResponse<EventResponse>();
 
         if (page < 0) {
             response.setMessage("Page number must be non-negative.");

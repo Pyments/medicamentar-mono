@@ -18,42 +18,47 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-  private final UserRepository repository;
+  private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final TokenService tokenService;
 
   public ServiceResponse<String> login(LoginRequest loginRequest) {
     ServiceResponse<String> response = new ServiceResponse<String>();
 
-    User user = this.repository.findByEmail(loginRequest.email())
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = this.userRepository.findByEmail(loginRequest.email()).orElse(null);
 
-    if (passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-      String token = this.tokenService.generateToken(user);
-      response.setData(token);
-      response.setMessage("Login successful");
-      response.setStatus(HttpStatus.OK);
+    if (user == null) {
+      response.setStatus(HttpStatus.NOT_FOUND);
+      response.setMessage("Usuário não encontrado");
       return response;
     }
 
-    response.setMessage("Bad request");
-    response.setStatus((HttpStatus.BAD_REQUEST));
+    if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
+      response.setMessage("Senha incorreta!");
+      response.setStatus(HttpStatus.UNAUTHORIZED);
+      return response;
+    }
 
+    String token = this.tokenService.generateToken(user);
+    response.setData(token);
+    response.setMessage("Login successful");
+    response.setStatus(HttpStatus.OK);
     return response;
+
   }
 
   public ServiceResponse<String> register(RegisterRequest registerRequest) {
     ServiceResponse<String> response = new ServiceResponse<String>();
 
     if (!registerRequest.password().equals(registerRequest.confirmPassword())) {
-      response.setMessage(("Password do not match"));
+      response.setMessage(("As senhas não coincidem!"));
       response.setStatus(HttpStatus.BAD_REQUEST);
       return response;
     }
 
-    Optional<User> user = this.repository.findByEmail(registerRequest.email());
+    Optional<User> user = this.userRepository.findByEmail(registerRequest.email());
     if (user.isPresent()) {
-      response.setMessage("Email already in use");
+      response.setMessage("Esse email já está em uso!");
       response.setStatus(HttpStatus.BAD_REQUEST);
       return response;
     }
@@ -62,7 +67,7 @@ public class AuthService {
     newUser.setPassword(passwordEncoder.encode(registerRequest.password()));
     newUser.setEmail(registerRequest.email());
     newUser.setName(registerRequest.name());
-    this.repository.save(newUser);
+    this.userRepository.save(newUser);
 
     String token = this.tokenService.generateToken(newUser);
     response.setData(token);
