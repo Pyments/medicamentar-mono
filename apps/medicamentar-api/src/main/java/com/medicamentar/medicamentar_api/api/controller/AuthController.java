@@ -14,7 +14,6 @@ import com.medicamentar.medicamentar_api.application.services.PasswordResetServi
 
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,15 +32,13 @@ public class AuthController {
 
   private final TokenService tokenService;
 
-
   @Operation(summary = "Autentica o usuário", method = "POST")
   @PostMapping("/login")
   public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
 
     var response = this.authService.login(loginRequest);
-    return response.getStatus() == HttpStatus.OK
-        ? ResponseEntity.status(HttpStatus.OK).body(response)
-        : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    return ResponseEntity.status(response.getStatus()).body(response);
+
   }
 
   @Operation(summary = "Registra um usuário", method = "POST")
@@ -49,25 +46,23 @@ public class AuthController {
   public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
 
     var response = this.authService.register(registerRequest);
-    return response.getStatus() == HttpStatus.CREATED
-        ? ResponseEntity.status(HttpStatus.CREATED).body(response)
-        : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    return ResponseEntity.status(response.getStatus()).body(response);
   }
 
-
   @PostMapping("/forgot")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
-        passwordResetService.createPasswordResetToken(email);
-        return ResponseEntity.ok("Email de recuperação enviado");
-    }
+  public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+    var response = this.passwordResetService.createPasswordResetToken(email);
 
-    @PostMapping("/reset")
-    public ResponseEntity<?> resetPassword(
-            @RequestParam String token,
-            @RequestParam String newPassword) {
-        passwordResetService.resetPassword(token, newPassword);
-        return ResponseEntity.ok("Senha alterada com sucesso");
-    }
+    return ResponseEntity.status(response.getStatus()).body(response);
+  }
+
+  @PostMapping("/reset")
+  public ResponseEntity<?> resetPassword(
+      @RequestParam String token,
+      @RequestParam String newPassword) {
+    var response = this.passwordResetService.resetPassword(token, newPassword);
+    return ResponseEntity.status(response.getStatus()).body(response);
+  }
 
   @GetMapping("/validate-token")
   public ResponseEntity<Void> validateToken(HttpServletRequest request) {
@@ -80,12 +75,9 @@ public class AuthController {
 
   private String extractToken(HttpServletRequest request) {
     var authHeader = request.getHeader("Authorization");
-    if (authHeader == null) return null;
+    if (authHeader == null)
+      return null;
     return authHeader.replace("Bearer ", "");
   }
 
-
 }
-
-// Retornar o token quando se registrar? Ou apenas através do Login?
-// String token = this.tokenService.generateToken(newUser);
