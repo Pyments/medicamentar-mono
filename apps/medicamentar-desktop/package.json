@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
-  "main": "dist-electron/main.js",
+  "main": "./dist-electron/main.js",
   "homepage": ".",
   "description": "App de gerência de medicações e exames",
   "author": {
@@ -18,22 +18,21 @@
   "scripts": {
     "start": "vite",
     "dev": "vite --mode development & wait-on tcp:3000 && electron .",
-    "build": "tsc && vite build && electron-builder",
+    "build": "tsc && vite build && electron-builder --config electron-builder.json5",
     "app:dir": "electron-builder --dir",
     "app:dist": "electron-builder",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.0",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.6",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-    "@mui/x-date-pickers": "^7.22.1",
+    "@mui/x-date-pickers": "^5.0.0",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "electron-store": "^10.0.0",
-    "pnpm": "^9.12.3",
     "react": "^18.3.1",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
@@ -61,14 +60,14 @@
     "appId": "com.medicamentar.medicamentar-desktop",
     "productName": "Medicamentar",
     "files": [
-      "dist/**",
-      "dist-electron/**",
-      "electrom/main.ts",
-      "electron/preload.ts",
+      "dist/**/*",
+      "dist-electron/**/*",
+      "node_modules/**/*",
       "package.json"
     ],
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "assets"
     }
   }
 }

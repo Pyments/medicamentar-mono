@@ -1,12 +1,9 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-// import { createRequire } from 'node:module'
 import { fileURLToPath } from "node:url";
 import Store from "electron-store";
-
 import path from "node:path";
 
 const store = new Store();
-// const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 ipcMain.handle("electron-store-get", (_event, key) => {
@@ -46,23 +43,54 @@ let win: BrowserWindow | null;
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    width: 1200,
+    height: 800,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       preload: path.join(__dirname, "preload.mjs"),
+      devTools: true,
+      webSecurity: false // temporarily disable for testing
     },
   });
 
-  // Test active push message to Renderer-process.
-  win.webContents.on("did-finish-load", () => {
-    win?.webContents.send("main-process-message", new Date().toLocaleString());
+  // Add extensive error logging
+  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorCode, errorDescription);
   });
 
-  app.isPackaged
-    ? win.loadFile(path.join(RENDERER_DIST, "index.html"))
-    : win.loadURL(VITE_DEV_SERVER_URL || "http://localhost:5173/");
+  win.webContents.on('did-finish-load', () => {
+    console.log('Page finished loading');
+    // Log the HTML content for debugging
+    win?.webContents.executeJavaScript(`
+      console.log('Document HTML:', document.documentElement.innerHTML);
+      console.log('Root element:', document.getElementById('root'));
+    `);
+  });
+
+  if (app.isPackaged) {
+    const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
+    console.log('Loading file from:', indexPath);
+    win.loadFile(indexPath).catch(err => {
+      console.error('Error loading file:', err);
+    });
+  } else {
+    win.loadURL(VITE_DEV_SERVER_URL || "http://localhost:5173/");
+  }
 
   win.webContents.openDevTools();
 }
+
+// Add this before app.whenReady()
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
+});
+
+app.on('web-contents-created', (_event, contents) => {
+  contents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorCode, errorDescription);
+  });
+});
 
 app.whenReady().then(createWindow);
 
