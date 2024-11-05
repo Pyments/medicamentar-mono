@@ -6,7 +6,7 @@
   "directories": {
     "output": "release/${version}"
   },
-  "files": ["dist/**/*", "dist-electron/**/*"],
+  "files": ["dist/**/*", "dist-electron/**/*", "node_modules/**/*", "package.json"],
   "mac": {
     "target": ["dmg"],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"

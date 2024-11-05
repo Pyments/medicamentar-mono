@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./hooks/AuthContext.tsx";
 import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
 
-ReactDOM.createRoot(document.querySelector("#root")!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <CssBaseline>
       <ThemeProvider>
@@ -20,8 +20,3 @@ ReactDOM.createRoot(document.querySelector("#root")!).render(
     </CssBaseline>
   </React.StrictMode>
 );
-
-// Use contextBridge
-window.ipcRenderer.on("main-process-message", (_event, message) => {
-  console.log(message);
-});
