@@ -1,7 +1,8 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
 import com.medicamentar.medicamentar_api.application.services.ConsultationService;
@@ -11,11 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-
 
 
 @RestController
@@ -28,9 +24,11 @@ public class ConsultationController {
 
     @Operation(summary = "Adiciona uma consulta", method = "POST")
     @PostMapping()
-    public ResponseEntity createConsultation(@RequestBody ConsultationRequest consultationRegister){
-        var response = this.consultationService.createConsultation(consultationRegister);
-        return ResponseEntity.ok(response);
+    public ResponseEntity createConsultation(@RequestBody @Valid ConsultationRequest consultationRegisterDto){
+        var response = this.consultationService.createConsultation(consultationRegisterDto);
+        return response.getStatus() == HttpStatus.CREATED
+                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     
     @Operation(summary = "Lista de consultas", method = "GET")
@@ -43,10 +41,11 @@ public class ConsultationController {
     
     @Operation(summary = "Remova a consulta", method = "DELETE")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteConsultation(String id){
+    public ResponseEntity deleteConsultation(@PathVariable String id){
         var response = this.consultationService.deleteConsultation(id);
-
-        return ResponseEntity.ok(response);
+        return response.getStatus() == HttpStatus.ACCEPTED
+                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     
 }

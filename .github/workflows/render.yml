@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["Build Back-end API"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' && 
+      github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Render
+        env:
+          RENDER_API_TOKEN: ${{ secrets.RENDER_API_TOKEN }}
+#          IMAGE_URL: ${{ env.IMAGE_URL }}
+          SERVICE_ID: ${{ secrets.SERVICE_ID }}
+        run: |
+          IMAGE_URL="docker.io/${{ secrets.DOCKERHUB_USER }}/medicamentar-api:latest"
+          echo "Deploying image: $IMAGE_URL"
+          
+          curl --request POST \
+               --url https://api.render.com/v1/services/$SERVICE_ID/deploys \
+               --header 'accept: application/json' \
+               --header "authorization: Bearer $RENDER_API_TOKEN" \
+               --header 'content-type: application/json' \
+               --data '{
+                 "clearCache": "do_not_clear",
+                 "imageUrl": "'"$IMAGE_URL"'"
+               }'

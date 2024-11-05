@@ -1,4 +1,7 @@
 package com.medicamentar.medicamentar_api.application.dtos.medicationDto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 import java.util.Date;
 
@@ -11,4 +14,5 @@ public record MedicationResponse (
     String unity,
     Date period,
     Date validate
-){ }
+)
+{}

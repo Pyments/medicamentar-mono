@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping(value = "/api/v1/HelloWorld", produces = {"application/json"})
+@RequestMapping(value = "/helloWorld", produces = {"application/json"})
 @Tag(name = "HelloWorld!")
 public class HelloWorldController {
   @Operation(summary = "Pequena descrição do endpoint", method = "GET")

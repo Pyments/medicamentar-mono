@@ -1,7 +1,5 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,23 +10,26 @@ import com.medicamentar.medicamentar_api.application.dtos.eventDto.EventResponse
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.application.services.EventService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/events")
+@Tag(name = "Events")
 public class EventController {
 
     private final EventService eventService;
 
+    @Operation(summary = "Obtém a lista de eventos", method = "GET")
     @GetMapping()
-    public ResponseEntity<ServiceResponse<EventResponse>> getEvents(@RequestParam(defaultValue= "0") int page,
-                                                                    @RequestParam(defaultValue= "6") int size) {
-        var response = this.eventService.getEvents(page, size);
-        return response.getStatus() == HttpStatus.ACCEPTED
-        ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
-        : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    public ResponseEntity<ServiceResponse<EventResponse>> getEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        
+        ServiceResponse<EventResponse> response = eventService.getEvents(page, size);
+        
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 }
-
