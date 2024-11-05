@@ -36,12 +36,12 @@ public class EventService {
         var response = new PaginatedResponse<EventResponse>();
 
         if (page < 0) {
-            response.setMessage("Page number must be non-negative.");
+            response.setMessage("O número de páginas não pdoe ser negativo.");
             response.setStatus(HttpStatus.BAD_REQUEST);
             return response;
         }
         if (size <= 0) {
-            response.setMessage("Page size must be greater than zero.");
+            response.setMessage("O tamanho da página deve ser maior que zero.");
             response.setStatus(HttpStatus.BAD_REQUEST);
             return response;
         }
@@ -90,7 +90,7 @@ public class EventService {
         
 
             if (medicationsResponses.isEmpty() && examsResponses.isEmpty() && consultationsResponses.isEmpty()) {
-                response.setMessage("No events found.");
+                response.setMessage("Nehnum evento encontrado.");
                 response.setStatus(HttpStatus.NOT_FOUND); 
                 return response;
             }
@@ -98,13 +98,13 @@ public class EventService {
             EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses, examsResponses);
 
             response.setData(eventResponse);
-            response.setMessage("Events retrieved successfully.");
+            response.setMessage("Exibindo eventos.");
             response.setStatus(HttpStatus.OK);
             response.setGetTotalPages(pagedMedications.getTotalPages());
             response.setGetTotalElements(pagedMedications.getTotalElements());
 
         } catch (Exception e) {
-            response.setMessage("An error occurred while retrieving events: " + e.getMessage());
+            response.setMessage("Ocorreu um erro ao tentar mostrar os eventos: " + e.getMessage());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

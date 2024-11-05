@@ -20,7 +20,7 @@ public ResponseEntity<ServiceResponse<List<String>>> handleMethodArgumentNotVali
 
     ServiceResponse<List<String>> response = new ServiceResponse<>(
         errors,
-        "Validation failed",
+        "Validação falhou!",
         HttpStatus.BAD_REQUEST
     );
 

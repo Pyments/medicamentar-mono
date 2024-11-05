@@ -34,7 +34,7 @@ public class ConsultationService {
         this.consultationRepo.save(consultation);
         this.eLogService.saveEvent(EventLogAction.Criado, consultation);
 
-        response.setMessage("appointment successfully scheduled!");
+        response.setMessage("consulta agendada com sucesso!");
         response.setStatus(HttpStatus.CREATED);
         return response;
     }
@@ -55,7 +55,7 @@ public class ConsultationService {
 
         response.setData(consultationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setMessage("appointments retrieved successfully.");
+        response.setMessage("Exibindo consultas.");
 
         return response;
     }
@@ -70,10 +70,10 @@ public class ConsultationService {
             consultationRepo.deleteById(consultationId);
             this.eLogService.saveEvent(EventLogAction.Deletado, consultation.get());
 
-            response.setMessage("consultation successfully removed.");
+            response.setMessage("Consulta removida com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
-            response.setMessage("Consultation not found!");
+            response.setMessage("Consulta não encontrada!");
             response.setStatus(HttpStatus.NOT_FOUND);
         }
 

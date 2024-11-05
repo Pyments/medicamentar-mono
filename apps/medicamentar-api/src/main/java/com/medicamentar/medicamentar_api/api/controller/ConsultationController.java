@@ -1,7 +1,6 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
@@ -16,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping(value = "/consultation", produces = "application/json")
-@Tag(name = "/consultation")
+@Tag(name = "Consultation")
 @RequiredArgsConstructor
 public class ConsultationController {
 
@@ -26,9 +25,7 @@ public class ConsultationController {
     @PostMapping()
     public ResponseEntity createConsultation(@RequestBody @Valid ConsultationRequest consultationRegisterDto){
         var response = this.consultationService.createConsultation(consultationRegisterDto);
-        return response.getStatus() == HttpStatus.CREATED
-                ? ResponseEntity.status(HttpStatus.CREATED).body(response)
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
     
     @Operation(summary = "Lista de consultas", method = "GET")
@@ -36,16 +33,14 @@ public class ConsultationController {
     public ResponseEntity getConsultation(){
         var response = this.consultationService.getConsultations();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
     
     @Operation(summary = "Remova a consulta", method = "DELETE")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteConsultation(@PathVariable String id){
         var response = this.consultationService.deleteConsultation(id);
-        return response.getStatus() == HttpStatus.ACCEPTED
-                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(response)
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
     
 }

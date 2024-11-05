@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationRequest;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
-import com.medicamentar.medicamentar_api.application.dtos.medicationDto.UpdateRequest;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
@@ -41,7 +40,7 @@ public class MedicationService {
         this.medicationRepo.save(entity);
         this.eLogService.saveEvent(EventLogAction.Criado, entity);
 
-        response.setMessage("Medicine added!");
+        response.setMessage("Medicamento criado com sucesso!");
         response.setStatus(HttpStatus.CREATED);
         return response;
     }
@@ -69,12 +68,12 @@ public class MedicationService {
        
         response.setData(medicationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setMessage("Medications retrieved successfully");
+        response.setMessage("Exibindo medicamentos.");
     
         return response;
     }
 
-    public ServiceResponse<String> updateMedication(String id, UpdateRequest updateMedication) {
+    public ServiceResponse<String> updateMedication(String id, MedicationRequest updateMedication) {
         ServiceResponse<String> response = new ServiceResponse<String>();
 
         var medicationId = UUID.fromString(id);
@@ -84,34 +83,22 @@ public class MedicationService {
         if (medicationEntity.isPresent()) {
             var medication = medicationEntity.get();
 
-            if (updateMedication.name() != null) {
                 medication.setName(updateMedication.name());
-            }
-
-            if (updateMedication.dose() != null) {
+                medication.setType(updateMedication.type());
                 medication.setDose(updateMedication.dose());
-            }
-
-            if (updateMedication.amount() != null) {
+                medication.setUnity(updateMedication.unity());
                 medication.setAmount(updateMedication.amount());
-            }
-
-            if (updateMedication.period() != null) {
                 medication.setPeriod(updateMedication.period());
-            }
-
-            if (updateMedication.validate() != null) {
                 medication.setValidate(updateMedication.validate());
-            }
 
             medicationRepo.save(medication);
             this.eLogService.saveEvent(EventLogAction.Atualizado, medication);
 
-            response.setMessage("Updated successfully!");
+            response.setMessage("Atualizado com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);
             return response;
         }
-        response.setMessage("Updated Failed!");
+        response.setMessage("Medicamento não encontrado.");
         response.setStatus(HttpStatus.BAD_REQUEST);
         return response;
     }
@@ -127,10 +114,10 @@ public class MedicationService {
             medicationRepo.deleteById(medicationId);
             this.eLogService.saveEvent(EventLogAction.Deletado, medication.get());
 
-            response.setMessage("Medicine deleted successfully!");
+            response.setMessage("Medicamento deletado com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
-            response.setMessage("Medicine not found!");
+            response.setMessage("Medicamento não encontrado.");
             response.setStatus(HttpStatus.NOT_FOUND);
         }
     

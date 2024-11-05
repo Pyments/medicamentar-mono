@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ExamRequest(
-    @NotNull(message = "Date can't be null")
+    @NotNull(message = "Informe a data do exame.")
     Date date,
-    @NotBlank(message = "Name can't be blank")
+    @NotBlank(message = "O campo 'Nome' não pode estar em branco.")
     String name, 
-    @NotBlank(message= "local can't be blank")
+    @NotBlank(message= "O campo 'Local' não pode estar em branco.")
     String local,
     
     String description) {
