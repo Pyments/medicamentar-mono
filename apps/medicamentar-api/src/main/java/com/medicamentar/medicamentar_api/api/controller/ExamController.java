@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/exam")
-@Tag(name = "exam")
+@Tag(name = "Exam")
 @RequiredArgsConstructor
 public class ExamController {
 

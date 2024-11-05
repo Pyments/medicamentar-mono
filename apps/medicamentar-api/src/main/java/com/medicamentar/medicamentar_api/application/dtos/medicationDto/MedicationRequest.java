@@ -5,19 +5,19 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public record MedicationRequest (
-        @NotBlank(message = "Name can't be blank")
+        @NotBlank(message = "O campo 'Nome' não pode estar em branco.")
         String name,
-        @NotNull(message = "Type can't be blank")
+        @NotNull(message = "O campo 'Tipo' não pode estar em branco.")
         String type,
-        @NotBlank(message = "Dose can't be blank")
+        @NotBlank(message = "O campo 'Dose' não pode estar em branco.")
         String dose,
-        @NotNull(message = "Amount can't be blank")
+        @NotNull(message = "O campo 'Quantidade' não pode estar em branco.")
         Double amount,
-        @NotBlank(message = "Unity can't be blank")
+        @NotBlank(message = "O campo 'Unidade' não pode estar em branco.")
         String unity,
-        @NotNull(message = "Period can't be Null")
+        @NotNull(message = "Defina o período inicial da medicação.")
         Date period,
-        @NotNull(message = "Validate can't be Null")
+        @NotNull(message = "Informe a validade.")
         Date validate
 ) {
 }

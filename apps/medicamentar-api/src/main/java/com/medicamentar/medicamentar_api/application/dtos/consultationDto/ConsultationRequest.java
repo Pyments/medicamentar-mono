@@ -6,12 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public record ConsultationRequest (
-        @NotNull(message = "Date can't be blank")
+        @NotNull(message = "O campo 'Data' não pode estar vazio.")
         Date date,
-        @NotBlank(message = "Name can't be blank")
+        @NotBlank(message = "O campo 'Nome' não pode estar vazio.")
         String doctorName,
-        @NotBlank(message = "local can't be blank")
+        @NotBlank(message = "O campo 'Local' não pode estar vazio.")
         String local,
-        @NotBlank(message = "Description cannot be blanck")
+        @NotBlank(message = "Registre alguma observação.")
         String description
 ){}

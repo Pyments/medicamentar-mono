@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/events")
-@Tag(name = "Events")
+@Tag(name = "Event")
 public class EventController {
 
     private final EventService eventService;

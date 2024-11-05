@@ -71,7 +71,7 @@ public class AuthService {
 
     String token = this.tokenService.generateToken(newUser);
     response.setData(token);
-    response.setMessage("User registered successfully");
+    response.setMessage("Usuário registrado com sucesso!");
     response.setStatus(HttpStatus.CREATED);
 
     return response;

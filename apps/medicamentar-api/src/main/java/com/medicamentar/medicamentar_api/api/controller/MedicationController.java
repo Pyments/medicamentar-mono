@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationRequest;
-import com.medicamentar.medicamentar_api.application.dtos.medicationDto.UpdateRequest;
 import com.medicamentar.medicamentar_api.application.services.MedicationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping(value = "/medicamentations", produces = {"application/json"})
+@RequestMapping(value = "/medication", produces = {"application/json"})
 @Tag(name = "Medication")
 @RequiredArgsConstructor
 public class MedicationController {
@@ -48,7 +47,7 @@ public class MedicationController {
 
     @Operation(summary = "Edita o medicamento selecionado.", method = "PUT")
     @PutMapping()
-    public ResponseEntity updateMedication(String id,@RequestBody @Valid UpdateRequest updateMedication){
+    public ResponseEntity updateMedication(String id,@RequestBody @Valid MedicationRequest updateMedication){
         var response = this.medService.updateMedication(id, updateMedication);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

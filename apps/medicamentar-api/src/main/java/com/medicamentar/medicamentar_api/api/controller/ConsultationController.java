@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping(value = "/consultation", produces = "application/json")
-@Tag(name = "/consultation")
+@Tag(name = "Consultation")
 @RequiredArgsConstructor
 public class ConsultationController {
 
