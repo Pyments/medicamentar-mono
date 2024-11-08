@@ -7,7 +7,8 @@ function runningActionColors(actionType: string) : string{
         warning: "#FF9800",
         alarmAnswered: "primary.main",
         deleted: "#D32F2F",
-        created: "#2E7D32"
+        "Consulta Criado": "#2E7D32",
+        "Exame Criado" : "#2E7D32"
     };
     return (actionColors[actionType as actionTypes] || "#c1c1c1")
 }
