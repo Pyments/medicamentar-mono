@@ -46,11 +46,10 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, "preload.mjs"),
-      devTools: true,
-      webSecurity: false // temporarily disable for testing
+      devTools: true
     },
   });
 
@@ -77,8 +76,6 @@ function createWindow() {
   } else {
     win.loadURL(VITE_DEV_SERVER_URL || "http://localhost:5173/");
   }
-
-  win.webContents.openDevTools();
 }
 
 // Add this before app.whenReady()
