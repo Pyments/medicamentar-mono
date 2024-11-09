@@ -5,7 +5,7 @@ import electron from "vite-plugin-electron/simple";
 
 export default defineConfig({
   root: ".",
-  base: './',
+  base: "./",
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -14,10 +14,10 @@ export default defineConfig({
       input: path.resolve(__dirname, "index.html"),
       output: {
         manualChunks: undefined,
-        format: 'es',
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
+        format: "es",
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
       },
     },
   },
@@ -41,7 +41,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
