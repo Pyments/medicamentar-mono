@@ -1,9 +1,7 @@
 import React, { useState, useMemo } from "react";
-import {
-  ThemeProvider as MuiThemeProvider,
-  createTheme,
-  Theme,
-} from "@mui/material/styles";
+import { ThemeProvider as MuiThemeProvider } from '@mui/material';
+import { createTheme, Theme } from '@mui/material/styles';
+
 import { ThemeContext } from "./ThemeContext";
 import { lightTheme, darkTheme } from "./themeConfig";
 
