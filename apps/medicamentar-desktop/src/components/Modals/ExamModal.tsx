@@ -143,7 +143,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          backgroundColor: darkMode ? "#1E1F24" : "common.white",
+          backgroundColor: darkMode ? "grey.900" : "common.white",
           width: 500,
           p: "60px",
           display: "flex",
@@ -170,7 +170,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
           value={tabValue}
           sx={{
             "& .Mui-selected": {
-              color: darkMode ? "#0078B6" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             },
             "& .MuiTabs-indicator": {
               backgroundColor: darkMode ? "#1A8BCA" : "primary.main",
@@ -218,7 +218,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
                         "& .MuiInputAdornment-root .MuiSvgIcon-root": {
                           color: darkMode ? "#CDCED7" : "-moz-initial",
                         },
-                        fontSize: "12px",
+                        fontSize: "0.9rem",
                         color: darkMode ? "common.white" : "text.primary",
                         "& .MuiOutlinedInput-notchedOutline": {
                           borderColor: darkMode
@@ -237,10 +237,10 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
                     },
                     InputLabelProps: {
                       sx: {
-                        fontSize: "12px",
+                        fontSize: "0.9rem",
                         color: darkMode ? "common.white" : "text.primary",
                         "&.Mui-focused": {
-                          color: darkMode ? "#103952" : "primary.main",
+                          color: darkMode ? "common.white" : "primary.main",
                         },
                       },
                     },
@@ -269,12 +269,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
                 helperText={errors.examName}
                 InputProps={{
                   sx: {
-                    fontSize: "12px",
+                    fontSize: "0.9rem",
                   },
                 }}
                 InputLabelProps={{
                   sx: {
-                    fontSize: "12px",
+                    fontSize: "0.9rem",
                   },
                 }}
               />
@@ -300,12 +300,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
                 helperText={errors.doctorName}
                 InputProps={{
                   sx: {
-                    fontSize: "12px",
+                    fontSize: "0.9rem",
                   },
                 }}
                 InputLabelProps={{
                   sx: {
-                    fontSize: "12px",
+                    fontSize: "0.9rem",
                   },
                 }}
               />
@@ -329,12 +329,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
             helperText={errors.location}
             InputProps={{
               sx: {
-                fontSize: "12px",
+                fontSize: "0.9rem",
               },
             }}
             InputLabelProps={{
               sx: {
-                fontSize: "12px",
+                fontSize: "0.9rem",
               },
             }}
           />
@@ -358,12 +358,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
             helperText={errors.description}
             InputProps={{
               sx: {
-                fontSize: "12px",
+                fontSize: "0.9rem",
               },
             }}
             InputLabelProps={{
               sx: {
-                fontSize: "12px",
+                fontSize: "0.9rem",
               },
             }}
           />
