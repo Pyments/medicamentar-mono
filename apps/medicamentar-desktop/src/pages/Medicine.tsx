@@ -1,13 +1,25 @@
+import { useState } from "react";
 import { Box, Typography, Button, Grid, Stack } from "@mui/material";
-import Header from "../components/Header.tsx";
-import SideBar from "../components/SideBar.tsx";
-import { useTheme } from "../constants/theme/useTheme";
-import { SectionContainer } from "../components/SectionContainer.tsx";
-import CardUniversal from "../components/CardUniversal.tsx";
-import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
+
+import Header from "@components/Header.tsx";
+import SideBar from "@components/SideBar.tsx";
+import CardUniversal from "@components/CardUniversal.tsx";
+import { SectionContainer } from "@components/SectionContainer.tsx";
+import ModalMedicineType from "@components/Modals/ModalMedicineType";
+import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
+
+import { useTheme } from "@theme/useTheme";
+import ModalNewMedication from "@components/Modals/ModalNewMedication";
 
 const Medicine = () => {
   const { darkMode } = useTheme();
+  const [openType, setOpenType] = useState<boolean>(false);
+  const [openNew, setOpenNew] = useState<boolean>(false);
+  const [type, setType] = useState<string>("");
+
+  const handleModal = () => {
+    setOpenType(!openType);
+  };
 
   return (
     <ContainerUniversal>
@@ -38,6 +50,7 @@ const Medicine = () => {
           </Typography>
 
           <Button
+            onClick={handleModal}
             sx={{
               backgroundColor: darkMode ? "primary.dark" : "primary.light",
               fontWeight: "bold",
@@ -142,6 +155,17 @@ const Medicine = () => {
           ></CardUniversal>
         </Grid>
       </SectionContainer>
+      {openType && (
+        <ModalMedicineType
+          open={openType}
+          setOpen={setOpenType}
+          setOpenNew={setOpenNew}
+          setType={setType}
+        />
+      )}
+      {openNew && (
+        <ModalNewMedication type={type} open={openNew} setOpen={setOpenNew} />
+      )}
     </ContainerUniversal>
   );
 };
