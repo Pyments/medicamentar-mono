@@ -75,10 +75,19 @@ const Medicine = () => {
     setDeleteModalOpen(false);
   };
 
-  const handleDeleteMedication = () => {
+  const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
-      setMedications(medications.filter(med => med.id !== selectedMedicationId));
-      closeDeleteModal(); 
+      try{
+        await axios.delete(`http://localhost:8080/medication/${selectedMedicationId}`,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setMedications(medications.filter(med => med.id !== selectedMedicationId));
+        closeDeleteModal(); 
+      }catch(error){
+        console.log("Erro ao deletar medicamento: ", error);  
+      }
     }
   };
 
