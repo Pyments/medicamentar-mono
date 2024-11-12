@@ -1,26 +1,96 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, Button, Grid, Stack } from "@mui/material";
-
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
 import CardUniversal from "@components/CardUniversal.tsx";
 import { SectionContainer } from "@components/SectionContainer.tsx";
 import ModalMedicineType from "@components/Modals/ModalMedicineType";
 import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
-
 import { useTheme } from "@theme/useTheme";
 import ModalNewMedication from "@components/Modals/ModalNewMedication";
+import ModalDelete from "@components/Modals/ModalDelete";
+import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
+import axios from "axios";
 
+interface MedicationData {
+  id: string;
+  title: string;
+  continuousUse: string;
+  qtDdose: string;
+  dose: string;
+  period: string;
+  expirationDate: string;
+  dateTime: string;
+}
+interface User {
+  token: {
+    data: string;
+  };
+}
 const Medicine = () => {
   const { darkMode } = useTheme();
   const [openType, setOpenType] = useState<boolean>(false);
   const [openNew, setOpenNew] = useState<boolean>(false);
   const [type, setType] = useState<string>("");
+  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false); 
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
+  const [medications, setMedications] = useState<MedicationData[]>([]);
+  const [user] = useLocalStorage<User | null>("user", null);
+  const token = user?.token.data;
+
+  useEffect(() => {
+    const fetchMedications = async () => {
+      try {
+        console.log(token);
+        const response = await axios.get("http://localhost:8080/medication", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }          
+        });
+        console.log(response.data);
+        setMedications(response.data);
+      } catch (error) {
+        console.error("Erro na requisição:", error);
+      }
+    };
+
+    if (token) {
+      fetchMedications();
+    }
+  }, [token]);
   const handleModal = () => {
     setOpenType(!openType);
   };
 
+  const openDeleteModal = (id: string) => {
+    setSelectedMedicationId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedMedicationId(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleDeleteMedication = () => {
+    if (selectedMedicationId) {
+      setMedications(medications.filter(med => med.id !== selectedMedicationId));
+      closeDeleteModal(); 
+    }
+  };
+
+  const openEditModal = (id: string) => {
+    setSelectedMedicationId(id);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setSelectedMedicationId(null);
+    setEditModalOpen(false);
+  };
   return (
     <ContainerUniversal>
       <Header />
@@ -63,96 +133,26 @@ const Medicine = () => {
           </Button>
         </Stack>
         <Grid container spacing={3} pb="75px">
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
-          <CardUniversal
-            type={"medication"}
-            continuousUse={"SIM"}
-            qtpDose={"10 COMPRIMIDOS"}
-            dose={"1 COMPRIMIDO"}
-            title={"CARD UNIVERSAL"}
-            period={"20/06/2024 A 27/06/2024"}
-            expirationDate={"20/06/2024"}
-            dateTime={"20/06 ÀS 14H"}
-          ></CardUniversal>
+        {medications.length > 0 ? (
+              medications.map((medication: any) => (
+                <CardUniversal
+                  key={medication.id}
+                  title={medication.title}
+                  continuousUse={medication.continuousUse}
+                  qtpDose={medication.qtDdose}
+                  dose={medication.dose}
+                  period={medication.period}
+                  expirationDate={medication.expirationDate}
+                  dateTime={medication.dateTime}
+                  onDelete={() => openDeleteModal(medication.id)}
+                  onEdit={() => openEditModal(medication.id)}
+                  type="medication"
+                />
+              ))
+            ) : (
+              <Typography>Nenhum medicamento encontrado.</Typography>
+            )}
+
         </Grid>
       </SectionContainer>
       {openType && (
@@ -165,6 +165,19 @@ const Medicine = () => {
       )}
       {openNew && (
         <ModalNewMedication type={type} open={openNew} setOpen={setOpenNew} />
+      )}
+       {isDeleteModalOpen && (
+        <ModalDelete
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onDelete={handleDeleteMedication}
+        />
+      )}
+        {isEditModalOpen && (
+        <ModalEditMedicine
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+        />
       )}
     </ContainerUniversal>
   );
