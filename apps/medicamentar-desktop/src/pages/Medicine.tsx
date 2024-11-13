@@ -50,8 +50,8 @@ const Medicine = () => {
             Authorization: `Bearer ${token}`
           }          
         });
-        console.log(response.data);
-        setMedications(response.data);
+        console.log(response.data.data);
+        setMedications(response.data.data);
       } catch (error) {
         console.error("Erro na requisição:", error);
       }
@@ -146,12 +146,12 @@ const Medicine = () => {
               medications.map((medication: any) => (
                 <CardUniversal
                   key={medication.id}
-                  title={medication.title}
+                  title={medication.name}
                   continuousUse={medication.continuousUse}
-                  qtpDose={medication.qtDdose}
+                  qtpDose={medication.amount}
                   dose={medication.dose}
                   period={medication.period}
-                  expirationDate={medication.expirationDate}
+                  expirationDate={medication.validate}
                   dateTime={medication.dateTime}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication.id)}
