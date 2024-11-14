@@ -18,6 +18,7 @@ import com.medicamentar.medicamentar_api.application.dtos.responsesDto.Paginated
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
+import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
@@ -54,18 +55,20 @@ public class EventService {
             Page<Consultation> pagedConsultations = this.consultationRepository.findAll(pageable);
 
             List<MedicationResponse> medicationsResponses = pagedMedications.stream()
-                    .map(M -> new MedicationResponse(
-                            M.getId(),
-                            M.getName(),
-                            M.getType(),
-                            M.getDose(),
-                            M.getAmount(),
-                            M.getUnity(),
-                            M.getPeriod(),
-                            M.getValidate()
-                    ))
-                    .sorted(Comparator.comparing(MedicationResponse::period))
-                .collect(Collectors.toList());
+                    .map(medication -> new MedicationResponse(
+                            medication.getId(),
+                            medication.getName(),
+                            medication.getType(),
+                            medication.getDose(),
+                            medication.getAmount(),
+                            medication.getUnity(),
+                            medication.getPeriod(),
+                            medication.isContinuousUse(),
+                            medication.getStart_date(),
+                            medication.getEnd_date(),
+                            medication.getFirst_dose(),
+                            medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
+                            .collect(Collectors.toList());
 
             List<ExamResponse> examsResponses = pagedExams.stream()
                     .map(E -> new ExamResponse(
@@ -73,9 +76,8 @@ public class EventService {
                             E.getDate(),
                             E.getName(),
                             E.getLocal(),
-                            E.getDescription()
-                    ))
-                .sorted(Comparator.comparing(ExamResponse::date))
+                            E.getDescription()))
+                    .sorted(Comparator.comparing(ExamResponse::date))
                     .collect(Collectors.toList());
 
             List<ConsultationResponse> consultationsResponses = pagedConsultations.stream()
@@ -85,17 +87,17 @@ public class EventService {
                             C.getDoctorName(),
                             C.getLocal(),
                             C.getDescription()))
-                .sorted(Comparator.comparing(ConsultationResponse::date))
+                    .sorted(Comparator.comparing(ConsultationResponse::date))
                     .collect(Collectors.toList());
-        
 
             if (medicationsResponses.isEmpty() && examsResponses.isEmpty() && consultationsResponses.isEmpty()) {
                 response.setMessage("Nehnum evento encontrado.");
-                response.setStatus(HttpStatus.NOT_FOUND); 
+                response.setStatus(HttpStatus.NOT_FOUND);
                 return response;
             }
 
-            EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses, examsResponses);
+            EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses,
+                    examsResponses);
 
             response.setData(eventResponse);
             response.setMessage("Exibindo eventos.");
