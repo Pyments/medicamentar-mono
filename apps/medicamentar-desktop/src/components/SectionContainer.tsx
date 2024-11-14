@@ -5,12 +5,16 @@ export const SectionContainer = ({ children }: { children: ReactNode }) => {
   return (
     <Stack
       sx={{
-        width: "100%",
+        top: 100,
         height: "100%",
-        marginTop: "100px",
         maxWidth: "100%",
-        gap: "50px",
-        padding: "75px",
+        overflowY: "auto",
+        position: "absolute",
+        left: { xs: 75, md: 300 },
+        transition: "all 200ms ease-out",
+        gap: { xs: 0, sm: "20px", md: "30px" },
+        padding: { xs: "10px", sm: "20px", md: "35px" },
+        width: { md: "calc(100% - 300px)", xs: "calc(100% - 75px)" },
       }}
     >
       {children}

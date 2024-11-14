@@ -1,14 +1,15 @@
-import { Box, Button, Container, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import Header from "../../components/Header";
 import WhiteTextField from "../../components/WhiteTextField";
 import { useTheme } from "../../constants/theme/useTheme";
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ContainerUniversal } from "@components/ContainerUniversal";
 
 export default function ForgotPassword() {
   const [error, setError] = React.useState<null | string>(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /\S+@\S+\.\S+/;
@@ -31,22 +32,10 @@ export default function ForgotPassword() {
 
     if (validateEmail(email)) {
       await forgot(email);
-
     }
   };
 
   const { darkMode } = useTheme();
-
-  const page__root = {
-    p: 0,
-    m: 0,
-    minWidth: 1,
-    minHeight: 1,
-    display: "flex",
-    placeItems: "center",
-    justifyContent: "center",
-    backgroundColor: darkMode ? "primary.darker" : "common.white",
-  };
 
   const card__wrapper = {
     display: "flex",
@@ -98,7 +87,12 @@ export default function ForgotPassword() {
   };
 
   return (
-    <Container component="main" sx={page__root}>
+    <ContainerUniversal
+      sx={{
+        backgroundColor: darkMode ? "primary.darker" : "common.white",
+        overflowY: "auto",
+      }}
+    >
       <Header />
       <Paper sx={card__wrapper}>
         <Typography
@@ -152,6 +146,6 @@ export default function ForgotPassword() {
           </Button>
         </Box>
       </Paper>
-    </Container>
+    </ContainerUniversal>
   );
 }

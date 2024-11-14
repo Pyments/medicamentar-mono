@@ -45,14 +45,29 @@ const Exam = () => {
           <Button
             onClick={handleModal}
             sx={{
-              backgroundColor: darkMode ? "primary.dark" : "primary.light",
-              fontWeight: "bold",
-              padding: "14px",
               color: "white",
-              fontSize: "14px",
+              borderRadius: { xs: "50%", md: "4px" },
+              padding: { xs: 0, md: "14px" },
+              px: { xs: 3.5, md: 2 },
+              fontWeight: "bold",
+              right: { xs: "30px", md: "auto" },
+              bottom: { xs: "30px", md: "auto" },
+              position: { xs: "fixed", md: "relative" },
+              backgroundColor: darkMode ? "primary.dark" : "primary.light",
+              "&:hover": {
+                backgroundColor: darkMode ? "primary.light" : "primary.main",
+              },
             }}
           >
-            + Adicionar Exame ou Consulta
+            <Box component="span" sx={{ fontSize:{xs: "3rem",md: "1rem"} }}>
+              +
+            </Box>
+            <Box
+              component="span"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
+              ADICIONAR MEDICAMENTO
+            </Box>
           </Button>
         </Stack>
 

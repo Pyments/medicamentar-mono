@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import { Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -15,6 +14,7 @@ import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 
 import { useTheme } from "../../constants/theme/useTheme";
+import { ContainerUniversal } from "@components/ContainerUniversal";
 
 export default function Register() {
   const { login } = useAuth();
@@ -94,15 +94,6 @@ export default function Register() {
     }
   };
 
-  const page__root = {
-    p: 0,
-    m: 0,
-    minWidth: 1,
-    minHeight: 1,
-    alignItems: "center",
-    backgroundColor: darkMode ? "primary.darker" : "common.white",
-  };
-
   const card__wrapper = {
     m: "auto",
     transition: "ease-out 300ms margin-top",
@@ -116,7 +107,12 @@ export default function Register() {
   };
 
   return (
-    <Container component="main" sx={page__root}>
+    <ContainerUniversal
+      sx={{
+        backgroundColor: darkMode ? "primary.darker" : "common.white",
+        overflowY: "auto",
+      }}
+    >
       <Header />
       <Paper sx={card__wrapper}>
         <Typography
@@ -211,6 +207,6 @@ export default function Register() {
           </Link>
         </Box>
       </Paper>
-    </Container>
+    </ContainerUniversal>
   );
 }

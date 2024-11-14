@@ -1,8 +1,7 @@
 import {
   Box,
-  Button,
-  Container,
   Paper,
+  Button,
   Snackbar,
   Typography,
 } from "@mui/material";
@@ -12,6 +11,7 @@ import { useTheme } from "../../constants/theme/useTheme";
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ContainerUniversal } from "@components/ContainerUniversal";
 
 interface SnackbarProps {
   open: boolean;
@@ -27,7 +27,7 @@ export default function ResetPassword() {
     horizontal: "right",
   });
   const { vertical, horizontal, open } = displaySnackbar;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleClose = () => {
     setDisplaySnackbar({ ...displaySnackbar, open: false });
@@ -71,17 +71,6 @@ export default function ResetPassword() {
 
   const { darkMode } = useTheme();
 
-  const page__root = {
-    p: 0,
-    m: 0,
-    minWidth: 1,
-    minHeight: 1,
-    display: "flex",
-    placeItems: "center",
-    justifyContent: "center",
-    backgroundColor: darkMode ? "primary.darker" : "common.white",
-  };
-
   const card__wrapper = {
     display: "flex",
     alignItems: "center",
@@ -116,7 +105,7 @@ export default function ResetPassword() {
       setError(null);
       setDisplaySnackbar({ ...displaySnackbar, open: true });
       setTimeout(() => {
-        navigate("/")
+        navigate("/");
       }, 6000);
       return response;
     } catch (error: unknown) {
@@ -135,7 +124,12 @@ export default function ResetPassword() {
   };
 
   return (
-    <Container component="main" sx={page__root}>
+    <ContainerUniversal
+      sx={{
+        backgroundColor: darkMode ? "primary.darker" : "common.white",
+        overflowY: "auto",
+      }}
+    >
       <Header />
       {displaySnackbar && (
         <Snackbar
@@ -206,6 +200,6 @@ export default function ResetPassword() {
           </Button>
         </Box>
       </Paper>
-    </Container>
+    </ContainerUniversal>
   );
 }
