@@ -104,9 +104,9 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
           type: type,
           name: name,
           dose: dose,
-          amount: amount,
-          unity: unity,
-          // continuo: continuo,
+          amount: amount, // num
+          unity: unity, // presets
+          // continuo: continuo, // bool
           period: period,
           //startDate: formattedStartDate,
           validate: formattedEndDate,
