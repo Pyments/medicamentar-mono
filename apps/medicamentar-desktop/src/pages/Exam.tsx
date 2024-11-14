@@ -32,10 +32,12 @@ const Exam = () => {
             }}
           >
             <Box
-              component="h1"
               sx={{
                 p: 0,
                 mt: 0,
+                fontSize: "2rem",
+                fontWeight: "bold",
+                textAlign: { xs: "center", md: "left" },
                 color: darkMode ? "common.white" : "primary.main",
               }}
             >
@@ -59,40 +61,35 @@ const Exam = () => {
               },
             }}
           >
-            <Box component="span" sx={{ fontSize:{xs: "3rem",md: "1rem"} }}>
+            <Box component="span" sx={{ fontSize: { xs: "3rem", md: "1rem" } }}>
               +
             </Box>
-            <Box
-              component="span"
-              sx={{ display: { xs: "none", md: "block" } }}
-            >
+            <Box component="span" sx={{ display: { xs: "none", md: "block" } }}>
               ADICIONAR MEDICAMENTO
             </Box>
           </Button>
         </Stack>
-
         <Grid container spacing={3} pb="75px">
           <CardUniversal
-          type="events"
+            type="events"
             title="CONSULTA"
             description="CONSULTA MÉDICA - HMPA DR. LULINHA"
             dateTime="12/04 ÀS 14H"
           />
           <CardUniversal
-          type="events"
+            type="events"
             title="CONSULTA"
             description="CONSULTA MÉDICA - HMPA DR. LULINHA"
             dateTime="12/04 ÀS 14H"
           />
           <CardUniversal
-          type="events"
+            type="events"
             title="CONSULTA"
             description="CONSULTA MÉDICA - HMPA DR. LULINHA"
             dateTime="12/04 ÀS 14H"
           />
         </Grid>
       </SectionContainer>
-
       {open && <ExamModal open={open} onClose={handleModal} />}
     </ContainerUniversal>
   );

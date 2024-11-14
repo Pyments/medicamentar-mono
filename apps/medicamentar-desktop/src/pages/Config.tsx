@@ -4,7 +4,7 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
@@ -13,7 +13,7 @@ import { useTheme } from "../constants/theme/useTheme";
 import { SectionContainer } from "../components/SectionContainer";
 import { ContainerUniversal } from "../components/ContainerUniversal";
 import { useNavigate } from "react-router-dom";
-import Arrow from "../assets/icons/Arrow.svg"
+import Arrow from "../assets/icons/Arrow.svg";
 
 const Config = () => {
   const { darkMode, toggleTheme } = useTheme();
@@ -33,8 +33,11 @@ const Config = () => {
       <Sidebar />
       <SectionContainer>
         <Box
-          component="h1"
-          sx={{ color: darkMode ? "text.primary" : "primary.darker" }}
+          sx={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: darkMode ? "text.primary" : "primary.darker",
+          }}
         >
           CONFIGURAÇÕES
         </Box>
@@ -57,7 +60,7 @@ const Config = () => {
                   : "background.paper",
                 borderRadius: "5px",
                 padding: "11px 30px",
-                justifyContent: "space-between"
+                justifyContent: "space-between",
               }}
             />
             <FormControlLabel
@@ -77,18 +80,19 @@ const Config = () => {
                   : "background.paper",
                 borderRadius: "5px",
                 padding: "11px 30px",
-                justifyContent: "space-between"
+                justifyContent: "space-between",
               }}
             />
             <FormControlLabel
               control={
-                <IconButton 
-                aria-label="Histórico" 
-                sx={{ pr: "25px"}}
-                onClick={() => navigate("/history")}
+                <IconButton
+                  aria-label="Histórico"
+                  sx={{ pr: "25px" }}
+                  onClick={() => navigate("/history")}
                 >
-                  <img src={Arrow}/>
-                </IconButton>}
+                  <img src={Arrow} />
+                </IconButton>
+              }
               label="HISTÓRICO"
               labelPlacement="start"
               sx={{

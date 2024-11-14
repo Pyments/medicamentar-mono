@@ -95,14 +95,16 @@ export default function Register() {
   };
 
   const card__wrapper = {
-    m: "auto",
-    transition: "ease-out 300ms margin-top",
-    mt: { xs: "100px", md: "180px", lg: "220px" },
+    top: "130px",
+    left: "50%",
     display: "flex",
-    maxWidth: "720px",
+    position: "absolute",
     alignItems: "center",
     p: "0 30px 30px 30px ",
     flexDirection: "column",
+    transform: "translateX(-50%)",
+    width: { sm: "720px", xs: "95%" },
+    transition: "ease-out 300ms margin-top",
     backgroundColor: darkMode ? "primary.dark" : "primary.light",
   };
 
@@ -116,8 +118,6 @@ export default function Register() {
       <Header />
       <Paper sx={card__wrapper}>
         <Typography
-          component="h1"
-          variant="h5"
           sx={{
             my: "50px",
             fontSize: "30px",

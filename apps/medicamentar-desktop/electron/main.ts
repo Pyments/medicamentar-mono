@@ -59,17 +59,12 @@ function createWindow() {
   });
 
   win.webContents.on('did-finish-load', () => {
-    console.log('Page finished loading');
-    // Log the HTML content for debugging
     win?.webContents.executeJavaScript(`
-      console.log('Document HTML:', document.documentElement.innerHTML);
-      console.log('Root element:', document.getElementById('root'));
     `);
   });
 
   if (app.isPackaged) {
     const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
-    console.log('Loading file from:', indexPath);
     win.loadFile(indexPath).catch(err => {
       console.error('Error loading file:', err);
     });

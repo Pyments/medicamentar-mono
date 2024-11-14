@@ -1,7 +1,13 @@
-import { Stack } from "@mui/material";
+import { Stack, SxProps } from "@mui/material";
 import { ReactNode } from "react";
 
-export const SectionContainer = ({ children }: { children: ReactNode }) => {
+export const SectionContainer = ({
+  children,
+  sx,
+}: {
+  children: ReactNode;
+  sx?: SxProps;
+}) => {
   return (
     <Stack
       sx={{
@@ -15,6 +21,7 @@ export const SectionContainer = ({ children }: { children: ReactNode }) => {
         gap: { xs: 0, sm: "20px", md: "30px" },
         padding: { xs: "10px", sm: "20px", md: "35px" },
         width: { md: "calc(100% - 300px)", xs: "calc(100% - 75px)" },
+        ...sx,
       }}
     >
       {children}

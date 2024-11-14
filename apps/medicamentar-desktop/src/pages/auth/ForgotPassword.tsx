@@ -96,8 +96,6 @@ export default function ForgotPassword() {
       <Header />
       <Paper sx={card__wrapper}>
         <Typography
-          component="h1"
-          variant="h5"
           sx={{
             my: "50px",
             fontSize: "30px",

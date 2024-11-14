@@ -85,10 +85,11 @@ const Home: React.FC = () => {
           }}
         >
           <Box
-            component="h1"
             sx={{
               p: 0,
               mt: 0,
+              fontSize: "2rem",
+              fontWeight: "bold",
               textAlign: { xs: "center", md: "left" },
               color: darkMode ? "common.white" : "primary.main",
             }}

@@ -143,7 +143,6 @@ export default function ResetPassword() {
       )}
       <Paper sx={card__wrapper}>
         <Typography
-          component="h1"
           variant="h5"
           sx={{
             my: "50px",
