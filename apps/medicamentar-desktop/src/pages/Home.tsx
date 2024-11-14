@@ -10,6 +10,8 @@ import axios from "axios";
 import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
 
 interface EventData {
+  type: string;
+  period: string;
   id: string;
   name: string;
   description: string;
@@ -101,8 +103,8 @@ const Home: React.FC = () => {
                   key={event.id}
                   type="events"
                   title={event.name || event.doctorName}
-                  description={event.description}
-                  dateTime={event.date}
+                  description={event.description || event.type}
+                  dateTime={event.date || event.period}
                 />
               ))
             ) : (
