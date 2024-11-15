@@ -27,13 +27,25 @@ export default function ModalMedicineType({
   setOpenNew,
   setType,
 }: ModalMedicineTypeProps) {
-  const [tipoMedicamento, setTipoMedicamento] = useState("");
+  const [tipoMedicamento, setTipoMedicamento] = useState<number>(-1);
   const { darkMode } = useTheme();
 
   if (!open) return null;
 
+  enum Type {
+    ORAL = 0,
+    TÓPICO = 1,
+    OFTÁLMICO = 2,
+    INTRANASAL = 3,
+    INJETÁVEL = 4,
+    SUBLINGUAL = 5,
+    TRANSDÉRMICO = 6,
+    RETAL = 7,
+    VAGINAL = 8,
+  }
+
   return (
-    <Modal open={open}>
+    <Modal open={open} onClose={() => setOpen(false)}>
       <Box
         sx={{
           position: "absolute",
@@ -78,26 +90,28 @@ export default function ModalMedicineType({
               <Select
                 sx={{ width: "240px" }}
                 label="TIPO DE MEDICAMENTO"
-                value={tipoMedicamento}
+                type="number"
+                value={String(tipoMedicamento)}
                 onChange={(event: SelectChangeEvent) =>
-                  setTipoMedicamento(event.target.value as string)
+                  setTipoMedicamento(Number(event.target.value))
                 }
               >
-                <MenuItem value="ORAL">ORAL</MenuItem>
-                <MenuItem value="TÓPICO">TÓPICO</MenuItem>
-                <MenuItem value="OFTÁLMICO">OFTÁLMICO</MenuItem>
-                <MenuItem value="INTRANASAL">INTRANASAL</MenuItem>
-                <MenuItem value="INJETÁVEL">INJETÁVEL</MenuItem>
-                <MenuItem value="SUBLINGUAL">SUBLINGUAL</MenuItem>
-                <MenuItem value="TRANSDÉRMICO">TRANSDÉRMICO</MenuItem>
-                <MenuItem value="RETAL OU VAGINAL">RETAL OU VAGINAL</MenuItem>
+                <MenuItem value={Type.ORAL}>ORAL</MenuItem>
+                <MenuItem value={Type.TÓPICO}>TÓPICO</MenuItem>
+                <MenuItem value={Type.OFTÁLMICO}>OFTÁLMICO</MenuItem>
+                <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
+                <MenuItem value={Type.INJETÁVEL}>INJETÁVEL</MenuItem>
+                <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
+                <MenuItem value={Type.TRANSDÉRMICO}>TRANSDÉRMICO</MenuItem>
+                <MenuItem value={Type.RETAL}>RETAL</MenuItem>
+                <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
               </Select>
             </FormControl>
             <Button
               variant="contained"
-              disabled={!tipoMedicamento}
+              disabled={tipoMedicamento < 0}
               onClick={() => {
-                setType(tipoMedicamento);
+                setType(String(tipoMedicamento));
                 setOpen(false);
                 setOpenNew(true);
               }}
