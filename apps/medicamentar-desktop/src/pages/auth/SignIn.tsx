@@ -28,6 +28,7 @@ export default function SignIn() {
     password: string
   ): boolean => {
     const emailRegex = /\S+@\S+\.\S+/;
+    const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/; 
     if (email === "" || password === "") {
       setError("Preencha todos os campos");
       return false;
@@ -41,7 +42,7 @@ export default function SignIn() {
 
   const loginUser = async (email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      const response = await axios.post("https://medicamentar-api-latest.onrender.com/auth/login", {
         email,
         password,
       });
@@ -57,6 +58,7 @@ export default function SignIn() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "Ocorreu um erro no login");
+        console.log(error)
       } else {
         setError("Ocorreu um erro inesperado");
       }

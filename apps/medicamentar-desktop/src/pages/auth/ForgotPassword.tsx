@@ -65,7 +65,7 @@ export default function ForgotPassword() {
   const forgot = async (email: string) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/auth/forgot?email=${email}`
+        `https://medicamentar-api-latest.onrender.com/auth/forgot?email=${email}`
       );
 
       setError(null);

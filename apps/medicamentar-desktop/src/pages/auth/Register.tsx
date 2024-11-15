@@ -32,6 +32,7 @@ export default function Register() {
     const confirmPassword = data.get("confirmPassword");
 
     const emailRegex = /\S+@\S+\.\S+/;
+    const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/;    
 
     if (
       name === "" ||
@@ -54,17 +55,20 @@ export default function Register() {
     }
 
     if (
-      password.length < 6 ||
-      password.length > 12 ||
-      confirmPassword.length < 6 ||
-      confirmPassword.length > 12
+      password.length < 8 ||
+      confirmPassword.length < 8 
     ) {
-      setError("As senhas devem ter entre 6 e 12 dígitos");
+      setError("As senhas devem ter pelo menos 8 dígitos");
+      return;
+    }
+
+    if (!specialCharRegex.test(password)) {
+      setError("A senha deve conter pelo menos um caractere especial");
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/register", {
+      const response = await axios.post("https://medicamentar-api-latest.onrender.com/auth/register", {
         name: name,
         email: email,
         password: password,

@@ -47,7 +47,7 @@ const Medicine = () => {
     const fetchMedications = async () => {
       try {
         console.log(token);
-        const response = await axios.get("http://localhost:8080/medication", {
+        const response = await axios.get("https://medicamentar-api-latest.onrender.com/medication", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -81,7 +81,7 @@ const Medicine = () => {
     if (selectedMedicationId) {
       try {
         await axios.delete(
-          `http://localhost:8080/medication/${selectedMedicationId}`,
+          `https://medicamentar-api-latest.onrender.com/medication/${selectedMedicationId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

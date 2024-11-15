@@ -99,7 +99,7 @@ export default function ResetPassword() {
   const forgot = async (token: string, password: string) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/auth/reset?token=${token}&newPassword=${password}`
+        `https://medicamentar-api-latest.onrender.com/auth/reset?token=${token}&newPassword=${password}`
       );
 
       setError(null);

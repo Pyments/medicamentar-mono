@@ -93,7 +93,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
     try {
       if (tabValue === "exame") {
         const response = await axios.post(
-          "http://localhost:8080/exam",
+          "https://medicamentar-api-latest.onrender.com/exam",
           {
             date: formattedDate,
             name: examName,
@@ -107,7 +107,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
         console.log(response.data);
       } else {
         const response = await axios.post(
-          "http://localhost:8080/consultation",
+          "https://medicamentar-api-latest.onrender.com/consultation",
           {
             date: formattedDate,
             doctorName: doctorName,
