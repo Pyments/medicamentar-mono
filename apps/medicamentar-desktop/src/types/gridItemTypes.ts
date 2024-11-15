@@ -1,7 +1,10 @@
+import { actionTypes } from "./actionTypes";
+
 export type gridItemTypes = {
-    title: string,
-    actionType: string,
-    action: string,
+    description: string,
+    name?: string,
+    actionType: actionTypes,
     date: string,
+    eventDate?: string,
     medic?: string
 };

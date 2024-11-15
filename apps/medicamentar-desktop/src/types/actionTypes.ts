@@ -1,5 +1,8 @@
-export type actionTypes = 
+ export type actionTypes = 
     "warning" |
     "alarmAnswered" |
     "deleted" |
-    "created";
+    "Consulta Criado" |
+    "Exame Criado" |
+    "Medicamento Criado"
+    ;

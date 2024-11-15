@@ -3,45 +3,62 @@ import Sidebar from "../components/SideBar";
 import { Box, Grid, Stack } from "@mui/material";
 import { useTheme } from "../constants/theme/useTheme";
 import GridItem from "../components/GridItem";
-// import { gridItemTypes } from "../components/GridItem";
+import axios from "axios";
 import { SectionContainer } from "../components/SectionContainer.tsx";
 import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
-
-// const historyObject: gridItemTypes = {
-//     title: "",
-//     actionType: "",
-//     action: "",
-//     date: "",
-//     medic: ""
-// };
-
-// const displayHistoryCards = () => {
-//     const gridArray = [];
-//     const historyQuantity: number = 0; // pegar a quantidade de eventos do back-end
-
-//     for(let i = 0; i <= historyQuantity; i++){
-//         historyObject.action = "" // pegar novo dado do back-end
-//         historyObject.actionType = "" // pegar novo dado do back-end
-//         historyObject.action = "" // pegar novo dado do back-end
-//         historyObject.date = "" // pegar novo dado do back-end
-//         historyObject.medic = "" // pegar novo dado do back-end
-//         gridArray.push(
-//             <Grid item>
-//                 <GridItem 
-//                 title={historyObject.title}
-//                 actionType={historyObject.actionType}
-//                 action={historyObject.action}
-//                 date={historyObject.date}
-//                 medic={historyObject.medic}
-//                 />      
-//             </Grid>
-//         );
-//     }
-//     return (gridArray);
-// }
+import { useEffect, useState } from "react";
+import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
 
 const History = () => {
     const { darkMode } = useTheme();
+    const [user] = useLocalStorage<{ token?: { data: string } } | undefined>("user", undefined);
+    const token = user?.token?.data;
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        try {
+            const getHistory = async () => {
+                const response = await axios.get("http://localhost:8080/eventsLog", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                });
+                setData(response.data.data);
+                console.log(response.data.data);
+            }
+            getHistory();
+        } catch (e){
+            console.log(e);
+        }
+    }, [token])
+
+    const displayHistoryCards = () => {
+        return data.map((event: any ) => {
+            const processedEvent = {
+                id: event.eventData.id,
+                name: event.eventData.name,
+                date: new Date(event.eventData.date).toLocaleString(),
+                eventDate: new Date(event.eventDate).toLocaleString(),
+                doctorName: event.eventData.doctorName || null,
+                local: event.eventData.local,
+                description: event.eventData.description,
+                action: event.eventAction,
+            };
+            return (
+                <Grid item key={processedEvent.id}>
+                    <GridItem 
+                        description={processedEvent.description && processedEvent.description.toUpperCase()}
+                        name={processedEvent.name && processedEvent.name.toUpperCase()}
+                        actionType={processedEvent.action}
+                        date={processedEvent.date}
+                        eventDate={processedEvent.eventDate}
+                        medic={processedEvent.doctorName && "CONSULTA COM DOUTOR(A) " + processedEvent.doctorName.toUpperCase()}
+                    />
+                </Grid>
+            );
+        });
+    };
+
     return (
         <ContainerUniversal>
             <Header />
@@ -56,33 +73,8 @@ const History = () => {
                 }}>
                         HISTÓRICO
                 </Box>
-                <Grid container spacing={2}> 
-                    {/* componentes abaixo servem apenas de demonstração e placeholding */}
-                    <Grid item>
-                        <GridItem 
-                            title="PARACETAMOL-10MG 8:30" 
-                            actionType="warning" 
-                            action="MEDICAMENTO EDITADO" 
-                            date="24/10 12:18"
-                        />
-                    </Grid>
-                    <Grid item>
-                        <GridItem
-                            title="OFTAMOLOGISTA 15:30" 
-                            actionType="alarmAnswered" 
-                            action="ALARME ATENDIDO" 
-                            date="25/10 15:30" 
-                            medic="CONSULTA COM DOUTORA JURAÇA"
-                        />
-                    </Grid>
-                    <Grid item>
-                        <GridItem
-                            title="DORFLEX" 
-                            actionType="deleted" 
-                            action="MEDICAMENTO DELETADO" 
-                            date="23/10 16:30"
-                        />
-                    </Grid>
+                <Grid container spacing={2}>
+                    {displayHistoryCards()}
                 </Grid>
             </Stack>
             </SectionContainer>
