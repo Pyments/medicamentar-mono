@@ -2,7 +2,7 @@ package com.medicamentar.medicamentar_api.application.dtos.medicationDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import com.medicamentar.medicamentar_api.domain.entities.OphthalmicDetails;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
@@ -23,11 +23,7 @@ public record MedicationRequest (
         int period,
         boolean isContinuousUse,
         @NotNull(message = "Informe a data de inicio.")
-        Date start_date,
-        @NotNull(message = "Informe a data final.")
-        Date end_date,
-        @NotNull(message = "Informe a data da primeira dose.")
-        Date first_dose,
+        ZonedDateTime start_date,
         OphthalmicDetails ophthalmicDetails
 ) {
 }

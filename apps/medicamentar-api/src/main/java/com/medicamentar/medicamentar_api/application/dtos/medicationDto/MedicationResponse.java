@@ -1,4 +1,5 @@
 package com.medicamentar.medicamentar_api.application.dtos.medicationDto;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import com.medicamentar.medicamentar_api.domain.entities.OphthalmicDetails;
@@ -16,9 +17,8 @@ public record MedicationResponse (
     MedicationUnity unity,
     int period,
     boolean continuousUse,
-    Date startDate,
-    Date endDate,
-    Date firstDose,
+    ZonedDateTime startDate,
+    ZonedDateTime endDate,
     OphthalmicDetails ophthalmicDetails
 )
 {}
