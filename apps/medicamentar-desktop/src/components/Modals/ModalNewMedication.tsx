@@ -99,7 +99,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
       const response = await axios({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "post",
-        url: "http://localhost:8080/medication",
+        url: "https://medicamentar-api-latest.onrender.com/medication",
         data: {
           type: type,
           name: name,

@@ -37,7 +37,7 @@ const Home: React.FC = () => {
     const fetchEvents = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/events?page=0&size=6",
+          "https://medicamentar-api-latest.onrender.com/events?page=0&size=6",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
