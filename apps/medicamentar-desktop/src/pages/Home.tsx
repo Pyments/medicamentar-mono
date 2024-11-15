@@ -10,6 +10,8 @@ import axios from "axios";
 import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
 
 interface EventData {
+  type: string;
+  period: string;
   id: string;
   name: string;
   description: string;
@@ -34,17 +36,21 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/events?page=0&size=6", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:8080/events?page=0&size=6",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         console.log("Resposta completa da API:", response.data);
-        const consultationEvents = response.data.data.consultationResponse || [];
+        const consultationEvents =
+          response.data.data.consultationResponse || [];
         const examEvents = response.data.data.examResponse || [];
         const medicationEvents = response.data.data.medicationResponse || [];
-  
-       //console.log("EVENTOS: consultationResponse:", consultationEvents);
+
+        //console.log("EVENTOS: consultationResponse:", consultationEvents);
         //console.log("EVENTOS: examResponse:", examEvents);
-       // console.log("EVENTOS: medicationResponse:", medicationEvents);
+        // console.log("EVENTOS: medicationResponse:", medicationEvents);
 
         const combinedEvents = [
           ...consultationEvents,
@@ -54,12 +60,12 @@ const Home: React.FC = () => {
 
         console.log("LISTA DE TODOS OS EVENTOS: ", combinedEvents);
         setEvents(combinedEvents);
-        setError(null); 
+        setError(null);
       } catch (error) {
         console.error("Erro na requisição:", error);
         setError("Erro ao carregar eventos.");
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -79,10 +85,12 @@ const Home: React.FC = () => {
           }}
         >
           <Box
-            component="h1"
             sx={{
               p: 0,
               mt: 0,
+              fontSize: "2rem",
+              fontWeight: "bold",
+              textAlign: { xs: "center", md: "left" },
               color: darkMode ? "common.white" : "primary.main",
             }}
           >
@@ -101,8 +109,8 @@ const Home: React.FC = () => {
                   key={event.id}
                   type="events"
                   title={event.name || event.doctorName}
-                  description={event.description}
-                  dateTime={event.date}
+                  description={event.description || event.type}
+                  dateTime={event.date || event.period}
                 />
               ))
             ) : (

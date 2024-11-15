@@ -65,7 +65,12 @@ const History = () => {
             <Sidebar />
             <SectionContainer>
             <Stack sx={{ alignItems: "center" }} spacing="67px">
-                <Box component="h1" sx={{ color: darkMode ? "text.primary" : "primary.darker", alignSelf: "start" }}>
+                <Box sx={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: darkMode ? "text.primary" : "primary.darker",
+                    alignSelf: "start"
+                }}>
                         HISTÓRICO
                 </Box>
                 <Grid container spacing={2}>

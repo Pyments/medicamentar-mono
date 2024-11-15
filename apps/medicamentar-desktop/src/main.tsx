@@ -1,22 +1,26 @@
 import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Router from "./pages/router.tsx";
 import { CssBaseline } from "@mui/material";
 import { HashRouter } from "react-router-dom";
-import { AuthProvider } from "./hooks/AuthContext.tsx";
-import { ThemeProvider } from "./constants/theme/ThemeProvider.tsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+import Router from "@pages/router";
+import { AuthProvider } from "@hooks/AuthContext";
+import { ThemeProvider } from "@theme/ThemeProvider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <CssBaseline>
-      <ThemeProvider>
-        <HashRouter>
-          <AuthProvider>
+    <CssBaseline />
+    <ThemeProvider>
+      <HashRouter>
+        <AuthProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Router />
-          </AuthProvider>
-        </HashRouter>
-      </ThemeProvider>
-    </CssBaseline>
+          </LocalizationProvider>
+        </AuthProvider>
+      </HashRouter>
+    </ThemeProvider>
   </React.StrictMode>
 );

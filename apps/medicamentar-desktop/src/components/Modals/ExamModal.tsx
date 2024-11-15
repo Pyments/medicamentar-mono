@@ -8,15 +8,13 @@ import {
   Modal,
   IconButton,
 } from "@mui/material";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useTheme } from "../../constants/theme/useTheme";
 import CloseIcon from "@mui/icons-material/Close";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import axios from "axios";
 import { useLocalStorage } from "../../hooks/UseLocalStorage";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 interface ExamModalProps {
   open: boolean;
@@ -196,59 +194,58 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer
-              components={["DateTimePicker"]}
-              sx={{ width: "100%" }}
-            >
-              <DateTimePicker
-                label="DATA E HORA"
-                onChange={(newValue) => {
-                  setSelectedDate(newValue);
-                  if (newValue) {
-                    setErrors((prev) => ({ ...prev, selectedDate: undefined }));
-                  }
-                }}
-                slotProps={{
-                  textField: {
-                    error: Boolean(errors.selectedDate),
-                    helperText: errors.selectedDate,
-                    InputProps: {
-                      sx: {
-                        "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-                          color: darkMode ? "#CDCED7" : "-moz-initial",
-                        },
-                        fontSize: "0.9rem",
-                        color: darkMode ? "common.white" : "text.primary",
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: darkMode
-                            ? "rgba(128, 128, 128, 0.6)"
-                            : "-moz-initial",
-                        },
-                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: darkMode
-                            ? "common.white"
-                            : "primary.main",
-                        },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: darkMode ? "#103952" : "primary.main",
-                        },
-                      },
+          <DateTimePicker
+            views={["day", "hours", "minutes"]}
+            label="DATA E HORA"
+            value={selectedDate}
+            components={{
+              OpenPickerIcon: CalendarTodayIcon
+            }}
+            onChange={(newValue) => {
+              setSelectedDate(newValue as Dayjs);
+              if (newValue) {
+                setErrors((prev) => ({ ...prev, selectedDate: undefined }));
+              }
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                error={Boolean(errors.selectedDate)}
+                helperText={errors.selectedDate}
+                InputProps={{
+                  ...params.InputProps,
+                  sx: {
+                    "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+                      color: darkMode ? "#CDCED7" : "-moz-initial",
                     },
-                    InputLabelProps: {
-                      sx: {
-                        fontSize: "0.9rem",
-                        color: darkMode ? "common.white" : "text.primary",
-                        "&.Mui-focused": {
-                          color: darkMode ? "common.white" : "primary.main",
-                        },
-                      },
+                    fontSize: "0.9rem",
+                    color: darkMode ? "common.white" : "text.primary",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: darkMode
+                        ? "rgba(128, 128, 128, 0.6)"
+                        : "-moz-initial",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: darkMode ? "common.white" : "primary.main",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: darkMode ? "#103952" : "primary.main",
+                    },
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    fontSize: "0.9rem",
+                    color: darkMode ? "common.white" : "text.primary",
+                    "&.Mui-focused": {
+                      color: darkMode ? "common.white" : "primary.main",
                     },
                   },
                 }}
               />
-            </DemoContainer>
-          </LocalizationProvider>
+            )}
+          />
 
           {tabValue === "exame" && (
             <>

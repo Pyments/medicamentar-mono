@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import WhiteTextField from "../../components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -14,6 +13,8 @@ import { useTheme } from "../../constants/theme/useTheme";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
+import { ContainerUniversal } from "@components/ContainerUniversal";
+
 export default function SignIn() {
   const { login } = useAuth();
   const [error, setError] = React.useState<null | string>(null);
@@ -93,26 +94,17 @@ export default function SignIn() {
     fetchStoredCredentials();
   }, []);
 
-  const page__root = {
-    p: 0,
-    m: 0,
-    minWidth: 1,
-    minHeight: 1,
-    alignItems: "center",
-    backgroundColor: darkMode ? "primary.darker" : "common.white",
-  };
-
   const card__wrapper = {
-    w: 1,
-    m: "auto",
-    minMarginTop: "70px",
-    mt: { xs: "100px", md: "180px", lg: "220px" },
-    transition: "ease-out 300ms margin-top",
+    top: "130px",
+    left: "50%",
     display: "flex",
-    maxWidth: "720px",
+    position: "absolute",
     alignItems: "center",
     p: "0 30px 30px 30px ",
     flexDirection: "column",
+    transform: "translateX(-50%)",
+    width: { sm: "720px", xs: "95%" },
+    transition: "ease-out 300ms margin-top",
     backgroundColor: darkMode ? "primary.dark" : "primary.light",
   };
 
@@ -123,12 +115,15 @@ export default function SignIn() {
   };
 
   return (
-    <Container component="main" sx={page__root}>
+    <ContainerUniversal
+      sx={{
+        backgroundColor: darkMode ? "primary.darker" : "common.white",
+        overflowY: "auto",
+      }}
+    >
       <Header />
       <Paper sx={card__wrapper}>
         <Typography
-          component="h1"
-          variant="h5"
           sx={{
             my: "50px",
             fontSize: "30px",
@@ -224,6 +219,6 @@ export default function SignIn() {
           </Box>
         </Box>
       </Paper>
-    </Container>
+    </ContainerUniversal>
   );
 }

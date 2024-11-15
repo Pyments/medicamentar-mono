@@ -3,10 +3,6 @@ import EditOutlinedIcon from '../assets/icons/EditOutlined';
 import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon";
 import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
 import { useTheme } from "../constants/theme/useTheme";
-import ModalDelete from "./Modals/ModalDelete";
-import ModalEditMedicine from "./Modals/ModalEditMedicine";
-import { useState } from "react";
-
 
 interface CardUniversalProps{
     type: "medication" | "events";
@@ -18,17 +14,15 @@ interface CardUniversalProps{
     expirationDate?:string;
     dateTime:string;
     description?:string;
+    onDelete?: () => void; 
+    onEdit?: () => void;
+
 }
 
-const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose,qtpDose,period,expirationDate,dateTime,description})=>{
+const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose,qtpDose,period,expirationDate,dateTime,description,onDelete, onEdit})=>{
     const { darkMode } = useTheme();
-    const [isModalDeleteVisible , setIsModalDeleteVisible] = useState(false);
-    const [isModalEditVisible, setIsModalEditVisible] = useState(false);
     const isMedication = type ==="medication";
     const isEvents = type ==="events";
-    const onEdit = ()=> {setIsModalEditVisible(true)};
-    const onDelete =()=>{setIsModalDeleteVisible(true)};
-
 
     const titleCard = {
         fontSize: "12px",
@@ -145,14 +139,6 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                 </Box>
             </Card>
         )}
-         {isModalEditVisible?<ModalEditMedicine 
-         isOpen={isModalEditVisible} onClose={()=>{setIsModalEditVisible(false)}}>
-         </ModalEditMedicine>:null}
-
-        {isModalDeleteVisible?<ModalDelete 
-        isOpen={isModalDeleteVisible} 
-        onClose={()=>{setIsModalDeleteVisible(false)}}>
-        </ModalDelete>:null}
 
         {isEvents && (
             <Card sx={{

@@ -4,9 +4,10 @@ import { useTheme } from "../../constants/theme/useTheme";
 interface ModalDeleteProps{
     isOpen:boolean;
     onClose:()=>void;
+    onDelete:()=>void;
 }
 
-const ModalDelete: React.FC<ModalDeleteProps> = ({isOpen, onClose})=>{
+const ModalDelete: React.FC<ModalDeleteProps> = ({isOpen, onClose,onDelete})=>{
     const { darkMode } = useTheme();
     const styleContentBox={ 
         cursor:"pointer",
@@ -27,7 +28,7 @@ const ModalDelete: React.FC<ModalDeleteProps> = ({isOpen, onClose})=>{
                 <Box sx ={{...styleContentBox, backgroundColor:"primary.light"}}onClick={onClose}>
                     <Typography sx={{color:"#FFF"}}>CANCELAR</Typography>
                 </Box>
-                <Box sx ={{...styleContentBox, backgroundColor:"grey.200"}}>
+                <Box sx ={{...styleContentBox, backgroundColor:"grey.200"}} onClick={onDelete}>
                     <Typography sx={{color:"red"}}>DELETAR</Typography>
                 </Box>
             </DialogContent>

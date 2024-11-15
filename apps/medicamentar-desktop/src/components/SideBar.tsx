@@ -1,4 +1,4 @@
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from "../hooks/useAuth";
 
 import Pill_Icon from "../assets/icons/Pill_Icon";
 import Timer_Icon from "../assets/icons/Timer_Icon";
@@ -17,7 +17,13 @@ import Dark_Stethoscope_Icon from "../assets/icons/Dark_Stethoscope_Icon.svg";
 import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "../constants/theme/useTheme";
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from "@mui/material";
 
 const Sidebar: React.FC = () => {
   const { logout } = useAuth();
@@ -37,7 +43,7 @@ const Sidebar: React.FC = () => {
       ) : (
         <Stethoscope_Icon />
       ),
-      action: 'exam'
+      action: "exam",
     },
     {
       text: "MEDICAMENTOS",
@@ -47,12 +53,12 @@ const Sidebar: React.FC = () => {
     {
       text: "PERFIL",
       icon: darkMode ? <img src={Dark_Profile_Icon} /> : <Profile_Icon />,
-      action: "profile"
+      action: "profile",
     },
     {
       text: "CONFIGURAÇÕES",
       icon: darkMode ? <img src={Dark_Config_Icon} /> : <Config_Icon />,
-      action: "config"
+      action: "config",
     },
     {
       text: "SAIR",
@@ -61,24 +67,26 @@ const Sidebar: React.FC = () => {
     },
   ];
   const drawerStyles = {
-    width: 300,
-    flexShrink: 0,
-    "& .MuiDrawer-paper": {
-      width: 300,
-      zIndex: 1200,
-      borderRight: "none",
-      paddingTop: "128px",
-      boxSizing: "border-box",
-      backgroundColor: darkMode ? "primary.dark" : "gray.100",
-    },
+    left: 0,
+    top: 100,
+    zIndex: 1200,
+    borderRight: "none",
+    position: "absolute",
+    boxSizing: "border-box",
+    height: "calc(100% - 100px)",
+    transition: "all 200ms ease-out",
+    width: { xs: "75px", md: "300px" },
+    backgroundColor: darkMode ? "primary.dark" : "grey.100",
   };
 
   const listItemStyles = {
-    display: "flex",
-    alignItems: "center",
     "&:hover": {
       backgroundColor: darkMode ? "primary.main" : "primary.lighter",
     },
+    p: "10px 8px",
+    m: "auto 0",
+    transition: "all 200ms ease-out",
+
   };
 
   const listItemIconStyles = {
@@ -97,16 +105,16 @@ const Sidebar: React.FC = () => {
       navigate("/medicine");
     } else if (action == "config") {
       navigate("/config");
-    } else if (action == "profile"){
+    } else if (action == "profile") {
       navigate("/profile");
     } else if (action == "exam") {
-      navigate("/exam")
+      navigate("/exam");
     }
   };
 
   return (
-    <Drawer variant="permanent" anchor="left" sx={drawerStyles}>
-      <List>
+    <Box component="aside" sx={drawerStyles}>
+      <List sx={{ transition: "width 200ms ease-out", width: { xs: "75px", md: "300px" } }}>
         {items.map(({ text, icon, action }) => (
           <ListItemButton
             key={text}
@@ -117,14 +125,23 @@ const Sidebar: React.FC = () => {
             <ListItemText
               primary={text}
               primaryTypographyProps={{
-                sx: { fontSize: "14px", fontWeight: "500" },
+                sx: {
+                  fontSize: "14px",
+                  fontWeight: "500",
+                },
               }}
-              sx={{ flex: 1, marginLeft: "12px" }}
+              sx={{
+                flex: 1,
+                marginLeft: "12px",
+                textWrap: "nowrap",
+                display: { xs: "none", md: "block" },
+                color: darkMode ? "common.white" : "common.black",
+              }}
             />
           </ListItemButton>
         ))}
       </List>
-    </Drawer>
+    </Box>
   );
 };
 

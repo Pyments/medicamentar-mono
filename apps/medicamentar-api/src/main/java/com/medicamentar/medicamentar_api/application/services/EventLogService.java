@@ -20,6 +20,7 @@ import com.medicamentar.medicamentar_api.domain.entities.EventLog;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
+import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.EventLogRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
@@ -98,7 +99,13 @@ public class EventLogService {
                   medication.getAmount(),
                   medication.getUnity(),
                   medication.getPeriod(),
-                  medication.getValidate())).orElse(null);
+                  medication.isContinuousUse(),
+                  medication.getStart_date(),
+                  medication.getEnd_date(),
+                  medication.getFirst_dose(),
+                  medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null
+              )).orElse(null);
+              
               return new EventLogResponse(medicationResponse, h.getEventAction(), h.getEventDate());
 
             case "Exame":
