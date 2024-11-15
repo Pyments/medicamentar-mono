@@ -7,6 +7,7 @@ import { useTheme } from "../constants/theme/useTheme.ts";
 import { SectionContainer } from "../components/SectionContainer.tsx";
 import CardUniversal from "../components/CardUniversal.tsx";
 import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
+import { AddBtn } from "@components/AddBtn.tsx";
 
 const Exam = () => {
   const { darkMode } = useTheme();
@@ -44,30 +45,7 @@ const Exam = () => {
               CONSULTAS E EXAMES
             </Box>
           </Typography>
-          <Button
-            onClick={handleModal}
-            sx={{
-              color: "white",
-              borderRadius: { xs: "50%", md: "4px" },
-              padding: { xs: 0, md: "14px" },
-              px: { xs: 3.5, md: 2 },
-              fontWeight: "bold",
-              right: { xs: "30px", md: "auto" },
-              bottom: { xs: "30px", md: "auto" },
-              position: { xs: "fixed", md: "relative" },
-              backgroundColor: darkMode ? "primary.dark" : "primary.light",
-              "&:hover": {
-                backgroundColor: darkMode ? "primary.light" : "primary.main",
-              },
-            }}
-          >
-            <Box component="span" sx={{ fontSize: { xs: "3rem", md: "1rem" } }}>
-              +
-            </Box>
-            <Box component="span" sx={{ display: { xs: "none", md: "block" } }}>
-              ADICIONAR MEDICAMENTO
-            </Box>
-          </Button>
+          <AddBtn handleModal={handleModal} text="consulta ou exame"/>
         </Stack>
         <Grid container spacing={3} pb="75px">
           <CardUniversal
