@@ -38,8 +38,6 @@ public class MedicationService {
         medication.setPeriod(medicationRegister.period());
         medication.setContinuousUse(medicationRegister.isContinuousUse());
         medication.setStart_date(medicationRegister.start_date());
-        medication.setEnd_date(medicationRegister.end_date());
-        medication.setFirst_dose(medicationRegister.first_dose());
 
         if (medicationRegister.type() == MedicationType.OFTALMICO && medicationRegister.ophthalmicDetails() != null) {
             medication.setOphthalmicDetails(medicationRegister.ophthalmicDetails());
@@ -70,7 +68,6 @@ public class MedicationService {
                         medication.isContinuousUse(),
                         medication.getStart_date(),
                         medication.getEnd_date(),
-                        medication.getFirst_dose(),
                         medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                 .collect(Collectors.toList());
 
