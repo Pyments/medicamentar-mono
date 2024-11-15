@@ -5,8 +5,7 @@ import java.util.UUID;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationUnity;
 
-import java.util.Date;
-
+import java.time.ZonedDateTime;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.AccessLevel;
+import jakarta.persistence.PrePersist;
 
 @Entity
 @Table(name = "tb_medication")
@@ -36,10 +37,18 @@ public class Medication {
     private Double amount;
     private MedicationUnity unity;
     private int period;
-    private boolean isContinuousUse; 
-    private Date start_date;
-    private Date end_date;
-    private Date first_dose;
+    private boolean isContinuousUse;
+    private ZonedDateTime start_date;
+
+    @Setter(AccessLevel.NONE)
+    private ZonedDateTime end_date;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.start_date != null) {
+            this.end_date = this.start_date.plusDays(this.period);
+        }
+    }
 
     @Embedded
     private OphthalmicDetails ophthalmicDetails;
