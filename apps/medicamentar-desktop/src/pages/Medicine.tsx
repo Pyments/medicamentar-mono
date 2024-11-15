@@ -12,6 +12,7 @@ import ModalDelete from "@components/Modals/ModalDelete";
 import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axios from "axios";
+import { AddBtn } from "@components/AddBtn";
 
 interface MedicationData {
   id: string;
@@ -132,34 +133,11 @@ const Medicine = () => {
             MEDICAMENTOS
           </Typography>
 
-          <Button
-            onClick={handleModal}
-            sx={{
-              color: "white",
-              borderRadius: { xs: "50%", md: "4px" },
-              padding: { xs: 0, md: "14px" },
-              px: { xs: 3.5, md: 2 },
-              fontWeight: "bold",
-              right: { xs: "30px", md: "auto" },
-              bottom: { xs: "30px", md: "auto" },
-              position: { xs: "fixed", md: "relative" },
-              backgroundColor: darkMode ? "primary.dark" : "primary.light",
-              "&:hover": {
-                backgroundColor: darkMode ? "primary.light" : "primary.main",
-              },
-            }}
-          >
-            <Box component="span" sx={{ fontSize: { xs: "3rem", md: "1rem" } }}>
-              +
-            </Box>
-            <Box component="span" sx={{ display: { xs: "none", md: "block" } }}>
-              ADICIONAR MEDICAMENTO
-            </Box>
-          </Button>
+          <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
         <Grid container spacing={3} pb="75px">
           {medications.length > 0 ? (
-            medications.map((medication: any) => (
+            medications.map((medication) => (
               <CardUniversal
                 key={medication.id}
                 title={medication.title}
