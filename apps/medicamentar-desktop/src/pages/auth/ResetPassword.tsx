@@ -72,10 +72,16 @@ export default function ResetPassword() {
   const { darkMode } = useTheme();
 
   const card__wrapper = {
+    top: "130px",
+    left: "50%",
     display: "flex",
+    position: "absolute",
     alignItems: "center",
-    p: "0 30px 30px 30px ",
+    p: "0 30px 50px 30px ",
     flexDirection: "column",
+    transform: "translateX(-50%)",
+    width: { sm: "720px", xs: "95%" },
+    transition: "ease-out 300ms margin-top",
     backgroundColor: darkMode ? "primary.dark" : "primary.light",
   };
 
