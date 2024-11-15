@@ -38,10 +38,17 @@ export default function ForgotPassword() {
   const { darkMode } = useTheme();
 
   const card__wrapper = {
+    top: "130px",
+    left: "50%",
+    mx: 0,
     display: "flex",
+    position: "absolute",
     alignItems: "center",
-    p: "0 30px 30px 30px ",
+    p: "0 30px 90px 30px ",
     flexDirection: "column",
+    transform: "translateX(-50%)",
+    width: { sm: "720px", xs: "95%" },
+    transition: "ease-out 300ms margin-top",
     backgroundColor: darkMode ? "primary.dark" : "primary.light",
   };
 
@@ -95,53 +102,60 @@ export default function ForgotPassword() {
     >
       <Header />
       <Paper sx={card__wrapper}>
-        <Typography
-          sx={{
-            my: "50px",
-            fontSize: "30px",
-            fontWeight: "bold",
-            color: "common.white",
-          }}
-        >
-          {"RECUPERAR SENHA"}
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box sx={{ width: "90%"}}>
           <Typography
-            component="p"
-            variant="body1"
             sx={{
+              my: "50px",
+              fontSize: "30px",
+              fontWeight: "bold",
+              textAlign: "center",
               color: "common.white",
             }}
           >
-            {
-              "Insira seu e-mail e um link será enviado para redefinir sua senha"
-            }
+            {"RECUPERAR SENHA"}
           </Typography>
-          <WhiteTextField
-            required
-            fullWidth
-            id="email"
-            name="email"
-            label="Email"
-            margin="normal"
-            autoComplete="email"
-          />
-          {error && (
-            <Typography sx={{ color: "common.white", textAlign: "center" }}>
-              {error}
-            </Typography>
-          )}
-          <Button fullWidth type="submit" variant="contained" sx={card__button}>
-            {"ENVIAR"}
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            sx={card__cancel_button}
-            onClick={handleCancel}
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
           >
-            {"CANCELAR"}
-          </Button>
+            <Typography
+              component="p"
+              variant="body1"
+              sx={{
+                color: "common.white",
+              }}
+            >
+              {
+                "Insira seu e-mail e um link será enviado para redefinir sua senha"
+              }
+            </Typography>
+            <WhiteTextField
+              required
+              fullWidth
+              id="email"
+              name="email"
+              label="Email"
+              margin="normal"
+              autoComplete="email"
+            />
+            {error && (
+              <Typography sx={{ color: "common.white", textAlign: "center" }}>
+                {error}
+              </Typography>
+            )}
+            <Button fullWidth type="submit" variant="contained" sx={card__button}>
+              {"ENVIAR"}
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={card__cancel_button}
+              onClick={handleCancel}
+            >
+              {"CANCELAR"}
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </ContainerUniversal>

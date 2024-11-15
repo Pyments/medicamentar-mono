@@ -79,34 +79,6 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
 
-  useEffect(() => {
-    console.log(name);
-  }, [name]);
-  useEffect(() => {
-    console.log(dose);
-  }, [dose]);
-  useEffect(() => {
-    console.log(type);
-  }, [type]);
-  useEffect(() => {
-    console.log(unity);
-  }, [unity]);
-  useEffect(() => {
-    console.log(amount);
-  }, [amount]);
-  useEffect(() => {
-    console.log(continuo);
-  }, [continuo]);
-  useEffect(() => {
-    console.log(period);
-  }, [period]);
-  useEffect(() => {
-    console.log(startDate);
-  }, [startDate]);
-  useEffect(() => {
-    console.log(endDate);
-  }, [endDate]);
-
   enum Unity {
     ML = 0,
     MG = 1,
@@ -162,8 +134,8 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
           unity: Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
           period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
           isContinuousUse: continuo, // bool
-          /* 
-          ophthalmicDetails: {
+          start_date: startDate
+          /*ophthalmicDetails: {
             leftEyeFrequency: null, 
             leftEyeQuantity: null, 
             leftEyeDrops: null, 
@@ -376,7 +348,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                   components={{
                     OpenPickerIcon: CalendarTodayIcon,
                   }}
-                  onChange={(newValue) => setStartDate(newValue as Dayjs)}
+                  onChange={(newValue) => setStartDate(newValue)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
