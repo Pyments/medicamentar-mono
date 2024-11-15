@@ -21,8 +21,6 @@ public record MedicationRequest (
         MedicationUnity unity,
         @NotNull(message = "Defina o período inicial da medicação.")
         int period,
-        @NotNull(message = "Informe a validade.")
-        Date validate,
         boolean isContinuousUse,
         @NotNull(message = "Informe a data de inicio.")
         Date start_date,
