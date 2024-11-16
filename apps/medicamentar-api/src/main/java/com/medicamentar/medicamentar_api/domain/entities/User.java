@@ -25,6 +25,9 @@ public class User {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
+  @Column(name = "profile_image")
+  private String profileImage;
+
   @Column(nullable = false)
   private String name;
 
@@ -33,6 +36,21 @@ public class User {
 
   @Column(nullable = false)
   private String password;
+
+  @Column(nullable = false)
+  private int age;
+
+  @Column(nullable = false)
+  private double weigth;
+
+  @Column(nullable = false)
+  private String bloodType;
+
+  @Column(nullable = false)
+  private double height;
+
+  @Column(nullable = true)
+  private String address;
 
   @Column(nullable = true)
   private String resetToken;
