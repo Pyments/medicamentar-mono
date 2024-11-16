@@ -8,6 +8,7 @@ import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
+import { checkEventsAndMedications } from "../services/scheduler.ts";
 
 interface EventData {
   type: string;
@@ -34,6 +35,14 @@ const Home: React.FC = () => {
   const token = user?.token.data;
 
   useEffect(() => {
+    checkEventsAndMedications(); // Chama a função diretamente
+
+    const interval = setInterval(checkEventsAndMedications, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await axios.get(
@@ -42,7 +51,7 @@ const Home: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("Resposta completa da API:", response.data);
+
         const consultationEvents =
           response.data.data.consultationResponse || [];
         const examEvents = response.data.data.examResponse || [];
@@ -58,7 +67,6 @@ const Home: React.FC = () => {
           ...medicationEvents,
         ];
 
-        console.log("LISTA DE TODOS OS EVENTOS: ", combinedEvents);
         setEvents(combinedEvents);
         setError(null);
       } catch (error) {

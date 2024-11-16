@@ -9,6 +9,7 @@ interface ElectronWindow {
       on: (channel: string, func: (...args: any[]) => void) => void;
       once: (channel: string, func: (...args: any[]) => void) => void;
       send: (channel: string, ...args: any[]) => void;
+      showNotification: (title: string, body: string) => void;
     };
   };
 }

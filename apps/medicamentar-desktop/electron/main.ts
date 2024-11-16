@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import { fileURLToPath } from "node:url";
 import Store from "electron-store";
 import path from "node:path";
@@ -49,24 +49,29 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, "preload.mjs"),
-      devTools: true
+      devTools: true,
     },
   });
 
-  // Add extensive error logging
-  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorCode, errorDescription);
+  ipcMain.on("show-notification", (event, { title, body }) => {
+    const notification = new Notification({ title, body });
+    notification.show();
   });
 
-  win.webContents.on('did-finish-load', () => {
+  // Add extensive error logging
+  win.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+    console.error("Failed to load:", errorCode, errorDescription);
+  });
+
+  win.webContents.on("did-finish-load", () => {
     win?.webContents.executeJavaScript(`
     `);
   });
 
   if (app.isPackaged) {
-    const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
-    win.loadFile(indexPath).catch(err => {
-      console.error('Error loading file:', err);
+    const indexPath = path.join(__dirname, "..", "dist", "index.html");
+    win.loadFile(indexPath).catch((err) => {
+      console.error("Error loading file:", err);
     });
   } else {
     win.loadURL(VITE_DEV_SERVER_URL || "http://localhost:5173/");
@@ -74,13 +79,13 @@ function createWindow() {
 }
 
 // Add this before app.whenReady()
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
 });
 
-app.on('web-contents-created', (_event, contents) => {
-  contents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorCode, errorDescription);
+app.on("web-contents-created", (_event, contents) => {
+  contents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+    console.error("Failed to load:", errorCode, errorDescription);
   });
 });
 
