@@ -4,22 +4,29 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.medicamentar.medicamentar_api.domain.entities.User;
+import com.medicamentar.medicamentar_api.domain.repositories.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 
 @Service
 public class TokenService {
   @Value("${api.security.token.secret}")
   private String secret;
+  private final UserRepository userRepo;
+
+  public TokenService(UserRepository userRepo) {
+    this.userRepo = userRepo;
+  }
 
   public String generateToken(User user) {
     try {
@@ -47,30 +54,12 @@ public class TokenService {
         }
     }
 
-  public String getEmailFromToken(HttpServletRequest request) {
-        // Obtém o token do header "Authorization"
-        String token = request.getHeader("Authorization");
-
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7); // Remove o prefixo "Bearer "
-
-            try {
-                Algorithm algorithm = Algorithm.HMAC256(secret);
-                JWTVerifier verifier = JWT.require(algorithm)
-                        .withIssuer("medicamentar-api")
-                        .build();
-
-                DecodedJWT jwt = verifier.verify(token);
-
-                // Obtém o e-mail (assumindo que foi colocado no 'subject' durante a criação)
-                return jwt.getSubject(); 
-
-            } catch (JWTVerificationException exception) {
-                throw new RuntimeException("Token inválido ou expirado.", exception);
-            }
-        } else {
-            throw new RuntimeException("Token de autenticação não fornecido.");
-        }
+  public String getCurrentUser(HttpServletRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+    return userRepo.findByEmail(email)
+      .orElseThrow(() -> new RuntimeException("Usuário não encontrado")).getEmail();
+        
     }
 
   private Instant expirationDate() {

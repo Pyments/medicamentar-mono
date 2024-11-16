@@ -17,12 +17,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.medicamentar.medicamentar_api.application.dtos.userDto.ImgurResponse;
 import com.medicamentar.medicamentar_api.application.exception.ImgurUploadException;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class ImgurService {
-    private final WebClient webClient;
+    private WebClient webClient;
     
     @Value("${imgur.client.api-url}")
     private String apiUrl;
@@ -33,8 +34,8 @@ public class ImgurService {
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     private static final int TARGET_SIZE = 300;
 
-    public ImgurService(@Value("${imgur.client.api-url}") String apiUrl,
-                       @Value("${imgur.client.id}") String clientId) {
+    @PostConstruct
+    private void init() {
         log.info("Iniciando ImgurService...");
         
         if (clientId == null || clientId.trim().isEmpty()) {
@@ -42,8 +43,6 @@ public class ImgurService {
             throw new IllegalStateException("Imgur Client ID não configurado! Configure em application.properties ou variável de ambiente IMGUR_CLIENT_ID");
         }
 
-        this.apiUrl = apiUrl;
-        this.clientId = clientId;
         this.webClient = WebClient.builder()
             .baseUrl(apiUrl)
             .defaultHeader("Authorization", "Client-ID " + clientId)

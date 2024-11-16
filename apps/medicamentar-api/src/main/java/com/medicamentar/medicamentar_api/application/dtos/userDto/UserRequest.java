@@ -1,12 +1,15 @@
 package com.medicamentar.medicamentar_api.application.dtos.userDto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public record UserRequest(
 
     String name,
-    int age,
-    double weigth,
+    Integer age,
+    Double weigth,
     String bloodType,
     String address,
-    double height
+    Double height,
+    MultipartFile profileImage
     
 ) {}

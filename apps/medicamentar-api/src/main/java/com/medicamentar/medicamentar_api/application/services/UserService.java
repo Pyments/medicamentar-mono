@@ -51,50 +51,33 @@ public class UserService {
         return response;
     }
 
-    public ServiceResponse<String> updateProfile(UserRequest updateProfile, String email){
+    public ServiceResponse<UserResponse> updateProfile(UserRequest updateProfile, String email) {
+        ServiceResponse<UserResponse> response = new ServiceResponse<>();
 
-        ServiceResponse<String> response = new ServiceResponse<>();
-
-        User user = userRepo.findByEmail(email)
-            .orElse(null);
-        
+        try {
+            User user = userRepo.findByEmail(email)
+                .orElse(null);
+            
             if (user == null) {
                 response.setMessage("Usuário não encontrado.");
                 response.setStatus(HttpStatus.NOT_FOUND);
                 return response;
             }
+
             user.setName(updateProfile.name());
             user.setAge(updateProfile.age());
             user.setWeigth(updateProfile.weigth());
             user.setBloodType(updateProfile.bloodType());
             user.setAddress(updateProfile.address());
             user.setHeight(updateProfile.height());
-        
-            userRepo.save(user);
 
-            eLogService.saveEvent(EventLogAction.Atualizado, user);
-
-        response.setMessage("Perfil atualizado com sucesso!");
-        response.setStatus(HttpStatus.ACCEPTED);
-        
-        return response;
-    }
-
-    public ServiceResponse<UserResponse> updateProfileImage(String email, String imageUrl) {
-        ServiceResponse<UserResponse> response = new ServiceResponse<>();
-        
-        try {
-            User user = userRepo.findByEmail(email)
-                .orElse(null);
-
-            if (user == null) {
-                response.setMessage("Usuário não encontrado.");
-                response.setStatus(HttpStatus.NOT_FOUND);
-                return response;
+            if (updateProfile.profileImage() != null && !updateProfile.profileImage().isEmpty()) {
+                String imageUrl = imgurService.storeFile(updateProfile.profileImage());
+                user.setProfileImage(imageUrl);
             }
-
-            user.setProfileImage(imageUrl);
+        
             userRepo.save(user);
+            eLogService.saveEvent(EventLogAction.Atualizado, user);
 
             UserResponse userResponse = new UserResponse(
                 user.getName(),
@@ -106,11 +89,12 @@ public class UserService {
                 user.getProfileImage()
             );
 
-            response.setMessage("Imagem de perfil atualizada com sucesso!");
+            response.setMessage("Perfil atualizado com sucesso!");
             response.setStatus(HttpStatus.OK);
             response.setData(userResponse);
-        } catch (RuntimeException e) {
-            response.setMessage(e.getMessage());
+            
+        } catch (Exception e) {
+            response.setMessage("Erro ao atualizar perfil: " + e.getMessage());
             response.setStatus(HttpStatus.BAD_REQUEST);
         }
         
