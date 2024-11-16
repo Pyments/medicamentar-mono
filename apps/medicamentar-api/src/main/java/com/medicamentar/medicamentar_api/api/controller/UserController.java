@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.application.dtos.userDto.UserRequest;
 import com.medicamentar.medicamentar_api.application.dtos.userDto.UserResponse;
-import com.medicamentar.medicamentar_api.application.services.FileStorageService;
 import com.medicamentar.medicamentar_api.application.services.UserService;
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
+import com.medicamentar.medicamentar_api.application.services.ImgurService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,13 +34,13 @@ public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
     private final HttpServletRequest request;
-    private final FileStorageService fileStorageService;
+    private final ImgurService imgurService;
 
-    public UserController(UserService userService, TokenService tokenService, HttpServletRequest request, FileStorageService fileStorageService){
+    public UserController(UserService userService, TokenService tokenService, HttpServletRequest request, ImgurService imgurService){
         this.userService = userService;
         this.tokenService = tokenService;
         this.request = request;
-        this.fileStorageService = fileStorageService;
+        this.imgurService = imgurService;
     }
 
     @Operation(summary = "Retorna informações do usuário.", method = "GET")
@@ -53,7 +53,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @Operation(summary = "Retorna as informações do usuário.", method = "PUT")
+    @Operation(summary = "Atualiza as informações do usuário.", method = "PUT")
     @PutMapping
     public ResponseEntity<ServiceResponse<String>> updateProfile(@RequestBody UserRequest userRequest) {
 
@@ -72,7 +72,7 @@ public class UserController {
             @RequestParam("file") MultipartFile file) {
         try {
             String email = tokenService.getEmailFromToken(request);
-            String imageUrl = fileStorageService.storeFile(file);
+            String imageUrl = imgurService.storeFile(file);
             
             var response = userService.updateProfileImage(email, imageUrl);
             return ResponseEntity.status(response.getStatus()).body(response);

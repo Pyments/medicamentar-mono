@@ -14,19 +14,25 @@ import com.medicamentar.medicamentar_api.domain.repositories.UserRepository;
 public class UserService {
     private final UserRepository userRepo;
     private final EventLogService eLogService;
-    private final FileStorageService fileStorageService;
+    private final ImgurService imgurService;
 
-    public UserService(UserRepository userRepo, EventLogService eLogService, FileStorageService fileStorageService){
+    public UserService(UserRepository userRepo, EventLogService eLogService, ImgurService imgurService){
         this.userRepo = userRepo;
         this.eLogService = eLogService;
-        this.fileStorageService = fileStorageService;
+        this.imgurService = imgurService;
     }
 
     public ServiceResponse<UserResponse> getUserInfo(String email) {
         ServiceResponse<UserResponse> response = new ServiceResponse<>();
 
         User user = userRepo.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            .orElse(null);
+
+        if (user == null) {
+            response.setMessage("Usuário não encontrado.");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return response;
+        }
 
         UserResponse userResponse = new UserResponse(
             user.getName(),
@@ -53,7 +59,7 @@ public class UserService {
             .orElse(null);
         
             if (user == null) {
-                response.setMessage("usuário não encontrado.");
+                response.setMessage("Usuário não encontrado.");
                 response.setStatus(HttpStatus.NOT_FOUND);
                 return response;
             }
@@ -79,7 +85,13 @@ public class UserService {
         
         try {
             User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElse(null);
+
+            if (user == null) {
+                response.setMessage("Usuário não encontrado.");
+                response.setStatus(HttpStatus.NOT_FOUND);
+                return response;
+            }
 
             user.setProfileImage(imageUrl);
             userRepo.save(user);
@@ -104,10 +116,4 @@ public class UserService {
         
         return response;
     }
-
-    public User findByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-    }
-
 }
