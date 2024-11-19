@@ -46,7 +46,7 @@ public class MedicationController {
 
 
     @Operation(summary = "Edita o medicamento selecionado.", method = "PUT")
-    @PutMapping()
+    @PutMapping("/{id}")
     public ResponseEntity updateMedication(String id,@RequestBody @Valid MedicationRequest updateMedication){
         var response = this.medService.updateMedication(id, updateMedication);
         return ResponseEntity.status(response.getStatus()).body(response);
