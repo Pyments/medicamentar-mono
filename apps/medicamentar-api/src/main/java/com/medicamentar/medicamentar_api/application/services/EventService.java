@@ -18,10 +18,12 @@ import com.medicamentar.medicamentar_api.application.dtos.responsesDto.Paginated
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
+import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,9 +34,10 @@ public class EventService {
     private final ConsultationRepository consultationRepository;
     private final ExamRepository examRepository;
     private final MedicationRepository medicationRepository;
-
+    private final TokenService tokenService;
     public PaginatedResponse<EventResponse> getEvents(int page, int size) {
         var response = new PaginatedResponse<EventResponse>();
+        User currentUser = tokenService.getCurrentUser();
 
         if (page < 0) {
             response.setMessage("O número de páginas não pdoe ser negativo.");
@@ -50,9 +53,9 @@ public class EventService {
         try {
             Pageable pageable = PageRequest.of(page, size);
 
-            Page<Medication> pagedMedications = this.medicationRepository.findAll(pageable);
-            Page<Exam> pagedExams = this.examRepository.findAll(pageable);
-            Page<Consultation> pagedConsultations = this.consultationRepository.findAll(pageable);
+            Page<Medication> pagedMedications = medicationRepository.findByUser(currentUser, pageable);
+            Page<Exam> pagedExams = examRepository.findByUser(currentUser, pageable);
+            Page<Consultation> pagedConsultations = consultationRepository.findByUser(currentUser, pageable);
 
             List<MedicationResponse> medicationsResponses = pagedMedications.stream()
                     .map(medication -> new MedicationResponse(

@@ -3,11 +3,12 @@ package com.medicamentar.medicamentar_api.domain.entities;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -38,4 +39,8 @@ public class EventLog {
   protected void onCreate() {
     this.eventDate = ZonedDateTime.now();
   }
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 }
