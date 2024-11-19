@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamRequest;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
-import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
+import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,11 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class ExamService {
     private final ExamRepository repository;
     private final EventLogService eLogService;
-
+    private final TokenService tokenService;
+    
     public ServiceResponse<List<ExamResponse>> getAllexams() {
         var response = new ServiceResponse<List<ExamResponse>>();
+        User currentUser = tokenService.getCurrentUser();
 
-        List<Exam> exams = this.repository.findAll();
+        List<Exam> exams = repository.findByUser(currentUser);
 
         List<ExamResponse> examsResponses = exams.stream()
                 .map(exam -> new ExamResponse(
@@ -47,48 +50,43 @@ public class ExamService {
 
     public ServiceResponse<ExamResponse> updateExam(UUID examId, ExamRequest examRequest) {
         ServiceResponse<ExamResponse> response = new ServiceResponse<>();
-        Optional<Exam> optionalExam = this.repository.findById(examId);
+        User currentUser = tokenService.getCurrentUser();
 
-        if (optionalExam.isPresent()) {
-            Exam exam = optionalExam.get();
-            exam.setDate(examRequest.date());
-            exam.setName(examRequest.name());
-            exam.setLocal(examRequest.local());
-            exam.setDescription(examRequest.description());
-            this.repository.save(exam);
-
-            var examResponse = new ExamResponse(
-                    exam.getId(),
-                    exam.getDate(),
-                    exam.getName(),
-                    exam.getLocal(),
-                    exam.getDescription());
-
-            this.eLogService.saveEvent(EventLogAction.Atualizado, exam);
-            response.setData(examResponse);
-            response.setMessage("Exame atualizado com sucesso!");
-            response.setStatus(HttpStatus.ACCEPTED);
-
+        Optional<Exam> examOptional = repository.findByIdAndUser(examId, currentUser);
+        if (!examOptional.isPresent()) {
+            response.setMessage("Exame não encontrado ou sem permissão.");
+            response.setStatus(HttpStatus.FORBIDDEN);
             return response;
         }
-        response.setMessage("Não foi possível atualizar o exame.");
-        response.setStatus(HttpStatus.BAD_REQUEST);
+
+        Exam exam = examOptional.get();
+        exam.setDate(examRequest.date());
+        exam.setName(examRequest.name());
+        exam.setLocal(examRequest.local());
+        exam.setDescription(examRequest.description());
+        this.repository.save(exam);
+
+        var examResponse = new ExamResponse(
+                exam.getId(),
+                exam.getDate(),
+                exam.getName(),
+                exam.getLocal(),
+                exam.getDescription());
+
+        this.eLogService.saveEvent(EventLogAction.Atualizado, exam);
+        response.setData(examResponse);
+        response.setMessage("Exame atualizado com sucesso!");
+        response.setStatus(HttpStatus.ACCEPTED);
 
         return response;
     }
 
     public ServiceResponse<ExamResponse> registerExam(ExamRequest data) {
         ServiceResponse<ExamResponse> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
-        if (data.date() == null || data.name() == null || data.local() == null) {
-            response.setMessage("Todos os campos devem ser preenchidos.");
-            response.setStatus(HttpStatus.BAD_REQUEST);
-            return response;
-        }
-
-        Optional<Exam> existingExam = this.repository.findByNameAndDate(data.name(), data.date());
-        if (existingExam.isPresent()) {
-            response.setMessage("Já existe um exame com o mesmo nome e data.");
+        if (data == null) {
+            response.setMessage("Não foi possível registrar o exame.");
             response.setStatus(HttpStatus.BAD_REQUEST);
             return response;
         }
@@ -98,46 +96,41 @@ public class ExamService {
         newExam.setName(data.name());
         newExam.setLocal(data.local());
         newExam.setDescription(data.description());
+        newExam.setUser(currentUser);
 
         Exam savedExam = this.repository.save(newExam);
-        if (savedExam != null) {
-            var examResponse = new ExamResponse(
-                    savedExam.getId(),
-                    savedExam.getDate(),
-                    savedExam.getName(),
-                    savedExam.getLocal(),
-                    savedExam.getDescription());
 
-            response.setData(examResponse);
-            response.setMessage("Exame registrado comsucesso!");
-            response.setStatus(HttpStatus.CREATED);
+        var examResponse = new ExamResponse(
+                savedExam.getId(),
+                savedExam.getDate(),
+                savedExam.getName(),
+                savedExam.getLocal(),
+                savedExam.getDescription());
 
-            this.eLogService.saveEvent(EventLogAction.Criado, newExam);
+        response.setData(examResponse);
+        response.setMessage("Exame registrado comsucesso!");
+        response.setStatus(HttpStatus.CREATED);
 
-            return response;
-        }
-
-        response.setMessage("Não foi possível registrar o exame.");
-        response.setStatus(HttpStatus.BAD_REQUEST);
+        this.eLogService.saveEvent(EventLogAction.Criado, newExam);
 
         return response;
     }
 
     public ServiceResponse<String> deleteExam(UUID id) {
         ServiceResponse<String> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
-        var exam = repository.findById(id);
-
-        if (exam.isPresent()) {
-            this.repository.deleteById(id);
-            response.setMessage("Exame deletado com sucesso!");
-            response.setStatus(HttpStatus.ACCEPTED);
-            this.eLogService.saveEvent(EventLogAction.Deletado, exam.get());
-
+        Optional<Exam> examOptional = repository.findByIdAndUser(id, currentUser);
+        if (!examOptional.isPresent()) {
+            response.setMessage("Exame não encontrado ou sem permissão.");
+            response.setStatus(HttpStatus.FORBIDDEN);
             return response;
         }
-        response.setMessage("Exame não encontrado.");
-        response.setStatus(HttpStatus.BAD_REQUEST);
+
+        this.repository.deleteById(id);
+        response.setMessage("Exame deletado com sucesso!");
+        response.setStatus(HttpStatus.ACCEPTED);
+        this.eLogService.saveEvent(EventLogAction.Deletado, examOptional.get());
 
         return response;
     }

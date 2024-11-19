@@ -6,6 +6,7 @@ import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceRe
 import com.medicamentar.medicamentar_api.application.dtos.userDto.UserRequest;
 import com.medicamentar.medicamentar_api.application.dtos.userDto.UserResponse;
 import com.medicamentar.medicamentar_api.application.services.UserService;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 import com.medicamentar.medicamentar_api.application.services.ImgurService;
 
@@ -42,8 +43,8 @@ public class UserController {
     @GetMapping
     public ResponseEntity<ServiceResponse<UserResponse>> profileInfo() {
 
-        String email = tokenService.getCurrentUser(request);
-        var response = userService.getUserInfo(email);
+        User user = tokenService.getCurrentUser();
+        var response = userService.getUserInfo(user.getEmail());
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -53,8 +54,8 @@ public class UserController {
     public ResponseEntity<ServiceResponse<UserResponse>> updateProfile(@ModelAttribute UserRequest userRequest) {
 
         try {
-            String email = tokenService.getCurrentUser(request);
-            var response = userService.updateProfile(userRequest, email);
+            User user = tokenService.getCurrentUser();
+            var response = userService.updateProfile(userRequest, user.getEmail());
             return ResponseEntity.status(response.getStatus()).body(response);
         } catch (Exception e) {
             var errorResponse = new ServiceResponse<UserResponse>();

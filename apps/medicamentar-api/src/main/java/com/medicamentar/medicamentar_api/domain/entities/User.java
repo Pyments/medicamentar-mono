@@ -37,16 +37,16 @@ public class User {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
-  private int age;
+  @Column(nullable = true)
+  private int age = 0;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private double weigth;
 
-  @Column(nullable = false)
-  private String bloodType;
+  @Column(nullable = true)
+  private String bloodType = "";
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private double height;
 
   @Column(nullable = true)

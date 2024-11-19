@@ -13,7 +13,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Table(name = "exam")
 @Entity(name = "exam")
@@ -24,8 +25,8 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 
 public class Exam {
-    
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
 
     private UUID id;
@@ -35,8 +36,10 @@ public class Exam {
     private String name;
 
     private String local;
-    
+
     private String description;
 
-    
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

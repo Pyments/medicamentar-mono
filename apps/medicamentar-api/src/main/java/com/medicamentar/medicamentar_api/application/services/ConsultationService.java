@@ -10,8 +10,10 @@ import com.medicamentar.medicamentar_api.application.dtos.consultationDto.Consul
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
+import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,16 +23,17 @@ public class ConsultationService {
 
     private final ConsultationRepository consultationRepo;
     private final EventLogService eLogService;
-
+    private final TokenService tokenService;
     public ServiceResponse<String> createConsultation(ConsultationRequest consultationRegister) {
         ServiceResponse<String> response = new ServiceResponse<String>();
+        User currentUser = tokenService.getCurrentUser();
 
         var consultation = new Consultation();
         consultation.setDate(consultationRegister.date());
         consultation.setDoctorName(consultationRegister.doctorName());
         consultation.setLocal(consultationRegister.local());
         consultation.setDescription(consultationRegister.description());
-
+        consultation.setUser(currentUser);
         this.consultationRepo.save(consultation);
         this.eLogService.saveEvent(EventLogAction.Criado, consultation);
 
@@ -41,8 +44,9 @@ public class ConsultationService {
 
     public ServiceResponse<List<ConsultationResponse>> getConsultations() {
         ServiceResponse<List<ConsultationResponse>> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
-        List<Consultation> consultations = this.consultationRepo.findAll();
+        List<Consultation> consultations = this.consultationRepo.findByUser(currentUser);
 
         List<ConsultationResponse> consultationResponses = consultations.stream()
                 .map(consultation -> new ConsultationResponse(
@@ -62,9 +66,10 @@ public class ConsultationService {
 
     public ServiceResponse<String> deleteConsultation(String id) {
         ServiceResponse<String> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
         var consultationId = UUID.fromString(id);
-        var consultation = consultationRepo.findById(consultationId);
+        var consultation = consultationRepo.findByIdAndUser(consultationId, currentUser);
 
         if (consultation.isPresent()) {
             consultationRepo.deleteById(consultationId);

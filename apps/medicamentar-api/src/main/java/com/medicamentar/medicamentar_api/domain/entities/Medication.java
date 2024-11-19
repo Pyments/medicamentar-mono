@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.AccessLevel;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "tb_medication")
@@ -52,4 +54,8 @@ public class Medication {
 
     @Embedded
     private OphthalmicDetails ophthalmicDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

@@ -14,20 +14,23 @@ import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
+import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
+
+import lombok.RequiredArgsConstructor;
+
+import com.medicamentar.medicamentar_api.domain.entities.User;
 
 @Service
+@RequiredArgsConstructor
 public class MedicationService {
 
     private final MedicationRepository medicationRepo;
     private final EventLogService eLogService;
-
-    public MedicationService(MedicationRepository medicationRepo, EventLogService eLogService) {
-        this.medicationRepo = medicationRepo;
-        this.eLogService = eLogService;
-    }
+    private final TokenService tokenService;
 
     public ServiceResponse<String> createMedication(MedicationRequest medicationRegister) {
         ServiceResponse<String> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
         Medication medication = new Medication();
         medication.setName(medicationRegister.name());
@@ -38,6 +41,7 @@ public class MedicationService {
         medication.setPeriod(medicationRegister.period());
         medication.setContinuousUse(medicationRegister.isContinuousUse());
         medication.setStart_date(medicationRegister.start_date());
+        medication.setUser(currentUser);
 
         if (medicationRegister.type() == MedicationType.OFTALMICO && medicationRegister.ophthalmicDetails() != null) {
             medication.setOphthalmicDetails(medicationRegister.ophthalmicDetails());
@@ -53,8 +57,9 @@ public class MedicationService {
 
     public ServiceResponse<List<MedicationResponse>> getMedications() {
         ServiceResponse<List<MedicationResponse>> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
-        List<Medication> medications = medicationRepo.findAll();
+        List<Medication> medications = medicationRepo.findByUser(currentUser);
 
         List<MedicationResponse> medicationResponses = medications.stream()
                 .map(medication -> new MedicationResponse(
@@ -80,12 +85,19 @@ public class MedicationService {
 
     public ServiceResponse<String> updateMedication(String id, MedicationRequest updateMedication) {
         ServiceResponse<String> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
         var medicationId = UUID.fromString(id);
         var medicationEntity = this.medicationRepo.findById(medicationId);
 
         if (medicationEntity.isPresent()) {
             var medication = medicationEntity.get();
+            
+            if (!medication.getUser().getId().equals(currentUser.getId())) {
+                response.setMessage("Você não tem permissão para editar este medicamento.");
+                response.setStatus(HttpStatus.FORBIDDEN);
+                return response;
+            }
 
             medication.setName(updateMedication.name());
             medication.setType(updateMedication.type());
@@ -114,12 +126,18 @@ public class MedicationService {
 
     public ServiceResponse<String> deleteMedication(String id) {
         ServiceResponse<String> response = new ServiceResponse<>();
+        User currentUser = tokenService.getCurrentUser();
 
         var medicationId = UUID.fromString(id);
-
         var medication = medicationRepo.findById(medicationId);
 
         if (medication.isPresent()) {
+            if (!medication.get().getUser().getId().equals(currentUser.getId())) {
+                response.setMessage("Você não tem permissão para deletar este medicamento.");
+                response.setStatus(HttpStatus.FORBIDDEN);
+                return response;
+            }
+
             medicationRepo.deleteById(medicationId);
             this.eLogService.saveEvent(EventLogAction.Deletado, medication.get());
 

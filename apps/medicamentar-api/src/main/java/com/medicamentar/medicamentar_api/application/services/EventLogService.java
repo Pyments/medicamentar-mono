@@ -19,12 +19,14 @@ import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.EventLog;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.EventLogRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.ExamRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
+import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +37,7 @@ public class EventLogService {
   private final MedicationRepository medicationRepository;
   private final ExamRepository examRepository;
   private final ConsultationRepository consultationRepository;
-
+  private final TokenService tokenService;
   /**
    * Saves an event log entry in the database.
    *
@@ -63,6 +65,7 @@ public class EventLogService {
         eventLog.setEventReferenceId(eventReferenceId);
         eventLog.setEventAction(String.format("%s %s", translatedName, eventAction));
         eventLog.setEventType(translatedName);
+        eventLog.setUser(tokenService.getCurrentUser());
 
         this.eventLogRepository.save(eventLog);
       } else {
@@ -83,8 +86,9 @@ public class EventLogService {
 
   public ServiceResponse<List<EventLogResponse>> getHistory() {
     var response = new ServiceResponse<List<EventLogResponse>>();
+    User currentUser = tokenService.getCurrentUser();
 
-    var history = this.eventLogRepository.findAll();
+    var history = eventLogRepository.findByUser(currentUser);
 
     var eventLogResponse = history.stream()
         .map(h -> {
