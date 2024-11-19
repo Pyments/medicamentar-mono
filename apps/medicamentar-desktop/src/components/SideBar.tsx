@@ -1,22 +1,22 @@
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@hooks/useAuth";
 
-import Pill_Icon from "../assets/icons/Pill_Icon";
-import Timer_Icon from "../assets/icons/Timer_Icon";
-import Config_Icon from "../assets/icons/Config_Icon";
-import Logout_Icon from "../assets/icons/Logout_Icon";
-import Profile_Icon from "../assets/icons/Profile_Icon";
-import Stethoscope_Icon from "../assets/icons/Stethoscope_Icon";
+import Pill_Icon from "@assets/icons/Pill_Icon";
+import Timer_Icon from "@assets/icons/Timer_Icon";
+import Config_Icon from "@assets/icons/Config_Icon";
+import Logout_Icon from "@assets/icons/Logout_Icon";
+import Profile_Icon from "@assets/icons/Profile_Icon";
+import Stethoscope_Icon from "@assets/icons/Stethoscope_Icon";
 
-import Dark_Pill_Icon from "../assets/icons/Dark_Pill_Icon.svg";
-import Dark_Timer_Icon from "../assets/icons/Dark_Timer_Icon.svg";
-import Dark_Config_Icon from "../assets/icons/Dark_Config_Icon.svg";
-import Dark_Logout_Icon from "../assets/icons/Dark_Logout_Icon.svg";
-import Dark_Profile_Icon from "../assets/icons/Dark_Profile_Icon.svg";
-import Dark_Stethoscope_Icon from "../assets/icons/Dark_Stethoscope_Icon.svg";
+import Dark_Pill_Icon from "@assets/icons/Dark_Pill_Icon.svg";
+import Dark_Timer_Icon from "@assets/icons/Dark_Timer_Icon.svg";
+import Dark_Config_Icon from "@assets/icons/Dark_Config_Icon.svg";
+import Dark_Logout_Icon from "@assets/icons/Dark_Logout_Icon.svg";
+import Dark_Profile_Icon from "@assets/icons/Dark_Profile_Icon.svg";
+import Dark_Stethoscope_Icon from "@assets/icons/Dark_Stethoscope_Icon.svg";
 
 import { useNavigate } from "react-router-dom";
 
-import { useTheme } from "../constants/theme/useTheme";
+import { useTheme } from "@constants/theme/useTheme";
 import {
   Box,
   List,

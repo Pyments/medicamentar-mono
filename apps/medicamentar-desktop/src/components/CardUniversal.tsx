@@ -1,8 +1,8 @@
 import { Box, Card, Grid, IconButton, Typography } from "@mui/material";
-import EditOutlinedIcon from '../assets/icons/EditOutlined';
-import DeleteOutlineOutlinedIcon from "../assets/icons/DeleteOutlineOutlinedIcon";
-import AccessAlarmOutlinedIcon from "../assets/icons/AccessAlarmOutlinedIcon";
-import { useTheme } from "../constants/theme/useTheme";
+import EditOutlinedIcon from '@assets/icons/EditOutlined';
+import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
+import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
+import { useTheme } from "@constants/theme/useTheme";
 
 interface CardUniversalProps{
     type: "medication" | "events";

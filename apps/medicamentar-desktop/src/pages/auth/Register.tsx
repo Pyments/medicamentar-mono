@@ -2,18 +2,19 @@ import * as React from "react";
 
 import Box from "@mui/material/Box";
 import { Paper } from "@mui/material";
+import Header from "@components/Header";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
-import WhiteTextField from "../../components/WhiteTextField";
+import WhiteTextField from "@components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Header from "../../components/Header";
 
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
+import { useAuth } from "@hooks/useAuth";
 
-import { useTheme } from "../../constants/theme/useTheme";
+import axiosInstance from "@utils/axiosInstance";
+import { useTheme } from "@constants/theme/useTheme";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
 export default function Register() {
@@ -68,7 +69,7 @@ export default function Register() {
     }
 
     try {
-      const response = await axios.post("https://medicamentar-api-latest.onrender.com/auth/register", {
+      const response = await axiosInstance.post("/auth/register", {
         name: name,
         email: email,
         password: password,

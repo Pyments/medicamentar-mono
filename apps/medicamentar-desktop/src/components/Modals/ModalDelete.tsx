@@ -1,5 +1,5 @@
+import { useTheme } from "@constants/theme/useTheme";
 import { Box, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useTheme } from "../../constants/theme/useTheme";
 
 interface ModalDeleteProps{
     isOpen:boolean;

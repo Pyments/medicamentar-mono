@@ -1,4 +1,3 @@
-import ModalXCloseButton from "../../assets/icons/ModalXCloseButton.svg";
 import {
   Box,
   Stack,
@@ -11,8 +10,9 @@ import {
   FormControl,
 } from "@mui/material";
 import { useState } from "react";
-import { Select, SelectChangeEvent } from "@mui/material";
 import { useTheme } from "@theme/useTheme";
+import { Select, SelectChangeEvent } from "@mui/material";
+import ModalXCloseButton from "@assets/icons/ModalXCloseButton.svg";
 
 interface ModalMedicineTypeProps {
   open: boolean;

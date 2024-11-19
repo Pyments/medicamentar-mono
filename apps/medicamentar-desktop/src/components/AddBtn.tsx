@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material"
-import { useTheme } from "../constants/theme/useTheme.ts";
+import { useTheme } from "@constants/theme/useTheme.ts";
 
 interface AddBtn{
     handleModal: () => void;

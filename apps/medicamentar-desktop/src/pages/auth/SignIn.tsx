@@ -1,19 +1,21 @@
 import * as React from "react";
 
 import Box from "@mui/material/Box";
+import Header from "@components/Header";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
-import WhiteTextField from "../../components/WhiteTextField";
+import WhiteTextField from "@components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Header from "../../components/Header";
-import { useTheme } from "../../constants/theme/useTheme";
 
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
+import { useAuth } from "@hooks/useAuth";
+import axiosInstance from "@utils/axiosInstance";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+
+import { useTheme } from "@constants/theme/useTheme";
 
 export default function SignIn() {
   const { login } = useAuth();
@@ -28,7 +30,7 @@ export default function SignIn() {
     password: string
   ): boolean => {
     const emailRegex = /\S+@\S+\.\S+/;
-    const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/; 
+    // const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/;
     if (email === "" || password === "") {
       setError("Preencha todos os campos");
       return false;
@@ -42,10 +44,12 @@ export default function SignIn() {
 
   const loginUser = async (email: string, password: string) => {
     try {
-      const response = await axios.post("https://medicamentar-api-latest.onrender.com/auth/login", {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post("/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
       const token = response.data;
       if (token) {
@@ -58,7 +62,7 @@ export default function SignIn() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "Ocorreu um erro no login");
-        console.log(error)
+        console.log(error);
       } else {
         setError("Ocorreu um erro inesperado");
       }

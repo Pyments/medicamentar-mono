@@ -26,7 +26,8 @@
       "@pages/*": ["src/pages/*"],
       "@assets/*": ["src/assets/*"],
       "@types/*": ["src/types/*"],
-      "@theme/*": ["src/constants/theme/*"]
+      "@theme/*": ["src/constants/theme/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src", "electron"],

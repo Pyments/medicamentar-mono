@@ -1,19 +1,20 @@
 import {
   Box,
-  FormControl,
-  FormGroup,
-  FormControlLabel,
   Switch,
+  FormGroup,
   IconButton,
+  FormControl,
+  FormControlLabel,
 } from "@mui/material";
-import Header from "../components/Header";
-import Sidebar from "../components/SideBar";
 import { useState } from "react";
-import { useTheme } from "../constants/theme/useTheme";
-import { SectionContainer } from "../components/SectionContainer";
-import { ContainerUniversal } from "../components/ContainerUniversal";
+import Header from "@components/Header";
+import Sidebar from "@components/SideBar";
+import Arrow from "@assets/icons/Arrow.svg";
 import { useNavigate } from "react-router-dom";
-import Arrow from "../assets/icons/Arrow.svg";
+import { SectionContainer } from "@components/SectionContainer";
+import { ContainerUniversal } from "@components/ContainerUniversal";
+
+import { useTheme } from "@constants/theme/useTheme";
 
 const Config = () => {
   const { darkMode, toggleTheme } = useTheme();

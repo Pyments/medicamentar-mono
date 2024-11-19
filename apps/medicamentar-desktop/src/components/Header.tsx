@@ -1,11 +1,11 @@
 import { useLocation } from "react-router-dom";
 
 import { Box, AppBar } from "@mui/material";
-import logoWhite from "../assets/icons/logoWhite.svg";
-import logoBlue from "../assets/icons/logoBlue.svg";
-import DarkModeToggle from "./ThemeSwitcherButton";
+import logoBlue from "@assets/icons/logoBlue.svg";
+import logoWhite from "@assets/icons/logoWhite.svg";
+import DarkModeToggle from "@components/ThemeSwitcherButton";
 
-import { useTheme } from "../constants/theme/useTheme";
+import { useTheme } from "@constants/theme/useTheme";
 
 function Header() {
   const { darkMode } = useTheme();

@@ -1,20 +1,20 @@
-import { useState } from "react";
 import {
   Box,
-  TextField,
-  Button,
-  Tabs,
   Tab,
+  Tabs,
   Modal,
+  Button,
+  TextField,
   IconButton,
 } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useTheme } from "../../constants/theme/useTheme";
-import CloseIcon from "@mui/icons-material/Close";
+import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import axios from "axios";
-import { useLocalStorage } from "../../hooks/UseLocalStorage";
+import axiosInstance from "@utils/axiosInstance";
+import CloseIcon from "@mui/icons-material/Close";
+import { useTheme } from "@constants/theme/useTheme";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 interface ExamModalProps {
   open: boolean;
@@ -92,8 +92,8 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
 
     try {
       if (tabValue === "exame") {
-        const response = await axios.post(
-          "https://medicamentar-api-latest.onrender.com/exam",
+        const response = await axiosInstance.post(
+          "/exam",
           {
             date: formattedDate,
             name: examName,
@@ -106,8 +106,8 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
         );
         console.log(response.data);
       } else {
-        const response = await axios.post(
-          "https://medicamentar-api-latest.onrender.com/consultation",
+        const response = await axiosInstance.post(
+          "/consultation",
           {
             date: formattedDate,
             doctorName: doctorName,
@@ -199,7 +199,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
             label="DATA E HORA"
             value={selectedDate}
             components={{
-              OpenPickerIcon: CalendarTodayIcon
+              OpenPickerIcon: CalendarTodayIcon,
             }}
             onChange={(newValue) => {
               setSelectedDate(newValue as Dayjs);

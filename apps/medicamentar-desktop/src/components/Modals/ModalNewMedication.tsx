@@ -1,6 +1,3 @@
-import axios from "axios";
-import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -19,11 +16,15 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-import { useTheme } from "@theme/useTheme";
+import dayjs from "dayjs";
+import { useState } from "react";
+import axiosInstance from "@utils/axiosInstance";
 import CloseIcon from "@mui/icons-material/Close";
-import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { DateTimePicker } from "@mui/x-date-pickers";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+
+import { useTheme } from "@theme/useTheme";
 
 interface FormErrors {
   name?: string;
@@ -77,7 +78,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
 
   enum Unity {
     ML = 0,
@@ -87,7 +88,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     SC = 4,
   }
 
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, _setErrors] = useState<FormErrors>({});
 
   /*  const validadeForm = () => {
     const newErrors: FormErrors = {};
@@ -122,10 +123,10 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     } */
 
     try {
-      const response = await axios({
+      const response = await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "post",
-        url: "https://medicamentar-api-latest.onrender.com/medication",
+        url: "/medication",
         data: {
           name: name, // string
           type: Number(type), // presets
@@ -134,7 +135,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
           unity: Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
           period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
           isContinuousUse: continuo, // bool
-          start_date: startDate
+          start_date: startDate,
           /*ophthalmicDetails: {
             leftEyeFrequency: null, 
             leftEyeQuantity: null, 

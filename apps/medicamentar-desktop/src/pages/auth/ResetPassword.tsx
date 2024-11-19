@@ -5,13 +5,14 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import Header from "../../components/Header";
-import WhiteTextField from "../../components/WhiteTextField";
-import { useTheme } from "../../constants/theme/useTheme";
 import React from "react";
 import axios from "axios";
+import Header from "@components/Header";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@constants/theme/useTheme";
+import WhiteTextField from "@components/WhiteTextField";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import axiosInstance from "@utils/axiosInstance";
 
 interface SnackbarProps {
   open: boolean;
@@ -104,10 +105,7 @@ export default function ResetPassword() {
 
   const forgot = async (token: string, password: string) => {
     try {
-      const response = await axios.post(
-        `https://medicamentar-api-latest.onrender.com/auth/reset?token=${token}&newPassword=${password}`
-      );
-
+      const response = await axiosInstance.post(`/auth/reset?token=${token}&newPassword=${password}`)
       setError(null);
       setDisplaySnackbar({ ...displaySnackbar, open: true });
       setTimeout(() => {

@@ -9,14 +9,14 @@ import {
   Typography,
   FormControl,
 } from "@mui/material";
-import SideBar from "../components/SideBar.tsx";
-import Header from "../components/Header.tsx";
-import { useTheme } from "../constants/theme/useTheme";
-import Profile_Default from "../assets/icons/Profile_Default.jpg";
-import Change_Photo from "../assets/icons/Change_Photo.svg";
-
-import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
+import Header from "@components/Header.tsx";
+import SideBar from "@components/SideBar.tsx";
+import Change_Photo from "@assets/icons/Change_Photo.svg";
+import Profile_Default from "@assets/icons/Profile_Default.jpg";
 import { SectionContainer } from "@components/SectionContainer.tsx";
+import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
+
+import { useTheme } from "@constants/theme/useTheme";
 
 const Profile = () => {
   const { darkMode } = useTheme();

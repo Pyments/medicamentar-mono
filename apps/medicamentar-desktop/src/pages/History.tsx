@@ -1,13 +1,13 @@
-import Header from "../components/Header";
-import Sidebar from "../components/SideBar";
-import { Box, Grid, Stack } from "@mui/material";
-import { useTheme } from "../constants/theme/useTheme";
-import GridItem from "../components/GridItem";
-import axios from "axios";
-import { SectionContainer } from "../components/SectionContainer.tsx";
-import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
+import Header from "@components/Header";
+import Sidebar from "@components/SideBar";
 import { useEffect, useState } from "react";
-import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
+import GridItem from "@components/GridItem";
+import { Box, Grid, Stack } from "@mui/material";
+import axiosInstance from "@utils/axiosInstance";
+import { useTheme } from "@constants/theme/useTheme";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
+import { SectionContainer } from "@components/SectionContainer";
+import { ContainerUniversal } from "@components/ContainerUniversal";
 
 const History = () => {
   const { darkMode } = useTheme();
@@ -21,14 +21,11 @@ const History = () => {
   useEffect(() => {
     try {
       const getHistory = async () => {
-        const response = await axios.get(
-          "https://medicamentar-api-latest.onrender.com/eventsLog",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axiosInstance.get("/eventsLog", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setData(response.data.data);
         console.log(response.data.data);
         console.log(response.data);
@@ -42,7 +39,7 @@ const History = () => {
   const displayHistoryCards = () => {
     return data.map((event: any) => {
       if (!event?.eventData) return null;
-      
+
       const processedEvent = {
         id: event.eventData.id,
         name: event.eventData.name,
@@ -53,7 +50,7 @@ const History = () => {
         description: event.eventData.description,
         action: event.eventAction,
       };
-      
+
       return (
         <Grid item key={processedEvent.id}>
           <GridItem
@@ -62,8 +59,11 @@ const History = () => {
             actionType={processedEvent.action}
             date={processedEvent.date}
             eventDate={processedEvent.eventDate}
-            medic={processedEvent.doctorName && 
-              "CONSULTA COM DOUTOR(A) " + processedEvent.doctorName.toUpperCase()}
+            medic={
+              processedEvent.doctorName &&
+              "CONSULTA COM DOUTOR(A) " +
+                processedEvent.doctorName.toUpperCase()
+            }
           />
         </Grid>
       );

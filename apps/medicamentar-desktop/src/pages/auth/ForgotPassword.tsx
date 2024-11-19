@@ -1,10 +1,11 @@
-import { Box, Button, Paper, Typography } from "@mui/material";
-import Header from "../../components/Header";
-import WhiteTextField from "../../components/WhiteTextField";
-import { useTheme } from "../../constants/theme/useTheme";
 import React from "react";
 import axios from "axios";
+import Header from "@components/Header";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "@utils/axiosInstance";
+import WhiteTextField from "@components/WhiteTextField";
+import { useTheme } from "@constants/theme/useTheme";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
 export default function ForgotPassword() {
@@ -71,9 +72,7 @@ export default function ForgotPassword() {
 
   const forgot = async (email: string) => {
     try {
-      const response = await axios.post(
-        `https://medicamentar-api-latest.onrender.com/auth/forgot?email=${email}`
-      );
+      const response = await axiosInstance.post(`auth/forgot?email=${email}`);
 
       setError(null);
       navigate("/reset-password");
@@ -102,7 +101,7 @@ export default function ForgotPassword() {
     >
       <Header />
       <Paper sx={card__wrapper}>
-        <Box sx={{ width: "90%"}}>
+        <Box sx={{ width: "90%" }}>
           <Typography
             sx={{
               my: "50px",
@@ -114,11 +113,7 @@ export default function ForgotPassword() {
           >
             {"RECUPERAR SENHA"}
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          <Box component="form" onSubmit={handleSubmit} noValidate>
             <Typography
               component="p"
               variant="body1"
@@ -144,7 +139,12 @@ export default function ForgotPassword() {
                 {error}
               </Typography>
             )}
-            <Button fullWidth type="submit" variant="contained" sx={card__button}>
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={card__button}
+            >
               {"ENVIAR"}
             </Button>
             <Button

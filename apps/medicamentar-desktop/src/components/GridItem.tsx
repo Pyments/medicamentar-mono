@@ -1,7 +1,7 @@
 import { Paper, Typography, Stack, styled } from "@mui/material";
 import { actionTypes } from "../types/actionTypes";
 import { gridItemTypes } from "../types/gridItemTypes";
-import { useTheme } from "../constants/theme/useTheme";
+import { useTheme } from "@constants/theme/useTheme";
 
 function runningActionColors(actionType: string) : string{
     const actionColors: Record<actionTypes, string> = {

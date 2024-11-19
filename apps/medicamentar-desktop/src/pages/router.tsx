@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { IRouterType } from "../types/router.types";
 import pagesData from "./pagesData";
-import { ProtectedRoute } from "../hooks/ProtectedRoute";
+import { ProtectedRoute } from "@hooks/ProtectedRoute";
 
 const Router = () => {
   const publicRoutes = ['signin', 'register', 'forgot-password', 'reset-password'];

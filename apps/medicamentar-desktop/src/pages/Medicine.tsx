@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, Button, Grid, Stack } from "@mui/material";
 import Header from "@components/Header.tsx";
+import { useEffect, useState } from "react";
+import { AddBtn } from "@components/AddBtn";
 import SideBar from "@components/SideBar.tsx";
+import axiosInstance from "@utils/axiosInstance";
+import { Typography, Grid, Stack } from "@mui/material";
+import ModalDelete from "@components/Modals/ModalDelete";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
+import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { SectionContainer } from "@components/SectionContainer.tsx";
 import ModalMedicineType from "@components/Modals/ModalMedicineType";
 import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
-import { useTheme } from "@theme/useTheme";
 import ModalNewMedication from "@components/Modals/ModalNewMedication";
-import ModalDelete from "@components/Modals/ModalDelete";
-import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
-import { useLocalStorage } from "@hooks/UseLocalStorage";
-import axios from "axios";
-import { AddBtn } from "@components/AddBtn";
+
+import { useTheme } from "@theme/useTheme";
 
 interface MedicationData {
   id: string;
@@ -48,7 +49,7 @@ const Medicine = () => {
     const fetchMedications = async () => {
       try {
         console.log(token);
-        const response = await axios.get("https://medicamentar-api-latest.onrender.com/medication", {
+        const response = await axiosInstance.get("/medication", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -81,14 +82,11 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axios.delete(
-          `https://medicamentar-api-latest.onrender.com/medication/${selectedMedicationId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );

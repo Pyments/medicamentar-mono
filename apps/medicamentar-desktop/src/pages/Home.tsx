@@ -1,13 +1,14 @@
-import { Box, Grid, Typography } from "@mui/material";
-import Header from "../components/Header.tsx";
-import SideBar from "../components/SideBar.tsx";
-import CardUniversal from "../components/CardUniversal.tsx";
-import { useTheme } from "../constants/theme/useTheme";
-import { SectionContainer } from "../components/SectionContainer.tsx";
-import { ContainerUniversal } from "../components/ContainerUniversal.tsx";
+import Header from "@components/Header";
+import SideBar from "@/components/SideBar";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useLocalStorage } from "../hooks/UseLocalStorage.tsx";
+import { Box, Grid, Typography } from "@mui/material";
+import CardUniversal from "@components/CardUniversal";
+import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
+import { SectionContainer } from "@components/SectionContainer";
+import { ContainerUniversal } from "@components/ContainerUniversal";
+
+import { useTheme } from "@constants/theme/useTheme";
+import axiosInstance from "@utils/axiosInstance";
 
 interface EventData {
   type: string;
@@ -36,12 +37,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get(
-          "https://medicamentar-api-latest.onrender.com/events?page=0&size=6",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axiosInstance.get("/events?page=0&size=6", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         console.log("Resposta completa da API:", response.data);
         const consultationEvents =
           response.data.data.consultationResponse || [];

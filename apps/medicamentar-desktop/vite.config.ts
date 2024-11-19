@@ -41,14 +41,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
-      { find: '@', replacement: path.resolve(__dirname, 'src') },
-      { find: '@components', replacement: path.resolve(__dirname, 'src/components') },
-      { find: '@pages', replacement: path.resolve(__dirname, 'src/pages') },
-      { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') },
-      { find: '@assets', replacement: path.resolve(__dirname, 'src/assets') },
-      { find: '@types', replacement: path.resolve(__dirname, 'src/types') },
-      { find: '@theme', replacement: path.resolve(__dirname, 'src/constants/theme') },
-      { find: '@hooks', replacement: path.resolve(__dirname, 'src/hooks') },
-    ]
+      { find: "@", replacement: path.resolve(__dirname, "src") },
+      { find: "@components", replacement: path.resolve(__dirname, "src/components") },
+      { find: "@pages", replacement: path.resolve(__dirname, "src/pages") },
+      { find: "@utils", replacement: path.resolve(__dirname, "src/utils") },
+      { find: "@assets", replacement: path.resolve(__dirname, "src/assets") },
+      { find: "@types", replacement: path.resolve(__dirname, "src/types") },
+      { find: "@theme", replacement: path.resolve(__dirname, "src/constants/theme" ) },
+      { find: "@hooks", replacement: path.resolve(__dirname, "src/hooks") },
+      { find: "@constants", replacement: path.resolve(__dirname, "src/constants") },
+      { find: "@utils", replacement: path.resolve(__dirname, "src/utils") },
+    ],
   },
 });
