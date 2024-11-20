@@ -12,6 +12,7 @@ export const AddBtn: React.FC<AddBtn> = ({handleModal, text}) => {
         <Button
             onClick={handleModal}
             sx={{
+              zIndex: 10,
               color: "white",
               borderRadius: { xs: "50%", md: "4px" },
               padding: { xs: 0, md: "14px" },

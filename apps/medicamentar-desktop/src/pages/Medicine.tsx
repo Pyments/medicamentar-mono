@@ -132,7 +132,7 @@ const Medicine = () => {
 
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
-        <Grid container spacing={3} pb="75px">
+        <Grid container spacing={3} mb="75px">
           {medications.length > 0 ? (
             medications.map((medication) => (
               <CardUniversal

@@ -69,6 +69,7 @@ const Sidebar: React.FC = () => {
   const drawerStyles = {
     left: 0,
     top: 100,
+    pt: { xs: "0", sm: "13px", md: "30px" },
     zIndex: 1200,
     borderRight: "none",
     position: "absolute",
@@ -86,7 +87,6 @@ const Sidebar: React.FC = () => {
     p: "10px 8px",
     m: "auto 0",
     transition: "all 200ms ease-out",
-
   };
 
   const listItemIconStyles = {
@@ -114,7 +114,12 @@ const Sidebar: React.FC = () => {
 
   return (
     <Box component="aside" sx={drawerStyles}>
-      <List sx={{ transition: "width 200ms ease-out", width: { xs: "75px", md: "300px" } }}>
+      <List
+        sx={{
+          transition: "width 200ms ease-out",
+          width: { xs: "75px", md: "300px" },
+        }}
+      >
         {items.map(({ text, icon, action }) => (
           <ListItemButton
             key={text}
