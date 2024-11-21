@@ -48,7 +48,7 @@ const Medicine = () => {
     const fetchMedications = async () => {
       try {
         console.log(token);
-        const response = await axios.get("https://medicamentar-api-latest-9piq.onrender.com/medication", {
+        const response = await axiosInstance.get("/medication", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,8 +82,8 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axios.delete(
-          `https://medicamentar-api-latest-9piq.onrender.com/medication/${selectedMedicationId}`,
+        await axiosInstance.delete(
+          `/medication/${selectedMedicationId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
