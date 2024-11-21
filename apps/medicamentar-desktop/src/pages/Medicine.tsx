@@ -11,7 +11,7 @@ import ModalNewMedication from "@components/Modals/ModalNewMedication";
 import ModalDelete from "@components/Modals/ModalDelete";
 import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
-import axios from "axios";
+import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 
 interface MedicationData {
@@ -87,8 +87,8 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axios.delete(
-          `https://medicamentar-api-latest-9piq.onrender.com/medication/${selectedMedicationId}`,
+        await axiosInstance.delete(
+          `/medication/${selectedMedicationId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
