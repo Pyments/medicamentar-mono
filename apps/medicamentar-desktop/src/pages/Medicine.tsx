@@ -17,12 +17,12 @@ import { useTheme } from "@theme/useTheme";
 
 interface MedicationData {
   id: string;
-  title: string;
-  continuousUse: string;
-  qtDdose: string;
+  name: string;
+  continuousUse: boolean;
+  amount: string;
   dose: string;
   period: string;
-  expirationDate: string;
+  endDate: string;
   dateTime: string;
 }
 interface User {
@@ -48,13 +48,12 @@ const Medicine = () => {
   useEffect(() => {
     const fetchMedications = async () => {
       try {
-        console.log(token);
         const response = await axiosInstance.get("/medication", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data.data);
+        console.log("Lista de Medicamentos:",response.data.data);
         setMedications(response.data.data);
       } catch (error) {
         console.error("Erro na requisição:", error);
@@ -138,12 +137,12 @@ const Medicine = () => {
             medications.map((medication) => (
               <CardUniversal
                 key={medication.id}
-                title={medication.title}
+                title={medication.name}
                 continuousUse={medication.continuousUse}
-                qtpDose={medication.qtDdose}
+                qtpDose={medication.amount}
                 dose={medication.dose}
                 period={medication.period}
-                expirationDate={medication.expirationDate}
+                expirationDate={medication.endDate}
                 dateTime={medication.dateTime}
                 onDelete={() => openDeleteModal(medication.id)}
                 onEdit={() => openEditModal(medication.id)}
