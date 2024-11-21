@@ -1,19 +1,18 @@
-import Header from "@components/Header.tsx";
 import { useEffect, useState } from "react";
-import { AddBtn } from "@components/AddBtn";
+import { Box, Typography, Button, Grid, Stack } from "@mui/material";
+import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
-import axiosInstance from "@utils/axiosInstance";
-import { Typography, Grid, Stack } from "@mui/material";
-import ModalDelete from "@components/Modals/ModalDelete";
-import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
-import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { SectionContainer } from "@components/SectionContainer.tsx";
 import ModalMedicineType from "@components/Modals/ModalMedicineType";
 import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
-import ModalNewMedication from "@components/Modals/ModalNewMedication";
-
 import { useTheme } from "@theme/useTheme";
+import ModalNewMedication from "@components/Modals/ModalNewMedication";
+import ModalDelete from "@components/Modals/ModalDelete";
+import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
+import axios from "axios";
+import { AddBtn } from "@components/AddBtn";
 
 interface MedicationData {
   id: string;
@@ -39,7 +38,7 @@ const Medicine = () => {
     string | null
   >(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
 
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
@@ -49,7 +48,7 @@ const Medicine = () => {
     const fetchMedications = async () => {
       try {
         console.log(token);
-        const response = await axiosInstance.get("/medication", {
+        const response = await axios.get("https://medicamentar-api-latest-9piq.onrender.com/medication", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -65,6 +64,7 @@ const Medicine = () => {
       fetchMedications();
     }
   }, [token]);
+
   const handleModal = () => {
     setOpenType(!openType);
   };
@@ -82,11 +82,14 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.delete(
+          `https://medicamentar-api-latest-9piq.onrender.com/medication/${selectedMedicationId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );
@@ -97,15 +100,11 @@ const Medicine = () => {
     }
   };
 
-  const openEditModal = (id: string) => {
+  const handleOpenEditModal = (id: string) => {
     setSelectedMedicationId(id);
-    setEditModalOpen(true);
+    setOpenEdit(true);
   };
 
-  const closeEditModal = () => {
-    setSelectedMedicationId(null);
-    setEditModalOpen(false);
-  };
   return (
     <ContainerUniversal>
       <Header />
@@ -146,7 +145,7 @@ const Medicine = () => {
                 expirationDate={medication.expirationDate}
                 dateTime={medication.dateTime}
                 onDelete={() => openDeleteModal(medication.id)}
-                onEdit={() => openEditModal(medication.id)}
+                onEdit={() => handleOpenEditModal(medication.id)}
                 type="medication"
               />
             ))
@@ -183,10 +182,12 @@ const Medicine = () => {
               onDelete={handleDeleteMedication}
             />
           )}
-          {isEditModalOpen && (
+          {openEdit && (
             <ModalEditMedicine
-              isOpen={isEditModalOpen}
-              onClose={closeEditModal}
+              open={openEdit}
+              setOpen={setOpenEdit}
+              id= {selectedMedicationId}
+              type = {type}
             />
           )}
         </Grid>
