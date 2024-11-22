@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu } from "electron";
+import { app, BrowserWindow, Menu, Notification, ipcMain } from "electron";
 import { fileURLToPath } from "node:url";
 import Store from "electron-store";
 import path from "node:path";
@@ -106,4 +106,132 @@ app.on("window-all-closed", () => {
     app.quit();
     win = null;
   }
+});
+
+interface MedicationResponse {
+  name: string;
+  dose: string;
+  startDate: string;
+}
+
+interface ConsultationResponse {
+  doctorName: string;
+  date: string;
+}
+
+interface ExamResponse {
+  name: string;
+  date: string;
+}
+
+interface ApiResponse {
+  medicationResponse: MedicationResponse[];
+  consultationResponse: ConsultationResponse[];
+  examResponse: ExamResponse[];
+}
+
+let token: { token: { data: string } } | null = null;
+
+interface NotificationSent {
+  id: string;
+  timestamp: number;
+}
+
+const sentNotifications = new Map<string, NotificationSent>();
+
+function shouldNotify(eventId: string, thresholdMinutes: number): boolean {
+  const now = Date.now();
+  const notification = sentNotifications.get(eventId);
+
+  if (!notification || now - notification.timestamp > thresholdMinutes * 60 * 1000) {
+    sentNotifications.set(eventId, { id: eventId, timestamp: now });
+    return true;
+  }
+  return false;
+}
+
+async function checkEvents() {
+  if (!token) {
+    console.warn("Token não disponível. Ignorando verificação de eventos.");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://medicamentar-api-latest-9piq.onrender.com/events", {
+      headers: {
+        Authorization: `Bearer ${token.token.data}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Erro ao buscar eventos:", response.statusText);
+      return;
+    }
+
+    const { data }: { data: ApiResponse } = await response.json();
+    const now = new Date();
+
+    const processEvent = (
+      event: { id: string; date: string; message: string },
+      thresholdMinutes: number,
+      title: string
+    ) => {
+      const eventTime = new Date(event.date);
+      const diffMinutes = (eventTime.getTime() - now.getTime()) / (1000 * 60);
+      if (diffMinutes <= thresholdMinutes && diffMinutes > 0 && shouldNotify(event.id, thresholdMinutes)) {
+        new Notification({ title, body: `${event.message} em ${Math.round(diffMinutes)} minutos.` }).show();
+      }
+    };
+
+    data.medicationResponse.forEach((med: MedicationResponse) =>
+      processEvent(
+        { id: med.name, date: med.startDate, message: `Está na hora de tomar ${med.name} (${med.dose})` },
+        5,
+        "Medicamento Próximo"
+      )
+    );
+
+    data.consultationResponse.forEach((consult: ConsultationResponse) =>
+      processEvent(
+        { id: consult.doctorName, date: consult.date, message: `Consulta com ${consult.doctorName}` },
+        15,
+        "Consulta Próxima"
+      )
+    );
+
+    data.examResponse.forEach((exam: ExamResponse) =>
+      processEvent(
+        { id: exam.name, date: exam.date, message: `Exame ${exam.name}` },
+        15,
+        "Exame Próximo"
+      )
+    );
+
+  } catch (error) {
+    console.error("Erro ao verificar eventos:", error);
+  }
+}
+
+ipcMain.on("send-user-data", (_event, userData) => {
+  try {
+    if (typeof userData === "string") {
+      userData = JSON.parse(userData);
+    }
+    
+    if (userData?.token?.data) {
+      store.set("user", JSON.stringify(userData));
+      token = userData;
+    } else {
+      console.warn("Estrutura de userData não é válida:", userData);
+    }
+  } catch (error) {
+    console.error("Erro ao analisar userData recebido:", error);
+  }
+});
+
+
+app.whenReady().then(() => {
+  const rawToken = store.get("user");
+  token = rawToken ? JSON.parse(rawToken as string) : null;
+  setInterval(checkEvents, 60 * 1000);
 });
