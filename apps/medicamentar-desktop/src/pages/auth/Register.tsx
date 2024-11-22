@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import Box from "@mui/material/Box";
-import { Paper } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import Header from "@components/Header";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -17,10 +17,14 @@ import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
+import handleCapslock from "@utils/handleCapslock";
+import handleShowPassword from "@utils/handleShowPassword";
+
 export default function Register() {
   const { login } = useAuth();
   const [error, setError] = React.useState<null | string>(null);
   const [remember, setRemember] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const { darkMode } = useTheme();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -33,7 +37,7 @@ export default function Register() {
     const confirmPassword = data.get("confirmPassword");
 
     const emailRegex = /\S+@\S+\.\S+/;
-    const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/;    
+    const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/;
 
     if (
       name === "" ||
@@ -55,10 +59,7 @@ export default function Register() {
       return;
     }
 
-    if (
-      password.length < 8 ||
-      confirmPassword.length < 8 
-    ) {
+    if (password.length < 8 || confirmPassword.length < 8) {
       setError("As senhas devem ter pelo menos 8 dígitos");
       return;
     }
@@ -156,42 +157,61 @@ export default function Register() {
             fullWidth
             label="Senha"
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             margin="normal"
             variant="outlined"
             autoComplete="current-password"
+            onKeyDown={(event:React.KeyboardEvent<HTMLInputElement>) => handleCapslock(event, setError)}
           />
           <WhiteTextField
             required
             fullWidth
             label="Confirmar senha"
             id="confirmPassword"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="confirmPassword"
             margin="normal"
             variant="outlined"
             autoComplete="current-password"
+            onKeyDown={(event:React.KeyboardEvent<HTMLInputElement>) => handleCapslock(event, setError)}
           />
-
           {error && (
             <Typography sx={{ color: "common.white", textAlign: "center" }}>
               {error}
             </Typography>
           )}
-
-          <FormControlLabel
-            label="Lembrar senha"
-            sx={{ color: "common.white" }}
-            control={
-              <Checkbox
-                value="remember"
-                color="primary"
-                sx={{ color: "common.white" }}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-            }
-          />
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ mt: 2 }}
+          >
+            <FormControlLabel
+              label="Lembrar senha"
+              sx={{ color: "common.white" }}
+              control={
+                <Checkbox
+                  value="remember"
+                  color="primary"
+                  sx={{ color: "common.white" }}
+                  onChange={(e) => setRemember(e.target.checked)}
+                />
+              }
+            />
+            <FormControlLabel
+              label="Mostrar Senha"
+              sx={{ color: "common.white" }}
+              control={
+                <Checkbox
+                  value="remember"
+                  color="primary"
+                  sx={{ color: "common.white" }}
+                  onChange={() => handleShowPassword(setShowPassword)}
+                />
+              }
+            />
+          </Stack>
           <Button
             fullWidth
             type="submit"

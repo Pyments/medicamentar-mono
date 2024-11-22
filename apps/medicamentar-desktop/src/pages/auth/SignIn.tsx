@@ -8,6 +8,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import WhiteTextField from "@components/WhiteTextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { Stack } from "@mui/material";
 
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -16,6 +17,8 @@ import axiosInstance from "@utils/axiosInstance";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
 import { useTheme } from "@constants/theme/useTheme";
+import handleCapslock from "@utils/handleCapslock";
+import handleShowPassword from "@utils/handleShowPassword";
 
 export default function SignIn() {
   const { login } = useAuth();
@@ -23,6 +26,7 @@ export default function SignIn() {
   const [remember, setRemember] = React.useState(false);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const [showPassword, setShowPassword] = React.useState(false);
   const { darkMode } = useTheme();
 
   const validateEmailAndPassword = (
@@ -156,19 +160,26 @@ export default function SignIn() {
             fullWidth
             label="Senha"
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             margin="normal"
             variant="outlined"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(event:React.KeyboardEvent<HTMLInputElement>) => handleCapslock(event, setError)}
           />
           {error && (
             <Typography sx={{ color: "common.white", textAlign: "center" }}>
               {error}
             </Typography>
           )}
+          <Stack
+           direction="row"
+           justifyContent="space-between"
+           alignItems="center"
+           sx={{ mt: 2 }}
+          >
           <FormControlLabel
             label="Lembrar senha"
             sx={{ color: "common.white" }}
@@ -181,6 +192,19 @@ export default function SignIn() {
               />
             }
           />
+           <FormControlLabel
+              label="Mostrar Senha"
+              sx={{ color: "common.white" }}
+              control={
+                <Checkbox
+                  value="remember"
+                  color="primary"
+                  sx={{ color: "common.white" }}
+                  onChange={() => handleShowPassword(setShowPassword)}
+                />
+              }
+            />
+          </Stack>
           <Button fullWidth type="submit" variant="contained" sx={card__button}>
             {"ENTRAR"}
           </Button>
