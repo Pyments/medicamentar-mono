@@ -18,7 +18,8 @@ interface EventData {
   description: string;
   date: string;
   local: string;
-  unity:string  
+  unity:string;
+  doctorName:string;
 }
 interface User {
   token: {
@@ -90,7 +91,7 @@ const Home: React.FC = () => {
                 <CardUniversal
                   key={event.id}
                   type="events"
-                  title={event.name}
+                  title={event.name || event.doctorName}
                   description={event.description || event.type }
                   dateTime={event.date || event.amount + " " +event.unity}
                 />
@@ -103,7 +104,7 @@ const Home: React.FC = () => {
                 color: darkMode ? "common.white" : "commonm.dark",
               }}
             >
-              Nenhum medicamento encontrado.
+              Nenhum evento encontrado.
             </Typography>
             )}
           </Grid>

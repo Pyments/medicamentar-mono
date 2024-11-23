@@ -31,8 +31,8 @@ const Exam = () => {
   const [exams, setExams] = useState<ExamData[]>([]);
 
 
-  useEffect(() => {
-    const fetchMedications = async () => {
+  
+    const fetchExams  = async () => {
       try {
         const response = await axiosInstance.get("/exam", {
           headers: {
@@ -46,10 +46,11 @@ const Exam = () => {
       }
     };
 
-    if (token) {
-      fetchMedications();
-    }
-  }, [token]);
+    useEffect(() => {
+      if (token) {
+        fetchExams();
+      }
+    }, [token]);
 
   const handleModal = () => {
     setOpen(!open);
@@ -104,13 +105,13 @@ const Exam = () => {
                 color: darkMode ? "common.white" : "commonm.dark",
               }}
             >
-              Nenhum medicamento encontrado.
+              Nenhuma consulta ou exame encontrado.
             </Typography>
           )}
          
         </Grid>
       </SectionContainer>
-      {open && <ExamModal open={open} onClose={handleModal} />}
+      {open && <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />}
     </ContainerUniversal>
   );
 };
