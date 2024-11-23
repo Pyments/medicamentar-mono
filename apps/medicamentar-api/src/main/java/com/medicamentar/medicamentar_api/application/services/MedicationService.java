@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +14,13 @@ import com.medicamentar.medicamentar_api.application.dtos.medicationDto.Medicati
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
+import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
 import lombok.RequiredArgsConstructor;
-
-import com.medicamentar.medicamentar_api.domain.entities.User;
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +57,15 @@ public class MedicationService {
         return response;
     }
 
-    public ServiceResponse<List<MedicationResponse>> getMedications() {
+    public ServiceResponse<List<MedicationResponse>> getMedications(int page, int size) {
         ServiceResponse<List<MedicationResponse>> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        List<Medication> medications = medicationRepo.findByUser(currentUser);
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<MedicationResponse> medicationResponses = medications.stream()
+        Page<Medication> medicationsPage = medicationRepo.findByUser(currentUser, pageable);
+
+        List<MedicationResponse> medicationResponses = medicationsPage.getContent().stream()
                 .map(medication -> new MedicationResponse(
                         medication.getId(),
                         medication.getName(),
@@ -78,7 +82,7 @@ public class MedicationService {
 
         response.setData(medicationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setMessage("Exibindo medicamentos.");
+        response.setMessage(String.format("Exibindo página %d de %d.", medicationsPage.getNumber() + 1, medicationsPage.getTotalPages()));
 
         return response;
     }

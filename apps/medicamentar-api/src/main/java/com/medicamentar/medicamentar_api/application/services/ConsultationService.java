@@ -3,6 +3,9 @@ package com.medicamentar.medicamentar_api.application.services;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,9 @@ public class ConsultationService {
     private final ConsultationRepository consultationRepo;
     private final EventLogService eLogService;
     private final TokenService tokenService;
+
     public ServiceResponse<String> createConsultation(ConsultationRequest consultationRegister) {
-        ServiceResponse<String> response = new ServiceResponse<String>();
+        ServiceResponse<String> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
         var consultation = new Consultation();
@@ -37,16 +41,17 @@ public class ConsultationService {
         this.consultationRepo.save(consultation);
         this.eLogService.saveEvent(EventLogAction.Criado, consultation);
 
-        response.setMessage("consulta agendada com sucesso!");
+        response.setMessage("Consulta agendada com sucesso!");
         response.setStatus(HttpStatus.CREATED);
         return response;
     }
 
-    public ServiceResponse<List<ConsultationResponse>> getConsultations() {
+    public ServiceResponse<List<ConsultationResponse>> getConsultations(int page, int size) {
         ServiceResponse<List<ConsultationResponse>> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        List<Consultation> consultations = this.consultationRepo.findByUser(currentUser);
+        Page<Consultation> consultations = this.consultationRepo.findByUser(
+                currentUser, PageRequest.of(page, size));
 
         List<ConsultationResponse> consultationResponses = consultations.stream()
                 .map(consultation -> new ConsultationResponse(
@@ -84,5 +89,4 @@ public class ConsultationService {
 
         return response;
     }
-
 }

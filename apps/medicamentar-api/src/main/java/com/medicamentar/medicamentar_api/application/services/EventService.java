@@ -1,10 +1,11 @@
 package com.medicamentar.medicamentar_api.application.services;
 
-import java.util.Comparator;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class EventService {
         User currentUser = tokenService.getCurrentUser();
 
         if (page < 0) {
-            response.setMessage("O número de páginas não pdoe ser negativo.");
+            response.setMessage("O número de páginas não pode ser negativo.");
             response.setStatus(HttpStatus.BAD_REQUEST);
             return response;
         }
@@ -52,12 +53,12 @@ public class EventService {
 
         try {
             Pageable pageable = PageRequest.of(page, size);
+            
+            List<Medication> medications = medicationRepository.findByUser(currentUser);
+            List<Exam> exams = examRepository.findByUser(currentUser);
+            List<Consultation> consultations = consultationRepository.findByUser(currentUser);
 
-            Page<Medication> pagedMedications = medicationRepository.findByUser(currentUser, pageable);
-            Page<Exam> pagedExams = examRepository.findByUser(currentUser, pageable);
-            Page<Consultation> pagedConsultations = consultationRepository.findByUser(currentUser, pageable);
-
-            List<MedicationResponse> medicationsResponses = pagedMedications.stream()
+            List<MedicationResponse> medicationsResponses = medications.stream()
                     .map(medication -> new MedicationResponse(
                             medication.getId(),
                             medication.getName(),
@@ -70,42 +71,63 @@ public class EventService {
                             medication.getStart_date(),
                             medication.getEnd_date(),
                             medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
-                            .collect(Collectors.toList());
+                    .collect(Collectors.toList());
 
-            List<ExamResponse> examsResponses = pagedExams.stream()
+            List<ExamResponse> examsResponses = exams.stream()
                     .map(E -> new ExamResponse(
                             E.getId(),
                             E.getDate(),
                             E.getName(),
                             E.getLocal(),
                             E.getDescription()))
-                    .sorted(Comparator.comparing(ExamResponse::date))
                     .collect(Collectors.toList());
 
-            List<ConsultationResponse> consultationsResponses = pagedConsultations.stream()
+            List<ConsultationResponse> consultationsResponses = consultations.stream()
                     .map(C -> new ConsultationResponse(
                             C.getId(),
                             C.getDate(),
                             C.getDoctorName(),
                             C.getLocal(),
                             C.getDescription()))
-                    .sorted(Comparator.comparing(ConsultationResponse::date))
                     .collect(Collectors.toList());
 
-            if (medicationsResponses.isEmpty() && examsResponses.isEmpty() && consultationsResponses.isEmpty()) {
-                response.setMessage("Nehnum evento encontrado.");
-                response.setStatus(HttpStatus.NOT_FOUND);
-                return response;
-            }
+            List<Object> allEvents = new ArrayList<>();
+            allEvents.addAll(medicationsResponses);
+            allEvents.addAll(examsResponses);
+            allEvents.addAll(consultationsResponses);
 
-            EventResponse eventResponse = new EventResponse(medicationsResponses, consultationsResponses,
-                    examsResponses);
+            allEvents.sort((a, b) -> {
+                ZonedDateTime dateA = getEventDate(a);
+                ZonedDateTime dateB = getEventDate(b);
+                return dateB.compareTo(dateA); 
+            });
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), allEvents.size());
+            List<Object> pagedEvents = allEvents.subList(start, end);
+
+            List<MedicationResponse> pagedMedications = pagedEvents.stream()
+                    .filter(e -> e instanceof MedicationResponse)
+                    .map(e -> (MedicationResponse) e)
+                    .collect(Collectors.toList());
+
+            List<ExamResponse> pagedExams = pagedEvents.stream()
+                    .filter(e -> e instanceof ExamResponse)
+                    .map(e -> (ExamResponse) e)
+                    .collect(Collectors.toList());
+
+            List<ConsultationResponse> pagedConsultations = pagedEvents.stream()
+                    .filter(e -> e instanceof ConsultationResponse)
+                    .map(e -> (ConsultationResponse) e)
+                    .collect(Collectors.toList());
+
+            EventResponse eventResponse = new EventResponse(pagedMedications, pagedConsultations, pagedExams);
 
             response.setData(eventResponse);
             response.setMessage("Exibindo eventos.");
             response.setStatus(HttpStatus.OK);
-            response.setGetTotalPages(pagedMedications.getTotalPages());
-            response.setGetTotalElements(pagedMedications.getTotalElements());
+            response.setGetTotalPages((int) Math.ceil((double) allEvents.size() / size));
+            response.setGetTotalElements((long) allEvents.size());
 
         } catch (Exception e) {
             response.setMessage("Ocorreu um erro ao tentar mostrar os eventos: " + e.getMessage());
@@ -113,5 +135,16 @@ public class EventService {
         }
 
         return response;
+    }
+
+    private ZonedDateTime getEventDate(Object event) {
+        if (event instanceof MedicationResponse) {
+            return ((MedicationResponse) event).startDate();
+        } else if (event instanceof ExamResponse) {
+            return ((ExamResponse) event).date();
+        } else if (event instanceof ConsultationResponse) {
+            return ((ConsultationResponse) event).date();
+        }
+        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault()); // Fallback to Unix epoch
     }
 }

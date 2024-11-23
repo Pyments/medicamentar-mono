@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +29,15 @@ public class ExamService {
     private final EventLogService eLogService;
     private final TokenService tokenService;
     
-    public ServiceResponse<List<ExamResponse>> getAllexams() {
+    public ServiceResponse<List<ExamResponse>> getAllexams(int page, int size) {
         var response = new ServiceResponse<List<ExamResponse>>();
         User currentUser = tokenService.getCurrentUser();
 
-        List<Exam> exams = repository.findByUser(currentUser);
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<ExamResponse> examsResponses = exams.stream()
+        Page<Exam> examsPage = repository.findByUser(currentUser, pageable);
+
+        List<ExamResponse> examsResponses = examsPage.getContent().stream()
                 .map(exam -> new ExamResponse(
                         exam.getId(),
                         exam.getDate(),
@@ -43,7 +48,7 @@ public class ExamService {
 
         response.setData(examsResponses);
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setMessage("Exam successfully returned");
+        response.setMessage(String.format("Exibindo página %d de %d.", examsPage.getNumber() + 1, examsPage.getTotalPages()));
 
         return response;
     }
@@ -108,7 +113,7 @@ public class ExamService {
                 savedExam.getDescription());
 
         response.setData(examResponse);
-        response.setMessage("Exame registrado comsucesso!");
+        response.setMessage("Exame registrado com sucesso!");
         response.setStatus(HttpStatus.CREATED);
 
         this.eLogService.saveEvent(EventLogAction.Criado, newExam);
@@ -134,5 +139,4 @@ public class ExamService {
 
         return response;
     }
-
 }

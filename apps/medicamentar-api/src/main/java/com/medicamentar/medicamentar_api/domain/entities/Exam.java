@@ -1,20 +1,20 @@
 package com.medicamentar.medicamentar_api.domain.entities;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 
 @Table(name = "exam")
 @Entity(name = "exam")
@@ -31,7 +31,7 @@ public class Exam {
 
     private UUID id;
 
-    private Date date;
+    private ZonedDateTime date;
 
     private String name;
 

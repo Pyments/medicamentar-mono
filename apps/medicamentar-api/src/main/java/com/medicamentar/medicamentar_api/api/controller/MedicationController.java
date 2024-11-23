@@ -1,7 +1,14 @@
 package com.medicamentar.medicamentar_api.api.controller;
 
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationRequest;
@@ -9,15 +16,8 @@ import com.medicamentar.medicamentar_api.application.services.MedicationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -29,13 +29,13 @@ public class MedicationController {
 
     private final MedicationService medService;
 
-    @Operation(summary = "Visualização do medicamento adicionado.", method = "GET")
-    @GetMapping()
-    public ResponseEntity getMedication() {
-        var response = this.medService.getMedications();
-
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
+    @Operation(summary = "Visualização dos medicamentos com paginação.", method = "GET")
+@GetMapping()
+public ResponseEntity getMedications(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "9") int size) {
+    var response = this.medService.getMedications(page, size);
+    return ResponseEntity.status(response.getStatus()).body(response);
+}
 
     @Operation(summary = "Adiciona um novo medicamento", method = "POST")
     @PostMapping()
