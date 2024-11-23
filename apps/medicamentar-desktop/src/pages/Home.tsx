@@ -12,13 +12,14 @@ import axiosInstance from "@utils/axiosInstance";
 
 interface EventData {
   type: string;
-  period: string;
+  amount: string;
   id: string;
   name: string;
   description: string;
   date: string;
   local: string;
-  doctorName: string;
+  unity:string;
+  doctorName:string;
 }
 interface User {
   token: {
@@ -29,8 +30,6 @@ interface User {
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
   const [events, setEvents] = useState<EventData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
 
@@ -41,14 +40,9 @@ const Home: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Resposta completa da API:", response.data);
-        const consultationEvents =
-          response.data.data.consultationResponse || [];
+        const consultationEvents =response.data.data.consultationResponse || [];
         const examEvents = response.data.data.examResponse || [];
         const medicationEvents = response.data.data.medicationResponse || [];
-
-        //console.log("EVENTOS: consultationResponse:", consultationEvents);
-        //console.log("EVENTOS: examResponse:", examEvents);
-        // console.log("EVENTOS: medicationResponse:", medicationEvents);
 
         const combinedEvents = [
           ...consultationEvents,
@@ -58,15 +52,10 @@ const Home: React.FC = () => {
 
         console.log("LISTA DE TODOS OS EVENTOS: ", combinedEvents);
         setEvents(combinedEvents);
-        setError(null);
       } catch (error) {
         console.error("Erro na requisição:", error);
-        setError("Erro ao carregar eventos.");
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
-
     if (token) {
       fetchEvents();
     }
@@ -95,11 +84,7 @@ const Home: React.FC = () => {
             EVENTOS PRÓXIMOS
           </Box>
         </Typography>
-        {loading ? (
-          <Typography>Carregando eventos...</Typography>
-        ) : error ? (
-          <Typography color="error">{error}</Typography>
-        ) : (
+       
           <Grid container spacing={3} pb="75px">
             {events.length > 0 ? (
               events.map((event) => (
@@ -107,15 +92,22 @@ const Home: React.FC = () => {
                   key={event.id}
                   type="events"
                   title={event.name || event.doctorName}
-                  description={event.description || event.type}
-                  dateTime={event.date || event.period}
+                  description={event.description || event.type }
+                  dateTime={event.date || event.amount + " " +event.unity}
                 />
               ))
             ) : (
-              <Typography>Nenhum evento encontrado.</Typography>
+              <Typography
+              sx={{
+                margin: "auto",
+                mt: "50px",
+                color: darkMode ? "common.white" : "commonm.dark",
+              }}
+            >
+              Nenhum evento encontrado.
+            </Typography>
             )}
           </Grid>
-        )}
       </SectionContainer>
     </ContainerUniversal>
   );

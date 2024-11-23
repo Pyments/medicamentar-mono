@@ -7,7 +7,7 @@ import { useTheme } from "@constants/theme/useTheme";
 interface CardUniversalProps{
     type: "medication" | "events";
     title:string;
-    continuousUse?:string;
+    continuousUse?:boolean;
     dose?:string;
     qtpDose?:string;
     period?:string;
@@ -99,7 +99,7 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                         width:"219px", 
                         maxWidth:"100%", 
                         }}>
-                          <Typography sx ={infoCard}>USO CONTÍNUO: {continuousUse}</Typography>
+                          <Typography sx ={infoCard}>USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}</Typography>
                           <Typography sx ={infoCard}>QUANTIDADE: {qtpDose}</Typography>  
                           <Typography sx ={infoCard}>DOSE: {dose}</Typography>
                           <Typography sx ={infoCard}>PERÍODO: {period}</Typography>
@@ -171,6 +171,7 @@ const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose
                      alignItems: "center",
                      justifyContent: "center",
                 }}>
+                        
                     <Box sx={{
                          height: "70%",
                          display: "flex",

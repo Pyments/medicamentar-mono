@@ -19,6 +19,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 interface ExamModalProps {
   open: boolean;
   onClose: () => void;
+  fetchExams: () => Promise<void>;
 }
 
 interface FormErrors {
@@ -35,7 +36,7 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
+const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
   const [tabValue, setTabValue] = useState("exame");
   const [isOpen] = useState<boolean>(true);
   const [examName, setExamName] = useState<string>("");
@@ -120,6 +121,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose }) => {
         );
         console.log(response.data);
       }
+      await fetchExams();
     } catch (error) {
       console.error("Erro na requisição:", error);
     }
