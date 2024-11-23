@@ -20,6 +20,8 @@ import lombok.AccessLevel;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import java.time.LocalDateTime;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "tb_medication")
@@ -58,4 +60,7 @@ public class Medication {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

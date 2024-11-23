@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.application.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class MedicationService {
         ServiceResponse<List<MedicationResponse>> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        List<Medication> medications = medicationRepo.findByUser(currentUser);
+        List<Medication> medications = medicationRepo.findByUserAndDeletedAtIsNull(currentUser);
 
         List<MedicationResponse> medicationResponses = medications.stream()
                 .map(medication -> new MedicationResponse(
@@ -79,7 +80,6 @@ public class MedicationService {
         response.setData(medicationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage("Exibindo medicamentos.");
-
         return response;
     }
 
@@ -87,8 +87,16 @@ public class MedicationService {
         ServiceResponse<String> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        var medicationId = UUID.fromString(id);
-        var medicationEntity = this.medicationRepo.findById(medicationId);
+        UUID medicationId;
+        try {
+            medicationId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            response.setMessage("ID inválido.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
+
+        var medicationEntity = this.medicationRepo.findByIdAndUserAndDeletedAtIsNull(medicationId, currentUser);
 
         if (medicationEntity.isPresent()) {
             var medication = medicationEntity.get();
@@ -128,18 +136,29 @@ public class MedicationService {
         ServiceResponse<String> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        var medicationId = UUID.fromString(id);
-        var medication = medicationRepo.findById(medicationId);
+        UUID medicationId;
+        try {
+            medicationId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            response.setMessage("ID inválido.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
 
-        if (medication.isPresent()) {
-            if (!medication.get().getUser().getId().equals(currentUser.getId())) {
+        var medicationOpt = medicationRepo.findByIdAndUserAndDeletedAtIsNull(medicationId, currentUser);
+
+        if (medicationOpt.isPresent()) {
+            Medication medication = medicationOpt.get();
+
+            if (!medication.getUser().getId().equals(currentUser.getId())) {
                 response.setMessage("Você não tem permissão para deletar este medicamento.");
                 response.setStatus(HttpStatus.FORBIDDEN);
                 return response;
             }
 
-            medicationRepo.deleteById(medicationId);
-            this.eLogService.saveEvent(EventLogAction.Deletado, medication.get());
+            medication.setDeletedAt(LocalDateTime.now());
+            medicationRepo.save(medication);
+            eLogService.saveEvent(EventLogAction.Deletado, medication);
 
             response.setMessage("Medicamento deletado com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);

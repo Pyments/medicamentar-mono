@@ -15,6 +15,9 @@ import com.medicamentar.medicamentar_api.domain.entities.User;
 @Repository
 public interface ConsultationRepository extends JpaRepository<Consultation, UUID> {
     List<Consultation> findByUser(User user);
+    List<Consultation> findByUserAndDeletedAtIsNull(User user);
     Optional<Consultation> findByIdAndUser(UUID id, User user);
+    Optional<Consultation> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
     Page<Consultation> findByUser(User user, Pageable pageable);
+    Page<Consultation> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.medicamentar.medicamentar_api.domain.entities;
 
 import java.util.Date;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Column;
 
 @Table(name = "exam")
 @Entity(name = "exam")
@@ -42,4 +44,7 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }
