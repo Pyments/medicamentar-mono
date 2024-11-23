@@ -15,7 +15,11 @@ import com.medicamentar.medicamentar_api.domain.entities.User;
 
 @Repository
 public interface MedicationRepository extends JpaRepository<Medication, UUID> {
+    //TODO: Verificar se é necessário ter todos esses métodos
     List<Medication> findByUser(User user);
+    List<Medication> findByUserAndDeletedAtIsNull(User user);
     Optional<Medication> findByIdAndUser(UUID id, User user);
     Page<Medication> findByUser(User user, Pageable pageable);
+    Optional<Medication> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
+    Page<Medication> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
 }

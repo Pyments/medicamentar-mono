@@ -38,6 +38,7 @@ public class EventLogService {
   private final ExamRepository examRepository;
   private final ConsultationRepository consultationRepository;
   private final TokenService tokenService;
+
   /**
    * Saves an event log entry in the database.
    *
@@ -106,9 +107,9 @@ public class EventLogService {
                   medication.isContinuousUse(),
                   medication.getStart_date(),
                   medication.getEnd_date(),
-                  medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null
-              )).orElse(null);
-              
+                  medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
+                  .orElse(null);
+
               return new EventLogResponse(medicationResponse, h.getEventAction(), h.getEventDate());
 
             case "Exame":
@@ -138,10 +139,9 @@ public class EventLogService {
 
             default:
               return null;
-
           }
         })
-        .filter(eventLogResponseItem -> eventLogResponseItem != null) // Renomeie o parâmetro para evitar conflitos
+        .filter(eventLogResponseItem -> eventLogResponseItem != null)
         .collect(Collectors.toList());
 
     response.setData(eventLogResponse);

@@ -16,7 +16,10 @@ import com.medicamentar.medicamentar_api.domain.entities.User;
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, UUID> {
     List<Exam> findByUser(User user);
+    List<Exam> findByUserAndDeletedAtIsNull(User user);
     Optional<Exam> findByIdAndUser(UUID id, User user);
+    Optional<Exam> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
     Page<Exam> findByUser(User user, Pageable pageable);
+    Page<Exam> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
     Optional<Exam> findByNameAndDateAndUser(String name, LocalDateTime date, User user);
 }
