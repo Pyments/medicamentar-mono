@@ -1,7 +1,5 @@
 package com.medicamentar.medicamentar_api.domain.repositories;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,13 +11,10 @@ import org.springframework.stereotype.Repository;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.User;
 
+import jakarta.annotation.Nullable;
+
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, UUID> {
-    List<Exam> findByUser(User user);
-    List<Exam> findByUserAndDeletedAtIsNull(User user);
-    Optional<Exam> findByIdAndUser(UUID id, User user);
+    Page<Exam> findByUserAndDeletedAtIsNull(User user, @Nullable Pageable pageable);
     Optional<Exam> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
-    Page<Exam> findByUser(User user, Pageable pageable);
-    Page<Exam> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
-    Optional<Exam> findByNameAndDateAndUser(String name, LocalDateTime date, User user);
 }

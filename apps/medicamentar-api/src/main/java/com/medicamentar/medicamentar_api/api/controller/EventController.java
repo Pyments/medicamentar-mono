@@ -26,7 +26,7 @@ public class EventController {
     @GetMapping()
     public ResponseEntity<ServiceResponse<EventResponse>> getEvents(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
+            @RequestParam(defaultValue = "9") int size) {
         
         ServiceResponse<EventResponse> response = eventService.getEvents(page, size);
         
