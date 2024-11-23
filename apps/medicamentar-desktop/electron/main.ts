@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import { fileURLToPath } from "node:url";
 import Store from "electron-store";
 import path from "node:path";
@@ -45,6 +45,8 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "icons/medicamentar_logo_sm.svg"),
     width: 1200,
     height: 800,
+    minWidth: 720,
+    minHeight: 480,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -52,6 +54,8 @@ function createWindow() {
       devTools: true
     },
   });
+
+  Menu.setApplicationMenu(null);
 
   // Add extensive error logging
   win.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
