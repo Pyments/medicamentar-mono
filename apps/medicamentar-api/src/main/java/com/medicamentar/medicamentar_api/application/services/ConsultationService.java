@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.application.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public class ConsultationService {
         ServiceResponse<List<ConsultationResponse>> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Page<Consultation> consultations = this.consultationRepo.findByUser(
+        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNull(
                 currentUser, PageRequest.of(page, size));
 
         List<ConsultationResponse> consultationResponses = consultations.stream()
@@ -74,11 +75,13 @@ public class ConsultationService {
         User currentUser = tokenService.getCurrentUser();
 
         var consultationId = UUID.fromString(id);
-        var consultation = consultationRepo.findByIdAndUser(consultationId, currentUser);
+        var consultation = consultationRepo.findByIdAndUserAndDeletedAtIsNull(consultationId, currentUser);
 
         if (consultation.isPresent()) {
-            consultationRepo.deleteById(consultationId);
-            this.eLogService.saveEvent(EventLogAction.Deletado, consultation.get());
+            Consultation cons = consultation.get();
+            cons.setDeletedAt(LocalDateTime.now());
+            consultationRepo.save(cons);
+            this.eLogService.saveEvent(EventLogAction.Deletado, cons);
 
             response.setMessage("Consulta removida com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);

@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.application.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class ExamService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Exam> examsPage = repository.findByUser(currentUser, pageable);
+        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNull(currentUser, pageable);
 
         List<ExamResponse> examsResponses = examsPage.getContent().stream()
                 .map(exam -> new ExamResponse(
@@ -57,7 +58,7 @@ public class ExamService {
         ServiceResponse<ExamResponse> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Optional<Exam> examOptional = repository.findByIdAndUser(examId, currentUser);
+        Optional<Exam> examOptional = repository.findByIdAndUserAndDeletedAtIsNull(examId, currentUser);
         if (!examOptional.isPresent()) {
             response.setMessage("Exame não encontrado ou sem permissão.");
             response.setStatus(HttpStatus.FORBIDDEN);
@@ -125,17 +126,19 @@ public class ExamService {
         ServiceResponse<String> response = new ServiceResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Optional<Exam> examOptional = repository.findByIdAndUser(id, currentUser);
+        Optional<Exam> examOptional = repository.findByIdAndUserAndDeletedAtIsNull(id, currentUser);
         if (!examOptional.isPresent()) {
             response.setMessage("Exame não encontrado ou sem permissão.");
             response.setStatus(HttpStatus.FORBIDDEN);
             return response;
         }
 
-        this.repository.deleteById(id);
+        Exam exam = examOptional.get();
+        exam.setDeletedAt(LocalDateTime.now());
+        repository.save(exam);
         response.setMessage("Exame deletado com sucesso!");
         response.setStatus(HttpStatus.ACCEPTED);
-        this.eLogService.saveEvent(EventLogAction.Deletado, examOptional.get());
+        this.eLogService.saveEvent(EventLogAction.Deletado, exam);
 
         return response;
     }

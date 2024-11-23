@@ -2,6 +2,7 @@ package com.medicamentar.medicamentar_api.domain.entities;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.Column;
 
 
 @Entity
@@ -38,4 +40,6 @@ public class Consultation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

@@ -16,9 +16,6 @@ import com.medicamentar.medicamentar_api.application.dtos.eventDto.EventResponse
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
-import com.medicamentar.medicamentar_api.domain.entities.Consultation;
-import com.medicamentar.medicamentar_api.domain.entities.Exam;
-import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.repositories.ConsultationRepository;
@@ -54,9 +51,9 @@ public class EventService {
         try {
             Pageable pageable = PageRequest.of(page, size);
             
-            List<Medication> medications = medicationRepository.findByUser(currentUser);
-            List<Exam> exams = examRepository.findByUser(currentUser);
-            List<Consultation> consultations = consultationRepository.findByUser(currentUser);
+            var medications = medicationRepository.findByUserAndDeletedAtIsNull(currentUser, null);
+            var exams = examRepository.findByUserAndDeletedAtIsNull(currentUser, null);
+            var consultations = consultationRepository.findByUserAndDeletedAtIsNull(currentUser, null);
 
             List<MedicationResponse> medicationsResponses = medications.stream()
                     .map(medication -> new MedicationResponse(
