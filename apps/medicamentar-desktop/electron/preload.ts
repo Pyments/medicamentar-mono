@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     send: (channel: string, ...args: any[]) => {
       ipcRenderer.send(channel, ...args);
-    }
+    },
+  },
+  user: {
+    send: (userData: string) => ipcRenderer.send('send-user-data', userData)
   }
-});
+}); 

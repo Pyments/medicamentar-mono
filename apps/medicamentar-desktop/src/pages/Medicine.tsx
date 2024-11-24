@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AddBtn } from "@components/AddBtn";
 import SideBar from "@components/SideBar.tsx";
 import axiosInstance from "@utils/axiosInstance";
-import { Typography, Grid, Stack } from "@mui/material";
+import { Typography, Grid, Stack, Pagination } from "@mui/material";
 import ModalDelete from "@components/Modals/ModalDelete";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -17,13 +17,13 @@ import { useTheme } from "@theme/useTheme";
 
 interface MedicationData {
   id: string;
-  title: string;
-  continuousUse: string;
-  qtDdose: string;
+  name: string;
   dose: string;
+  amount: string;
   period: string;
-  expirationDate: string;
+  endDate: string;
   dateTime: string;
+  continuousUse: boolean;
 }
 interface User {
   token: {
@@ -44,17 +44,22 @@ const Medicine = () => {
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchMedications = async () => {
       try {
-        console.log(token);
-        const response = await axiosInstance.get("/medication", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(response.data.data);
+        const response = await axiosInstance.get(
+          `/medication?page=${page}&size=9`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Lista de Medicamentos:", response.data.data);
+        setPageCount(response.data.getTotalPages);
         setMedications(response.data.data);
       } catch (error) {
         console.error("Erro na requisição:", error);
@@ -106,6 +111,13 @@ const Medicine = () => {
     setSelectedMedicationId(null);
     setEditModalOpen(false);
   };
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
+  };
   return (
     <ContainerUniversal>
       <Header />
@@ -133,17 +145,17 @@ const Medicine = () => {
 
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
-        <Grid container spacing={3} pb="75px">
+        <Grid container spacing={3} mb="75px">
           {medications.length > 0 ? (
             medications.map((medication) => (
               <CardUniversal
                 key={medication.id}
-                title={medication.title}
+                title={medication.name}
                 continuousUse={medication.continuousUse}
-                qtpDose={medication.qtDdose}
+                qtpDose={medication.amount}
                 dose={medication.dose}
                 period={medication.period}
-                expirationDate={medication.expirationDate}
+                expirationDate={medication.endDate}
                 dateTime={medication.dateTime}
                 onDelete={() => openDeleteModal(medication.id)}
                 onEdit={() => openEditModal(medication.id)}
@@ -160,6 +172,31 @@ const Medicine = () => {
             >
               Nenhum medicamento encontrado.
             </Typography>
+          )}
+          {pageCount > 1 && (
+            <Grid
+              item
+              xs={12}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+            >
+              <Pagination
+                page={page + 1}
+                color="primary"
+                count={pageCount}
+                onChange={handlePagination}
+                sx={{
+                  "& .MuiPaginationItem-ellipsis": {
+                    color: darkMode ? "common.white" : "primary.main",
+                  },
+                  "& .MuiPaginationItem-page.Mui-selected": {
+                    backgroundColor: darkMode
+                      ? "primary.darker"
+                      : "primary.main",
+                    color: "white",
+                  },
+                }}
+              />
+            </Grid>
           )}
           {openType && (
             <ModalMedicineType

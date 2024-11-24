@@ -1,14 +1,13 @@
 import {
   Box,
-  Tab,
-  Tabs,
   Modal,
   Button,
   TextField,
   IconButton,
+  Typography,
 } from "@mui/material";
-import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import { useState, useEffect } from "react";
 import axiosInstance from "@utils/axiosInstance";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@constants/theme/useTheme";
@@ -16,18 +15,25 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
-interface ExamModalProps {
-  open: boolean;
+interface ExamEditModalProps {
+  isOpen: boolean;
   onClose: () => void;
   fetchExams: () => Promise<void>;
+  currentExam: {
+    id: string;
+    date: string;
+    name: string;
+    local: string;
+    description: string;
+  } | null;
 }
 
 interface FormErrors {
-  selectedDate?: string;
+  location?: string;
   examName?: string;
   doctorName?: string;
-  location?: string;
   description?: string;
+  selectedDate?: string;
 }
 
 interface User {
@@ -36,9 +42,12 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
-  const [tabValue, setTabValue] = useState("exame");
-  const [isOpen] = useState<boolean>(true);
+const ExamModal: React.FC<ExamEditModalProps> = ({
+  isOpen,
+  onClose,
+  fetchExams,
+  currentExam,
+}) => {
   const [examName, setExamName] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -50,27 +59,24 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
 
   const { darkMode } = useTheme();
 
-  const tabValues = ["exame", "consulta"];
-
-  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
-    setTabValue(newValue);
-  };
-
   if (!isOpen) return null;
+
+  console.log(currentExam);
+
+  useEffect(() => {
+    if (isOpen && currentExam) {
+      setExamName(currentExam.name || "");
+      setLocation(currentExam.local || "");
+      setDescription(currentExam.description || "");
+      setSelectedDate(currentExam.date ? dayjs(currentExam.date) : null);
+    }
+  }, [open, currentExam]);
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
 
     if (!selectedDate) {
       newErrors.selectedDate = "A data e hora são obrigatórias.";
-    }
-
-    if (tabValue === "exame" && !examName) {
-      newErrors.examName = "O nome do exame é obrigatório.";
-    }
-
-    if (tabValue === "consulta" && !doctorName) {
-      newErrors.doctorName = "O nome do médico é obrigatório.";
     }
 
     if (!location) {
@@ -92,58 +98,40 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
     const formattedDate = selectedDate?.toISOString();
 
     try {
-      if (tabValue === "exame") {
-        const response = await axiosInstance.post(
-          "/exam",
-          {
-            date: formattedDate,
-            name: examName,
-            local: location,
-            description: description,
-          },
-          {
-            headers: { Authorization: `Bearer ${user?.token.data}` },
-          }
-        );
-        console.log(response.data);
-      } else {
-        const response = await axiosInstance.post(
-          "/consultation",
-          {
-            date: formattedDate,
-            doctorName: doctorName,
-            local: location,
-            description: description,
-          },
-          {
-            headers: { Authorization: `Bearer ${user?.token.data}` },
-          }
-        );
-        console.log(response.data);
-      }
-      await fetchExams();
+      const response = await axiosInstance({
+        headers: { Authorization: `Bearer ${user?.token.data}` },
+        method: "put",
+        url: `/exam/${currentExam?.id}`,
+        data: {
+          name: examName,
+          local: location,
+          date: formattedDate,
+          doctorName: doctorName,
+          description: description,
+        },
+      });
+      console.log(response.data);
+      fetchExams();
     } catch (error) {
       console.error("Erro na requisição:", error);
     }
-
+    setSelectedDate(null);
     setExamName("");
     setLocation("");
     setDescription("");
     setDoctorName("");
-    setSelectedDate(null);
     setErrors({});
     onClose();
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={isOpen} onClose={onClose}>
       <Box
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          backgroundColor: darkMode ? "grey.900" : "common.white",
           width: 500,
           p: "60px",
           display: "flex",
@@ -152,6 +140,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
           gap: "10px",
           boxShadow: 24,
           borderRadius: "5px",
+          backgroundColor: darkMode ? "grey.900" : "common.white",
         }}
       >
         <IconButton
@@ -165,37 +154,46 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
         >
           <CloseIcon />
         </IconButton>
-        <Tabs
-          onChange={handleChange}
-          value={tabValue}
+        <Typography
           sx={{
-            "& .Mui-selected": {
-              color: darkMode ? "primary.light" : "primary.main",
-            },
-            "& .MuiTabs-indicator": {
-              backgroundColor: darkMode ? "#1A8BCA" : "primary.main",
-            },
-            mb: "20px",
+            mb: "10px",
+            fontSize: "1.8rem",
+            fontWeight: "bold",
+            color: darkMode ? "primary.light" : "primary.main",
           }}
         >
-          {tabValues.map((tab) => (
-            <Tab
-              sx={{
-                fontSize: "20px",
-                textTransform: "uppercase",
-                color: darkMode ? "common.white" : "-moz-initial",
-              }}
-              label={tab}
-              value={tab}
-              key={tab}
-            />
-          ))}
-        </Tabs>
-
+          EDITAR
+        </Typography>
         <form
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
+          <TextField
+            sx={{ margin: 0 }}
+            fullWidth
+            label="NOME"
+            variant="outlined"
+            value={examName}
+            onChange={(e) => {
+              setExamName(e.target.value);
+              if (e.target.value) {
+                setErrors((prev) => ({ ...prev, location: undefined }));
+              }
+            }}
+            margin="normal"
+            error={Boolean(errors.location)}
+            helperText={errors.location}
+            InputProps={{
+              sx: {
+                fontSize: "0.9rem",
+              },
+            }}
+            InputLabelProps={{
+              sx: {
+                fontSize: "0.9rem",
+              },
+            }}
+          />
           <DateTimePicker
             views={["day", "hours", "minutes"]}
             label="DATA E HORA"
@@ -248,69 +246,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
               />
             )}
           />
-
-          {tabValue === "exame" && (
-            <>
-              <TextField
-                sx={{ margin: 0 }}
-                fullWidth
-                label="NOME DO EXAME"
-                variant="outlined"
-                value={examName}
-                onChange={(e) => {
-                  setExamName(e.target.value);
-                  if (e.target.value) {
-                    setErrors((prev) => ({ ...prev, examName: undefined }));
-                  }
-                }}
-                margin="normal"
-                error={Boolean(errors.examName)}
-                helperText={errors.examName}
-                InputProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-                InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-              />
-            </>
-          )}
-
-          {tabValue === "consulta" && (
-            <>
-              <TextField
-                sx={{ margin: 0 }}
-                fullWidth
-                label="NOME DO MÉDICO"
-                variant="outlined"
-                value={doctorName}
-                onChange={(e) => {
-                  setDoctorName(e.target.value);
-                  if (e.target.value) {
-                    setErrors((prev) => ({ ...prev, doctorName: undefined }));
-                  }
-                }}
-                margin="normal"
-                error={Boolean(errors.doctorName)}
-                helperText={errors.doctorName}
-                InputProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-                InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-              />
-            </>
-          )}
-
           <TextField
             sx={{ margin: 0 }}
             fullWidth
@@ -337,7 +272,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
               },
             }}
           />
-
           <TextField
             sx={{ margin: 0 }}
             fullWidth
@@ -366,14 +300,13 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
               },
             }}
           />
-
           <Button
             type="submit"
             variant="contained"
             fullWidth
             sx={{ mt: "20px", backgroundColor: "#0078B6" }}
           >
-            adicionar
+            editar
           </Button>
         </form>
       </Box>

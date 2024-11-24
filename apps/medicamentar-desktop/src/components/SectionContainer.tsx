@@ -12,11 +12,11 @@ export const SectionContainer = ({
     <Stack
       sx={{
         top: 100,
-        height: "100%",
         maxWidth: "100%",
         overflowY: "auto",
         position: "absolute",
         left: { xs: 75, md: 300 },
+        height: "calc(100vh - 100px)",
         transition: "all 200ms ease-out",
         gap: { xs: 0, sm: "20px", md: "30px" },
         padding: { xs: "10px", sm: "20px", md: "35px" },
