@@ -117,15 +117,15 @@ interface MedicationResponse {
   id: string;
   name: string;
   type:
-  | "ORAL"
-  | "TOPICO"
-  | "OFTALMICO"
-  | "INTRANASAL"
-  | "INJETAVEL"
-  | "SUBLINGUAL"
-  | "TRANSDERMICO"
-  | "RETAL"
-  | "VAGINAL";
+    | "ORAL"
+    | "TOPICO"
+    | "OFTALMICO"
+    | "INTRANASAL"
+    | "INJETAVEL"
+    | "SUBLINGUAL"
+    | "TRANSDERMICO"
+    | "RETAL"
+    | "VAGINAL";
   dose: string;
   amount: number;
   unity: string;
@@ -157,7 +157,7 @@ interface NotificationSent {
 }
 
 function getMedicationMessage(med: MedicationResponse): string {
-  const { name, type, dose, amount, unity, ophthalmicDetails } = med;
+  const { name, type, amount, unity, ophthalmicDetails } = med;
 
   switch (type) {
     case "ORAL":
@@ -204,20 +204,18 @@ function shouldNotify(eventId: string, thresholdMinutes: number): boolean {
 }
 
 async function checkEvents() {
+  const apiUrl = import.meta.env.VITE_API_URL;
   if (!token) {
     console.warn("Token não disponível. Ignorando verificação de eventos.");
     return;
   }
 
   try {
-    const response = await fetch(
-      "https://medicamentar-api-latest-9piq.onrender.com/events",
-      {
-        headers: {
-          Authorization: `Bearer ${token.token.data}`,
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/events`, {
+      headers: {
+        Authorization: `Bearer ${token.token.data}`,
+      },
+    });
 
     if (!response.ok) {
       console.error("Erro ao buscar eventos:", response.statusText);
