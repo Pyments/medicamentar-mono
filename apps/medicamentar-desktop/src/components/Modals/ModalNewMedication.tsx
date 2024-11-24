@@ -79,6 +79,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
   const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [errors, _setErrors] = useState<FormErrors>({});
 
   enum Unity {
     ML = 0,
@@ -87,14 +88,11 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     CPS = 3,
     SC = 4,
   }
-
-  const [errors, _setErrors] = useState<FormErrors>({});
   const calcEndDate = (startDate:dayjs.Dayjs | null, period:number) =>{
     if(!startDate || period <=0) return null;
     return startDate.add(period,"day");
   };
   
-
   const handlePeriodChange = (newPeriod: number | null)=>{
     if (!newPeriod || newPeriod <= 0) {
       setPeriod(1); 
@@ -165,6 +163,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
         },
       });
       console.log(response.data);
+      setOpen(false);
     } catch (error) {
       console.error("Erro na requisição:", error);
     }

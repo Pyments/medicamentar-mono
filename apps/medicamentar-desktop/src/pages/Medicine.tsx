@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AddBtn } from "@components/AddBtn";
 import SideBar from "@components/SideBar.tsx";
 import axiosInstance from "@utils/axiosInstance";
-import { Typography, Grid, Stack } from "@mui/material";
+import { Typography, Grid, Stack, Pagination } from "@mui/material";
 import ModalDelete from "@components/Modals/ModalDelete";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -18,12 +18,12 @@ import { useTheme } from "@theme/useTheme";
 interface MedicationData {
   id: string;
   name: string;
-  continuousUse: boolean;
-  amount: string;
   dose: string;
+  amount: string;
   period: string;
   endDate: string;
   dateTime: string;
+  continuousUse: boolean;
 }
 interface User {
   token: {
@@ -44,16 +44,22 @@ const Medicine = () => {
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchMedications = async () => {
       try {
-        const response = await axiosInstance.get("/medication", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("Lista de Medicamentos:",response.data.data);
+        const response = await axiosInstance.get(
+          `/medication?page=${page}&size=9`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Lista de Medicamentos:", response.data.data);
+        setPageCount(response.data.getTotalPages);
         setMedications(response.data.data);
       } catch (error) {
         console.error("Erro na requisição:", error);
@@ -104,6 +110,13 @@ const Medicine = () => {
   const closeEditModal = () => {
     setSelectedMedicationId(null);
     setEditModalOpen(false);
+  };
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
   };
   return (
     <ContainerUniversal>
@@ -159,6 +172,31 @@ const Medicine = () => {
             >
               Nenhum medicamento encontrado.
             </Typography>
+          )}
+          {pageCount > 1 && (
+            <Grid
+              item
+              xs={12}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+            >
+              <Pagination
+                page={page + 1}
+                color="primary"
+                count={pageCount}
+                onChange={handlePagination}
+                sx={{
+                  "& .MuiPaginationItem-ellipsis": {
+                    color: darkMode ? "common.white" : "primary.main",
+                  },
+                  "& .MuiPaginationItem-page.Mui-selected": {
+                    backgroundColor: darkMode
+                      ? "primary.darker"
+                      : "primary.main",
+                    color: "white",
+                  },
+                }}
+              />
+            </Grid>
           )}
           {openType && (
             <ModalMedicineType

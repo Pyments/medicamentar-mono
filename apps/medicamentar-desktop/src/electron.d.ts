@@ -10,6 +10,9 @@ interface ElectronWindow {
       once: (channel: string, func: (...args: any[]) => void) => void;
       send: (channel: string, ...args: any[]) => void;
     };
+    user: {
+      send: (userData: string) => void;
+    };
   };
 }
 
