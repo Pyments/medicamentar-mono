@@ -157,9 +157,9 @@ function getMedicationMessage(med: MedicationResponse): string {
 
   switch (type) {
     case "ORAL":
-      return `Está na hora de tomar ${amount} ${unity} de ${name} (${dose}).`;
+      return `Está na hora de tomar ${amount} ${unity} de ${name}.`;
     case "TOPICO":
-      return `Aplique ${amount} ${unity} de ${name} (${dose}).`;
+      return `Aplique ${amount} ${unity} de ${name}.`;
     case "OFTALMICO":
       if (ophthalmicDetails) {
         const { leftEyeDrops, rightEyeDrops } = ophthalmicDetails;
@@ -167,19 +167,19 @@ function getMedicationMessage(med: MedicationResponse): string {
       }
       return `Siga as instruções para aplicar ${name}.`;
     case "INTRANASAL":
-      return `Administre ${amount} ${unity} de ${name} por via intranasal (${dose}).`;
+      return `Administre ${amount} ${unity} de ${name} por via intranasal.`;
     case "INJETAVEL":
-      return `Administre ${amount} ${unity} de ${name} por injeção (${dose}).`;
+      return `Administre ${amount} ${unity} de ${name} por injeção.`;
     case "SUBLINGUAL":
-      return `Coloque ${amount} ${unity} de ${name} debaixo da língua (${dose}).`;
+      return `Coloque ${amount} ${unity} de ${name} debaixo da língua.`;
     case "TRANSDERMICO":
-      return `Aplique o adesivo de ${name} na pele (${dose}).`;
+      return `Aplique o adesivo de ${name} na pele.`;
     case "RETAL":
-      return `Administre ${amount} ${unity} de ${name} por via retal (${dose}).`;
+      return `Administre ${amount} ${unity} de ${name} por via retal.`;
     case "VAGINAL":
-      return `Insira ${amount} ${unity} de ${name} por via vaginal (${dose}).`;
+      return `Insira ${amount} ${unity} de ${name} por via vaginal.`;
     default:
-      return `Está na hora de usar ${name} (${dose}).`;
+      return `Está na hora de usar ${name}.`;
   }
 }
 
