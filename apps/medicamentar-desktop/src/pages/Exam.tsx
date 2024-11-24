@@ -11,13 +11,15 @@ import { Box, Grid, Typography, Stack, Pagination } from "@mui/material";
 
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import ModalDelete from "@components/Modals/ModalDelete";
+import ExamEditModal from "@components/Modals/ExamEditModal";
 
 interface ExamData {
   id: string;
-  type: string;
   name: string;
   date: string;
   local: string;
+  description: string;
 }
 interface User {
   token: {
@@ -32,6 +34,11 @@ const Exam = () => {
   const [exams, setExams] = useState<ExamData[]>([]);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
+
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
+  const [selectedExam, setSelectedExam] = useState<ExamData | null>(null);
 
   const fetchExams = async () => {
     try {
@@ -56,6 +63,43 @@ const Exam = () => {
 
   const handleModal = () => {
     setOpen(!open);
+  };
+
+  const openDeleteModal = (id: string) => {
+    setSelectedExamId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedExamId(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleDeleteExams = async () => {
+    if (selectedExamId) {
+      try {
+        await axiosInstance.delete(`/exam/${selectedExamId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setExams(exams.filter((med) => med.id !== selectedExamId));
+        console.log(exams);
+        closeDeleteModal();
+      } catch (error) {
+        console.log("Erro ao deletar medicamento: ", error);
+      }
+    }
+  };
+
+  const openEditModal = (exam: ExamData) => {
+    setSelectedExam(exam);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setSelectedExamId(null);
+    setEditModalOpen(false);
   };
 
   const handlePagination = (
@@ -104,6 +148,8 @@ const Exam = () => {
                 dateTime={exam.date}
                 description={exam.local}
                 type="events"
+                onDelete={() => openDeleteModal(exam.id)}
+                onEdit={() => openEditModal(exam)}
               />
             ))
           ) : (
@@ -146,6 +192,21 @@ const Exam = () => {
       </SectionContainer>
       {open && (
         <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />
+      )}
+      {isDeleteModalOpen && (
+        <ModalDelete
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onDelete={handleDeleteExams}
+        />
+      )}
+      {isEditModalOpen && (
+        <ExamEditModal
+          currentExam={selectedExam}
+          isOpen={isEditModalOpen}
+          onClose={() => closeEditModal()}
+          fetchExams={fetchExams}
+        />
       )}
     </ContainerUniversal>
   );
