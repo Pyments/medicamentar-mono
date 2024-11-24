@@ -51,26 +51,26 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, "preload.mjs"),
-      devTools: true
+      devTools: true,
     },
   });
 
   Menu.setApplicationMenu(null);
 
   // Add extensive error logging
-  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorCode, errorDescription);
+  win.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+    console.error("Failed to load:", errorCode, errorDescription);
   });
 
-  win.webContents.on('did-finish-load', () => {
+  win.webContents.on("did-finish-load", () => {
     win?.webContents.executeJavaScript(`
     `);
   });
 
   if (app.isPackaged) {
-    const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
-    win.loadFile(indexPath).catch(err => {
-      console.error('Error loading file:', err);
+    const indexPath = path.join(__dirname, "..", "dist", "index.html");
+    win.loadFile(indexPath).catch((err) => {
+      console.error("Error loading file:", err);
     });
   } else {
     win.loadURL(VITE_DEV_SERVER_URL || "http://localhost:5173/");
@@ -78,13 +78,13 @@ function createWindow() {
 }
 
 // Add this before app.whenReady()
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
 });
 
-app.on('web-contents-created', (_event, contents) => {
-  contents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorCode, errorDescription);
+app.on("web-contents-created", (_event, contents) => {
+  contents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+    console.error("Failed to load:", errorCode, errorDescription);
   });
 });
 
@@ -108,9 +108,28 @@ app.on("window-all-closed", () => {
   }
 });
 
+interface OphthalmicDetails {
+  leftEyeDrops: number;
+  rightEyeDrops: number;
+}
+
 interface MedicationResponse {
+  id: string;
   name: string;
+  type:
+  | "ORAL"
+  | "TOPICO"
+  | "OFTALMICO"
+  | "INTRANASAL"
+  | "INJETAVEL"
+  | "SUBLINGUAL"
+  | "TRANSDERMICO"
+  | "RETAL"
+  | "VAGINAL";
   dose: string;
+  amount: number;
+  unity: string;
+  ophthalmicDetails?: OphthalmicDetails;
   startDate: string;
 }
 
@@ -137,13 +156,47 @@ interface NotificationSent {
   timestamp: number;
 }
 
+function getMedicationMessage(med: MedicationResponse): string {
+  const { name, type, dose, amount, unity, ophthalmicDetails } = med;
+
+  switch (type) {
+    case "ORAL":
+      return `Está na hora de tomar ${amount} ${unity} de ${name} (${dose}).`;
+    case "TOPICO":
+      return `Aplique ${amount} ${unity} de ${name} (${dose}).`;
+    case "OFTALMICO":
+      if (ophthalmicDetails) {
+        const { leftEyeDrops, rightEyeDrops } = ophthalmicDetails;
+        return `Aplique ${leftEyeDrops} gotas no olho esquerdo e ${rightEyeDrops} no olho direito de ${name}.`;
+      }
+      return `Siga as instruções para aplicar ${name}.`;
+    case "INTRANASAL":
+      return `Administre ${amount} ${unity} de ${name} por via intranasal (${dose}).`;
+    case "INJETAVEL":
+      return `Administre ${amount} ${unity} de ${name} por injeção (${dose}).`;
+    case "SUBLINGUAL":
+      return `Coloque ${amount} ${unity} de ${name} debaixo da língua (${dose}).`;
+    case "TRANSDERMICO":
+      return `Aplique o adesivo de ${name} na pele (${dose}).`;
+    case "RETAL":
+      return `Administre ${amount} ${unity} de ${name} por via retal (${dose}).`;
+    case "VAGINAL":
+      return `Insira ${amount} ${unity} de ${name} por via vaginal (${dose}).`;
+    default:
+      return `Está na hora de usar ${name} (${dose}).`;
+  }
+}
+
 const sentNotifications = new Map<string, NotificationSent>();
 
 function shouldNotify(eventId: string, thresholdMinutes: number): boolean {
   const now = Date.now();
   const notification = sentNotifications.get(eventId);
 
-  if (!notification || now - notification.timestamp > thresholdMinutes * 60 * 1000) {
+  if (
+    !notification ||
+    now - notification.timestamp > thresholdMinutes * 60 * 1000
+  ) {
     sentNotifications.set(eventId, { id: eventId, timestamp: now });
     return true;
   }
@@ -157,11 +210,14 @@ async function checkEvents() {
   }
 
   try {
-    const response = await fetch("https://medicamentar-api-latest-9piq.onrender.com/events", {
-      headers: {
-        Authorization: `Bearer ${token.token.data}`,
-      },
-    });
+    const response = await fetch(
+      "https://medicamentar-api-latest-9piq.onrender.com/events",
+      {
+        headers: {
+          Authorization: `Bearer ${token.token.data}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       console.error("Erro ao buscar eventos:", response.statusText);
@@ -178,14 +234,18 @@ async function checkEvents() {
     ) => {
       const eventTime = new Date(event.date);
       const diffMinutes = (eventTime.getTime() - now.getTime()) / (1000 * 60);
-      if (diffMinutes <= thresholdMinutes && diffMinutes > 0 && shouldNotify(event.id, thresholdMinutes)) {
-        new Notification({ title, body: `${event.message} em ${Math.round(diffMinutes)} minutos.` }).show();
+      if (
+        diffMinutes <= thresholdMinutes &&
+        diffMinutes > 0 &&
+        shouldNotify(event.id, thresholdMinutes)
+      ) {
+        new Notification({ title, body: event.message }).show();
       }
     };
 
     data.medicationResponse.forEach((med: MedicationResponse) =>
       processEvent(
-        { id: med.name, date: med.startDate, message: `Está na hora de tomar ${med.name} (${med.dose})` },
+        { id: med.id, date: med.startDate, message: getMedicationMessage(med) },
         5,
         "Medicamento Próximo"
       )
@@ -193,7 +253,11 @@ async function checkEvents() {
 
     data.consultationResponse.forEach((consult: ConsultationResponse) =>
       processEvent(
-        { id: consult.doctorName, date: consult.date, message: `Consulta com ${consult.doctorName}` },
+        {
+          id: consult.doctorName,
+          date: consult.date,
+          message: `Consulta com ${consult.doctorName}`,
+        },
         15,
         "Consulta Próxima"
       )
@@ -206,7 +270,6 @@ async function checkEvents() {
         "Exame Próximo"
       )
     );
-
   } catch (error) {
     console.error("Erro ao verificar eventos:", error);
   }
@@ -217,7 +280,7 @@ ipcMain.on("send-user-data", (_event, userData) => {
     if (typeof userData === "string") {
       userData = JSON.parse(userData);
     }
-    
+
     if (userData?.token?.data) {
       store.set("user", JSON.stringify(userData));
       token = userData;
@@ -228,7 +291,6 @@ ipcMain.on("send-user-data", (_event, userData) => {
     console.error("Erro ao analisar userData recebido:", error);
   }
 });
-
 
 app.whenReady().then(() => {
   const rawToken = store.get("user");
