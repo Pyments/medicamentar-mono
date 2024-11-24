@@ -52,6 +52,7 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, "preload.mjs"),
       devTools: true,
+      devTools: true,
     },
   });
 
