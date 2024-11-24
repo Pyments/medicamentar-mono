@@ -48,6 +48,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     validateToken();
+    if (user) {
+      window.electron.user.send(JSON.stringify(user));
+    }
   }, [user]);
 
   const isAuthenticated = !!user;
