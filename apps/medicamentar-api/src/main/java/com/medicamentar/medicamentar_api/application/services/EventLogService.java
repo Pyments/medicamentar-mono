@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,7 @@ import com.medicamentar.medicamentar_api.application.dtos.consultationDto.Consul
 import com.medicamentar.medicamentar_api.application.dtos.eventsHistoryDto.EventLogResponse;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
-import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.EventLog;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
@@ -85,11 +87,13 @@ public class EventLogService {
     }
   }
 
-  public ServiceResponse<List<EventLogResponse>> getHistory() {
-    var response = new ServiceResponse<List<EventLogResponse>>();
+  public PaginatedResponse<List<EventLogResponse>> getHistory(int page, int size) {
+    var response = new PaginatedResponse<List<EventLogResponse>>();
     User currentUser = tokenService.getCurrentUser();
 
-    var history = eventLogRepository.findByUser(currentUser);
+    Pageable pageable = PageRequest.of(page, size);
+
+    var history = eventLogRepository.findByUser(currentUser, pageable);
 
     var eventLogResponse = history.stream()
         .map(h -> {
@@ -110,7 +114,7 @@ public class EventLogService {
                   medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                   .orElse(null);
 
-              return new EventLogResponse(medicationResponse, h.getEventAction(), h.getEventDate());
+              return new EventLogResponse(h.getId(), medicationResponse, h.getEventAction(), h.getEventDate());
 
             case "Exame":
               Optional<Exam> optionalExam = this.examRepository.findById(h.getEventReferenceId());
@@ -121,7 +125,7 @@ public class EventLogService {
                   exam.getLocal(),
                   exam.getDescription())).orElse(null);
 
-              return new EventLogResponse(examResponse, h.getEventAction(), h.getEventDate());
+              return new EventLogResponse(h.getId(), examResponse, h.getEventAction(), h.getEventDate());
 
             case "Consulta":
               Optional<Consultation> optionalConsultation = this.consultationRepository
@@ -135,7 +139,7 @@ public class EventLogService {
                       consultation.getDescription()))
                   .orElse(null);
 
-              return new EventLogResponse(consultationResponse, h.getEventAction(), h.getEventDate());
+              return new EventLogResponse(h.getId(), consultationResponse, h.getEventAction(), h.getEventDate());
 
             default:
               return null;

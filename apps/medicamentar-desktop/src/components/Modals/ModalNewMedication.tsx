@@ -88,7 +88,24 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     CPS = 3,
     SC = 4,
   }
-
+  const calcEndDate = (startDate:dayjs.Dayjs | null, period:number) =>{
+    if(!startDate || period <=0) return null;
+    return startDate.add(period,"day");
+  };
+  
+  const handlePeriodChange = (newPeriod: number | null)=>{
+    if (!newPeriod || newPeriod <= 0) {
+      setPeriod(1); 
+      _setEndDate(null); 
+      return;
+    }
+    setPeriod(newPeriod);
+    if (!startDate) {
+      _setEndDate(null);
+      return;
+    }
+    _setEndDate(calcEndDate(startDate,newPeriod));
+  }
   /*  const validadeForm = () => {
     const newErrors: FormErrors = {};
     const requiredFields = {
@@ -368,16 +385,14 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                 <FormControl fullWidth>
                   <Autocomplete
                     disabled={continuo}
-                    value={period?.toString()}
+                    value={period?.toString() || ""}
                     sx={{
                       opacity: continuo ? 0.5 : 1,
                     }}
-                    onChange={(_, newValue) => {
+                    onChange={(_event, newValue) => {
                       if (newValue) {
-                        const numValue = Number(
-                          newValue.replace(/[^0-9]/g, "")
-                        );
-                        setPeriod(Math.max(1, numValue));
+                        const numValue = Number(newValue.replace(/[^0-9]/g, ""));
+                        handlePeriodChange(Math.max(1, numValue));
                       }
                     }}
                     freeSolo
@@ -386,12 +401,12 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                       <TextField
                         {...params}
                         type="number"
-                        value={period}
+                        value={period ? period.toString() : ""}
                         label="PERÍODO"
                         disabled={continuo}
                         onChange={(e) => {
                           const numValue = Number(e.target.value);
-                          setPeriod(Math.max(1, numValue));
+                          handlePeriodChange(Math.max(1, numValue));
                         }}
                         inputProps={{
                           ...params.inputProps,
@@ -406,7 +421,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                 <TextField
                   disabled
                   fullWidth
-                  value={endDate}
+                  value={endDate ? dayjs(endDate).format("DD/MM/YYYY") : ""}
                   label="FINAL DO TRATAMENTO"
                   helperText={errors.endDate}
                   error={Boolean(errors.endDate)}
