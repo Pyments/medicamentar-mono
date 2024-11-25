@@ -8,7 +8,7 @@ import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 import { Box, Grid, Typography, Stack, Pagination } from "@mui/material";
-
+import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import ModalDelete from "@components/Modals/ModalDelete";
@@ -17,7 +17,7 @@ import ExamEditModal from "@components/Modals/ExamEditModal";
 interface ExamData {
   id: string;
   name: string;
-  date: string;
+  date: dayjs.Dayjs;
   local: string;
   description: string;
 }

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Grid, Stack } from "@mui/material";
+import { Pagination, Typography, Grid, Stack } from "@mui/material";
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
 import CardUniversal from "@components/CardUniversal.tsx";
 import { SectionContainer } from "@components/SectionContainer.tsx";
 import ModalMedicineType from "@components/Modals/ModalMedicineType";
 import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
+import dayjs from "dayjs";
 import { useTheme } from "@theme/useTheme";
 import ModalNewMedication from "@components/Modals/ModalNewMedication";
 import ModalDelete from "@components/Modals/ModalDelete";
@@ -17,12 +18,13 @@ import { AddBtn } from "@components/AddBtn";
 interface MedicationData {
   id: string;
   name: string;
-  dose: string;
-  amount: string;
-  period: string;
-  endDate: string;
-  dateTime: string;
-  continuousUse: boolean;
+  type: string;
+  dose: number;
+  amount: number;
+  unity: string;
+  continuo: boolean;
+  period: number;
+  startDate: dayjs.Dayjs;
 }
 interface User {
   token: {
@@ -33,10 +35,9 @@ const Medicine = () => {
   const { darkMode } = useTheme();
   const [openType, setOpenType] = useState<boolean>(false);
   const [openNew, setOpenNew] = useState<boolean>(false);
-  const [type, setType] = useState<string>("");
-  const [selectedMedicationId, setSelectedMedicationId] = useState<
-    string | null
-  >(null);
+  const [type, setType] = useState<number>(0);
+  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
+  const [selectedMedication, setSelectedMedication] = useState<MedicationData | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
 
@@ -46,25 +47,25 @@ const Medicine = () => {
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchMedications = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/medication?page=${page}&size=9`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Lista de Medicamentos:", response.data.data);
-        setPageCount(response.data.getTotalPages);
-        setMedications(response.data.data);
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      }
-    };
+  const fetchMedications = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/medication?page=${page}&size=9`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Lista de Medicamentos:", response.data.data);
+      setPageCount(response.data.getTotalPages);
+      setMedications(response.data.data);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    }
+  };
 
+  useEffect(() => {
     if (token) {
       fetchMedications();
     }
@@ -105,11 +106,18 @@ const Medicine = () => {
     }
   };
 
-  const handleOpenEditModal = (id: string) => {
-    setSelectedMedicationId(id);
+  const openEditModal = (medication: MedicationData) => {
+    setSelectedMedication(medication);
+    setSelectedMedicationId(medication.id);
     setOpenEdit(true);
   };
 
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
+  };
   return (
     <ContainerUniversal>
       <Header />
@@ -143,14 +151,13 @@ const Medicine = () => {
               <CardUniversal
                 key={medication.id}
                 title={medication.name}
-                continuousUse={medication.continuousUse}
+                continuousUse={medication.continuo}
                 qtpDose={medication.amount}
                 dose={medication.dose}
                 period={medication.period}
-                expirationDate={medication.endDate}
-                dateTime={medication.dateTime}
+                dateTime={medication.startDate}
                 onDelete={() => openDeleteModal(medication.id)}
-                onEdit={() => handleOpenEditModal(medication.id)}
+                onEdit={() => openEditModal(medication)}
                 type="medication"
               />
             ))
@@ -214,10 +221,11 @@ const Medicine = () => {
           )}
           {openEdit && (
             <ModalEditMedicine
-              open={openEdit}
-              setOpen={setOpenEdit}
-              id= {selectedMedicationId}
-              type = {type}
+            open={openEdit}
+            setOpen={setOpenEdit}
+            id={selectedMedicationId}
+            currentMedication={selectedMedication}
+            fetchMedications={fetchMedications}
             />
           )}
         </Grid>

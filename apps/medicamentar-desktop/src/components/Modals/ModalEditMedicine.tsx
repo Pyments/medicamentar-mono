@@ -1,6 +1,6 @@
 import axiosInstance from "@utils/axiosInstance";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Grid, Modal, Button, Select, Checkbox, MenuItem, FormGroup, TextField, InputLabel, Typography, IconButton, FormControl, Autocomplete, FormControlLabel} from "@mui/material";
 import { useTheme } from "@theme/useTheme";
 import CloseIcon from "@mui/icons-material/Close";
@@ -12,8 +12,19 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 interface ModalEditMedicineProps{
     open:boolean;
     setOpen: (open: boolean) => void;
+    fetchMedications: () => Promise<void>;
+    currentMedication: {
+      id: string;
+      name: string;
+      type: string;
+      dose: number;
+      amount: number;
+      unity: string;
+      continuo: boolean;
+      period: number;
+      startDate: dayjs.Dayjs;
+    } | null;
     id: string | null;
-    type: string;
 }
 
 interface FormErrors {
@@ -49,7 +60,28 @@ const periodOptions = [
   { value: 30, label: "30 Dias" },
 ];
 
-const ModalEditMedicine = ({ open, setOpen, id, type }: ModalEditMedicineProps) => {
+enum Type {
+  ORAL = 0,
+  TOPICO = 1,
+  OFTALMICO = 2,
+  INTRANASAL = 3,
+  INJETAVEL = 4,
+  SUBLINGUAL = 5,
+  TRANSDERMICO = 6,
+  RETAL = 7,
+  VAGINAL = 8,
+}
+
+enum Unity {
+  mililitros = 0,
+  miligramas = 1,
+  gotas = 2,
+  comprimidos = 3,
+  subcutanea = 4,
+}
+
+
+const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication}: ModalEditMedicineProps) => {
   const { darkMode } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
@@ -57,34 +89,30 @@ const ModalEditMedicine = ({ open, setOpen, id, type }: ModalEditMedicineProps) 
     null
   );
   const [name, setName] = useState<string>("");
-  const [tipoMedicamento, setTipoMedicamento] = useState<string>(type);
+  const [tipoMedicamento, setTipoMedicamento] = useState<number>(Type[currentMedication?.type as keyof typeof Type]);
   const [dose, setDose] = useState<number>(1);
   const [amount, setAmount] = useState<number>(1);
-  const [unity, setUnity] = useState<string>("");
-  const [continuo, setContinuo] = useState<boolean>(false);
+  const [unity, setUnity] = useState<number>(Unity[currentMedication?.unity as keyof typeof Unity]);
+  const [continuo, setContinuo] = useState<boolean>(currentMedication?.continuo || false);
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
-  
-  enum Unity {
-    ML = 0,
-    MG = 1,
-    GTS = 2,
-    CPS = 3,
-    SC = 4,
-  }
 
-  enum Type {
-    ORAL = 0,
-    TÓPICO = 1,
-    OFTÁLMICO = 2,
-    INTRANASAL = 3,
-    INJETÁVEL = 4,
-    SUBLINGUAL = 5,
-    TRANSDÉRMICO = 6,
-    RETAL = 7,
-    VAGINAL = 8,
-  }
+  if (!isOpen) return null;
+  console.log(currentMedication);
+  
+
+  useEffect(() => {
+    if (open && currentMedication) {
+      setName(currentMedication.name || "");
+      setTipoMedicamento(tipoMedicamento);
+      setDose(currentMedication.dose || 1);
+      setAmount(currentMedication.amount || 1);
+      setUnity(unity);
+      setContinuo(currentMedication.continuo);
+      setPeriod(currentMedication.dose || 1);
+      setStartDate(currentMedication.startDate ? dayjs(currentMedication.startDate) : null);
+    }
+  }, [open, currentMedication]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,14 +141,14 @@ const ModalEditMedicine = ({ open, setOpen, id, type }: ModalEditMedicineProps) 
         },
       });
       console.log(response.data);
+      setOpen(false);
+      fetchMedications();
     } catch (error) {
       console.error("Erro na requisição:", error);
     }
   };
 
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  if (!isOpen) return null;
+  const [errors, _setErrors] = useState<FormErrors>({});
 
   const themedProps = {
     textField: {
@@ -220,15 +248,15 @@ return (
                     value={tipoMedicamento}
                     label="TIPO DE MEDICAMENTO"
                     labelId="type-label"
-                    onChange={(event) => setTipoMedicamento(String(event.target.value))}
+                    onChange={(event) => setTipoMedicamento(Number(event.target.value))}
                   >
                     <MenuItem value={Type.ORAL}>ORAL</MenuItem>
-                    <MenuItem value={Type.TÓPICO}>TÓPICO</MenuItem>
-                    <MenuItem value={Type.OFTÁLMICO}>OFTÁLMICO</MenuItem>
+                    <MenuItem value={Type.TOPICO}>TÓPICO</MenuItem>
+                    <MenuItem value={Type.OFTALMICO}>OFTÁLMICO</MenuItem>
                     <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
-                    <MenuItem value={Type.INJETÁVEL}>INJETÁVEL</MenuItem>
+                    <MenuItem value={Type.INJETAVEL}>INJETÁVEL</MenuItem>
                     <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
-                    <MenuItem value={Type.TRANSDÉRMICO}>TRANSDÉRMICO</MenuItem>
+                    <MenuItem value={Type.TRANSDERMICO}>TRANSDÉRMICO</MenuItem>
                     <MenuItem value={Type.RETAL}>RETAL</MenuItem>
                     <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
                   </Select>
@@ -314,13 +342,13 @@ return (
                   value={unity}
                   label="UNIDADE"
                   labelId="unity-label"
-                  onChange={(event) => setUnity(String(event.target.value))}
+                  onChange={(event) => setUnity(Number(event.target.value))}
                 >
-                  <MenuItem value={Unity.ML}>Mililitros (ML)</MenuItem>
-                  <MenuItem value={Unity.MG}>Miligramas (MG)</MenuItem>
-                  <MenuItem value={Unity.GTS}>Gotas (GTS)</MenuItem>
-                  <MenuItem value={Unity.CPS}>Comprimidos (CPS)</MenuItem>
-                  <MenuItem value={Unity.SC}>Subcutânea (SC)</MenuItem>
+                  <MenuItem value={Unity.mililitros}>Mililitros (ML)</MenuItem>
+                  <MenuItem value={Unity.miligramas}>Miligramas (MG)</MenuItem>
+                  <MenuItem value={Unity.gotas}>Gotas (GTS)</MenuItem>
+                  <MenuItem value={Unity.comprimidos}>Comprimidos (CPS)</MenuItem>
+                  <MenuItem value={Unity.subcutanea}>Subcutânea (SC)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -405,7 +433,7 @@ return (
               <TextField
                 disabled
                 fullWidth
-                value={endDate}
+                value={""}
                 label="FINAL DO TRATAMENTO"
                 helperText={errors.endDate}
                 error={Boolean(errors.endDate)}
