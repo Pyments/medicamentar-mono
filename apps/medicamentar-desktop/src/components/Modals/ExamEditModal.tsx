@@ -21,7 +21,7 @@ interface ExamEditModalProps {
   fetchExams: () => Promise<void>;
   currentExam: {
     id: string;
-    date: string;
+    date: dayjs.Dayjs;
     name: string;
     local: string;
     description: string;

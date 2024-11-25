@@ -38,7 +38,7 @@ interface FormErrors {
 }
 
 interface NewMedicationProps {
-  type: string;
+  type: number;
   open: boolean;
   setOpen: (open: boolean) => void;
 }

@@ -12,15 +12,15 @@ import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
 import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
 
 import { useTheme } from "@constants/theme/useTheme";
+import dayjs from "dayjs";
 interface CardUniversalProps {
   type: "medication" | "events";
   title: string;
   continuousUse?: boolean;
-  dose?: string;
-  qtpDose?: string;
-  period?: string;
-  expirationDate?: string;
-  dateTime: string;
+  dose?: number;
+  qtpDose?: number;
+  period?: number;
+  dateTime: dayjs.Dayjs;
   description?: string;
   onDelete?: () => void;
   onEdit?: () => void;
@@ -33,7 +33,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   dose,
   qtpDose,
   period,
-  expirationDate,
   dateTime,
   description,
   onDelete,
@@ -134,9 +133,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
               <Typography sx={infoCard}>DOSE: {dose}</Typography>
               <Typography sx={infoCard}>PERÍODO: {period}</Typography>
-              <Typography sx={infoCard}>
-                VENCIMENTO: {expirationDate}
-              </Typography>
             </Box>
             <Box
               sx={{
@@ -156,7 +152,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   color: "common.black",
                 }}
               >
-                {dateTime}
+                {dateTime.toString()}
               </Typography>
             </Box>
           </Box>
@@ -260,7 +256,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   color: "common.black",
                 }}
               >
-                {dateTime}
+                {dateTime.toString()}
               </Typography>
             </Box>
           </Box>

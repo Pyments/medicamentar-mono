@@ -1,29 +1,30 @@
-import Header from "@components/Header.tsx";
 import { useEffect, useState } from "react";
-import { AddBtn } from "@components/AddBtn";
+import { Pagination, Typography, Grid, Stack } from "@mui/material";
+import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
-import axiosInstance from "@utils/axiosInstance";
-import { Typography, Grid, Stack, Pagination } from "@mui/material";
-import ModalDelete from "@components/Modals/ModalDelete";
-import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
-import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { SectionContainer } from "@components/SectionContainer.tsx";
 import ModalMedicineType from "@components/Modals/ModalMedicineType";
 import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
-import ModalNewMedication from "@components/Modals/ModalNewMedication";
-
+import dayjs from "dayjs";
 import { useTheme } from "@theme/useTheme";
+import ModalNewMedication from "@components/Modals/ModalNewMedication";
+import ModalDelete from "@components/Modals/ModalDelete";
+import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
+import { useLocalStorage } from "@hooks/UseLocalStorage";
+import axiosInstance from "@utils/axiosInstance";
+import { AddBtn } from "@components/AddBtn";
 
 interface MedicationData {
   id: string;
   name: string;
-  dose: string;
-  amount: string;
-  period: string;
-  endDate: string;
-  dateTime: string;
-  continuousUse: boolean;
+  type: string;
+  dose: number;
+  amount: number;
+  unity: string;
+  continuo: boolean;
+  period: number;
+  startDate: dayjs.Dayjs;
 }
 interface User {
   token: {
@@ -34,12 +35,11 @@ const Medicine = () => {
   const { darkMode } = useTheme();
   const [openType, setOpenType] = useState<boolean>(false);
   const [openNew, setOpenNew] = useState<boolean>(false);
-  const [type, setType] = useState<string>("");
-  const [selectedMedicationId, setSelectedMedicationId] = useState<
-    string | null
-  >(null);
+  const [type, setType] = useState<number>(0);
+  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
+  const [selectedMedication, setSelectedMedication] = useState<MedicationData | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
 
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
@@ -47,29 +47,30 @@ const Medicine = () => {
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchMedications = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/medication?page=${page}&size=9`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Lista de Medicamentos:", response.data.data);
-        setPageCount(response.data.getTotalPages);
-        setMedications(response.data.data);
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      }
-    };
+  const fetchMedications = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/medication?page=${page}&size=9`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Lista de Medicamentos:", response.data.data);
+      setPageCount(response.data.getTotalPages);
+      setMedications(response.data.data);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    }
+  };
 
+  useEffect(() => {
     if (token) {
       fetchMedications();
     }
   }, [token]);
+
   const handleModal = () => {
     setOpenType(!openType);
   };
@@ -87,11 +88,14 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axiosInstance.delete(
+          `/medication/${selectedMedicationId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );
@@ -102,14 +106,10 @@ const Medicine = () => {
     }
   };
 
-  const openEditModal = (id: string) => {
-    setSelectedMedicationId(id);
-    setEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setSelectedMedicationId(null);
-    setEditModalOpen(false);
+  const openEditModal = (medication: MedicationData) => {
+    setSelectedMedication(medication);
+    setSelectedMedicationId(medication.id);
+    setOpenEdit(true);
   };
 
   const handlePagination = (
@@ -151,14 +151,13 @@ const Medicine = () => {
               <CardUniversal
                 key={medication.id}
                 title={medication.name}
-                continuousUse={medication.continuousUse}
+                continuousUse={medication.continuo}
                 qtpDose={medication.amount}
                 dose={medication.dose}
                 period={medication.period}
-                expirationDate={medication.endDate}
-                dateTime={medication.dateTime}
+                dateTime={medication.startDate}
                 onDelete={() => openDeleteModal(medication.id)}
-                onEdit={() => openEditModal(medication.id)}
+                onEdit={() => openEditModal(medication)}
                 type="medication"
               />
             ))
@@ -220,10 +219,13 @@ const Medicine = () => {
               onDelete={handleDeleteMedication}
             />
           )}
-          {isEditModalOpen && (
+          {openEdit && (
             <ModalEditMedicine
-              isOpen={isEditModalOpen}
-              onClose={closeEditModal}
+            open={openEdit}
+            setOpen={setOpenEdit}
+            id={selectedMedicationId}
+            currentMedication={selectedMedication}
+            fetchMedications={fetchMedications}
             />
           )}
         </Grid>
