@@ -1,18 +1,20 @@
-import { useLocation } from "react-router-dom";
-import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import {
   Box,
   Card,
   Grid,
-  IconButton,
   Tooltip,
   Typography,
+  IconButton,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
+import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
 import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
 
-import { useTheme } from "@constants/theme/useTheme";
 import dayjs from "dayjs";
+import { longDate } from "../types/sanitizeDate";
+import { useTheme } from "@constants/theme/useTheme";
+
 interface CardUniversalProps {
   type: "medication" | "events";
   title: string;
@@ -152,7 +154,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   color: "common.black",
                 }}
               >
-                {dateTime.toString()}
+                {longDate(dateTime)}
               </Typography>
             </Box>
           </Box>

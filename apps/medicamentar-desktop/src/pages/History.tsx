@@ -63,7 +63,6 @@ const History = () => {
       return (
         <Grid item key={processedEvent.id}>
           <GridItem
-            id={processedEvent.id}
             description={processedEvent.description?.toUpperCase()}
             name={processedEvent.name?.toUpperCase()}
             actionType={processedEvent.action}

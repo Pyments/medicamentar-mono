@@ -33,7 +33,8 @@ function GridItem({
   description,
 }: gridItemTypes) {
   const { darkMode } = useTheme();
-  const cards: Record<actionTypes, () => React.ReactNode> = {
+ const cards: Record<actionTypes, () => React.ReactNode> = {
+  
     "Consulta Criado": () => (
       <StyledPaper>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
