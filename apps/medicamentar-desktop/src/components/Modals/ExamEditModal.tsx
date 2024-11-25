@@ -61,8 +61,6 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
 
   if (!isOpen) return null;
 
-  console.log(currentExam);
-
   useEffect(() => {
     if (isOpen && currentExam) {
       setExamName(currentExam.name || "");
@@ -98,7 +96,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     const formattedDate = selectedDate?.toISOString();
 
     try {
-      const response = await axiosInstance({
+      await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "put",
         url: `/exam/${currentExam?.id}`,
@@ -110,7 +108,6 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
           description: description,
         },
       });
-      console.log(response.data);
       fetchExams();
     } catch (error) {
       console.error("Erro na requisição:", error);

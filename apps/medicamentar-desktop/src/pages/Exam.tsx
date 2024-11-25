@@ -47,9 +47,8 @@ const Exam = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Lista de Exames e Consultas:", response.data.data);
       setExams(response.data.data);
-      setPageCount(response.data.getTotalPages);
+      setPageCount(response.data.totalPages);
     } catch (error) {
       console.error("Erro na requisição:", error);
     }
@@ -84,10 +83,8 @@ const Exam = () => {
           },
         });
         setExams(exams.filter((med) => med.id !== selectedExamId));
-        console.log(exams);
         closeDeleteModal();
       } catch (error) {
-        console.log("Erro ao deletar medicamento: ", error);
       }
     }
   };

@@ -44,7 +44,6 @@ const Home: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("Resposta completa da API:", response.data);
         const consultationEvents =
           response.data.data.consultationResponse || [];
         const examEvents = response.data.data.examResponse || [];
@@ -54,10 +53,8 @@ const Home: React.FC = () => {
           ...examEvents,
           ...medicationEvents,
         ];
-
-        console.log("LISTA DE TODOS OS EVENTOS: ", combinedEvents);
         handlePagination;
-        setPageCount(response.data.getTotalPages);
+        setPageCount(response.data.totalPages);
         setEvents(combinedEvents);
       } catch (error) {
         console.error("Erro na requisição:", error);

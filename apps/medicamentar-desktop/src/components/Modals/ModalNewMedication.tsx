@@ -88,15 +88,15 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     CPS = 3,
     SC = 4,
   }
-  const calcEndDate = (startDate:dayjs.Dayjs | null, period:number) =>{
-    if(!startDate || period <=0) return null;
-    return startDate.add(period,"day");
+  const calcEndDate = (startDate: dayjs.Dayjs | null, period: number) => {
+    if (!startDate || period <= 0) return null;
+    return startDate.add(period, "day");
   };
-  
-  const handlePeriodChange = (newPeriod: number | null)=>{
+
+  const handlePeriodChange = (newPeriod: number | null) => {
     if (!newPeriod || newPeriod <= 0) {
-      setPeriod(1); 
-      _setEndDate(null); 
+      setPeriod(1);
+      _setEndDate(null);
       return;
     }
     setPeriod(newPeriod);
@@ -104,8 +104,8 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
       _setEndDate(null);
       return;
     }
-    _setEndDate(calcEndDate(startDate,newPeriod));
-  }
+    _setEndDate(calcEndDate(startDate, newPeriod));
+  };
   /*  const validadeForm = () => {
     const newErrors: FormErrors = {};
     const requiredFields = {
@@ -139,7 +139,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     } */
 
     try {
-      const response = await axiosInstance({
+      await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "post",
         url: "/medication",
@@ -162,7 +162,6 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
           }, */
         },
       });
-      console.log(response.data);
       setOpen(false);
     } catch (error) {
       console.error("Erro na requisição:", error);
@@ -391,7 +390,9 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                     }}
                     onChange={(_event, newValue) => {
                       if (newValue) {
-                        const numValue = Number(newValue.replace(/[^0-9]/g, ""));
+                        const numValue = Number(
+                          newValue.replace(/[^0-9]/g, "")
+                        );
                         handlePeriodChange(Math.max(1, numValue));
                       }
                     }}
