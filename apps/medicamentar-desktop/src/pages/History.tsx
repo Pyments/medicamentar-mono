@@ -28,8 +28,8 @@ const History = () => {
           },
         });
         setData(response.data.data);
-        console.log(response.data.data);
-        console.log(response.data);
+        // console.log(response.data.data);
+        // console.log(response.data);
       };
       getHistory();
     } catch (e) {
@@ -42,7 +42,7 @@ const History = () => {
       if (!event?.eventData) return null;
 
       const processedEvent = {
-        id: event.eventData.id,
+        id: event.id,
         name: event.eventData.name,
         date: new Date(event.eventData.date).toLocaleString(),
         eventDate: new Date(event.eventDate).toLocaleString(),
