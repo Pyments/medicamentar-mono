@@ -42,11 +42,11 @@ let win: BrowserWindow | null;
 
 function createWindow() {
   win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, "icons/medicamentar_logo_sm.svg"),
+    icon: path.join(__dirname, "../src/assets/icons/logo.png"),
     width: 1200,
     height: 800,
-    minWidth: 720,
-    minHeight: 480,
+    minWidth: 600,
+    minHeight: 400,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

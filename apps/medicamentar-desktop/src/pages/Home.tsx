@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 type="events"
                 title={event.name || event.doctorName}
                 description={event.description || event.type}
-                dateTime={event.date || event.amount + " " + event.unity}
+                dateTime={event.date}
               />
             ))
           ) : (
