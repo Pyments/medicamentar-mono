@@ -1,6 +1,6 @@
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import GridItem from "@components/GridItem";
 import { Box, Grid, Stack } from "@mui/material";
 import axiosInstance from "@utils/axiosInstance";
@@ -8,6 +8,7 @@ import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
   const { darkMode } = useTheme();
@@ -45,7 +46,7 @@ const History = () => {
         name: event.eventData.name,
         date: new Date(event.eventData.date).toLocaleString(),
         eventDate: new Date(event.eventDate).toLocaleString(),
-        doctorName: event.eventData.doctorName || null,
+        doctorName: event.eventData.doctorName,
         local: event.eventData.local,
         description: event.eventData.description,
         action: event.eventAction,
@@ -54,12 +55,13 @@ const History = () => {
       return (
         <Grid item key={processedEvent.id}>
           <GridItem
+            id={processedEvent.id}
             description={processedEvent.description?.toUpperCase()}
             name={processedEvent.name?.toUpperCase()}
             actionType={processedEvent.action}
             date={processedEvent.date}
             eventDate={processedEvent.eventDate}
-            medic={
+            doctorName={
               processedEvent.doctorName &&
               "CONSULTA COM DOUTOR(A) " +
                 processedEvent.doctorName.toUpperCase()
@@ -87,7 +89,11 @@ const History = () => {
             HISTÓRICO
           </Box>
           <Grid container spacing={2}>
-            {displayHistoryCards()}
+            {displayHistoryCards() || (
+              <Suspense fallback="Carregando...">
+                <Typography>Ainda não foi realizada nenhuma ação</Typography>
+              </Suspense>
+            )}
           </Grid>
         </Stack>
       </SectionContainer>
