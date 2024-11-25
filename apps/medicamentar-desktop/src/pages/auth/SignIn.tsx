@@ -19,6 +19,7 @@ import { ContainerUniversal } from "@components/ContainerUniversal";
 import { useTheme } from "@constants/theme/useTheme";
 import handleCapslock from "@utils/handleCapslock";
 import handleShowPassword from "@utils/handleShowPassword";
+import { Loader } from "@components/Loader";
 
 export default function SignIn() {
   const { login } = useAuth();
@@ -27,6 +28,7 @@ export default function SignIn() {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [showPassword, setShowPassword] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const { darkMode } = useTheme();
 
   const validateEmailAndPassword = (
@@ -47,13 +49,12 @@ export default function SignIn() {
   };
 
   const loginUser = async (email: string, password: string) => {
+    setError(null);
     try {
-      const response = await axiosInstance.post("/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
 
       const token = response.data;
       if (token) {
@@ -70,6 +71,7 @@ export default function SignIn() {
       } else {
         setError("Ocorreu um erro inesperado");
       }
+      setIsLoading(false);
     }
   };
 
@@ -87,17 +89,22 @@ export default function SignIn() {
 
   React.useEffect(() => {
     const fetchStoredCredentials = async () => {
-      const storedEmail = (await window.electron.store.get("email")) as
-        | string
-        | undefined;
-      const storedPassword = (await window.electron.store.get("password")) as
-        | string
-        | undefined;
+      try {
+        const storedEmail = (await window.electron.store.get("email")) as
+          | string
+          | undefined;
+        const storedPassword = (await window.electron.store.get("password")) as
+          | string
+          | undefined;
 
-      if (storedEmail && storedPassword) {
-        setEmail(storedEmail);
-        setPassword(storedPassword);
-        await loginUser(storedEmail, storedPassword);
+        if (storedEmail && storedPassword) {
+          await loginUser(storedEmail, storedPassword);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setError("Erro ao verificar credenciais salvas");
+        setIsLoading(false);
       }
     };
 
@@ -131,124 +138,146 @@ export default function SignIn() {
         overflowY: "auto",
       }}
     >
-      <Header />
-      <Paper sx={card__wrapper}>
-        <Typography
-          sx={{
-            my: "50px",
-            fontSize: "30px",
-            fontWeight: "bold",
-            color: "common.white",
-          }}
-        >
-          {"FAÇA LOGIN"}
-        </Typography>
-        <Box component="form" width={"90%"} onSubmit={handleSubmit} noValidate>
-          <WhiteTextField
-            required
-            fullWidth
-            id="email"
-            name="email"
-            label="Email"
-            margin="normal"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <WhiteTextField
-            required
-            fullWidth
-            label="Senha"
-            id="password"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            margin="normal"
-            variant="outlined"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(event:React.KeyboardEvent<HTMLInputElement>) => handleCapslock(event, setError)}
-          />
-          {error && (
-            <Typography sx={{ color: "common.white", textAlign: "center" }}>
-              {error}
-            </Typography>
-          )}
-          <Stack
-           direction="row"
-           justifyContent="space-between"
-           alignItems="center"
-           sx={{ mt: 2 }}
-          >
-          <FormControlLabel
-            label="Lembrar senha"
-            sx={{ color: "common.white" }}
-            control={
-              <Checkbox
-                value="remember"
-                color="primary"
-                sx={{ color: "common.white" }}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-            }
-          />
-           <FormControlLabel
-              label="Mostrar Senha"
-              sx={{ color: "common.white" }}
-              control={
-                <Checkbox
-                  value="remember"
-                  color="primary"
-                  sx={{ color: "common.white" }}
-                  onChange={() => handleShowPassword(setShowPassword)}
-                />
-              }
-            />
-          </Stack>
-          <Button fullWidth type="submit" variant="contained" sx={card__button}>
-            {"ENTRAR"}
-          </Button>
-          <Link
-            to="/forgot-password"
-            style={{
-              textAlign: "center",
-              color: "common.black",
-              textDecoration: "none",
-            }}
-          >
-            <Typography color={darkMode ? "primary.lighter" : "primary.main"}>
-              Esqueci minha senha
-            </Typography>
-          </Link>
-          <Box sx={{ textAlign: "center" }}>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <Header />
+          <Paper sx={card__wrapper}>
             <Typography
               sx={{
+                my: "50px",
+                fontSize: "30px",
+                fontWeight: "bold",
                 color: "common.white",
-                display: "inline-block",
-                mt: 1,
-                mr: 1,
               }}
             >
-              Precisando de uma conta?
+              {"FAÇA LOGIN"}
             </Typography>
-            <Link
-              style={{
-                textAlign: "center",
-                color: "common.black",
-                textDecoration: "none",
-                display: "inline-block",
-              }}
-              to={"/register"}
+            <Box
+              component="form"
+              width={"90%"}
+              onSubmit={handleSubmit}
+              noValidate
             >
-              <Typography
-                sx={{ color: darkMode ? "primary.lighter" : "primary.main" }}
+              <WhiteTextField
+                required
+                fullWidth
+                id="email"
+                name="email"
+                label="Email"
+                margin="normal"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <WhiteTextField
+                required
+                fullWidth
+                label="Senha"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                margin="normal"
+                variant="outlined"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) =>
+                  handleCapslock(event, setError)
+                }
+              />
+              {error && (
+                <Typography sx={{ color: "common.white", textAlign: "center" }}>
+                  {error}
+                </Typography>
+              )}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mt: 2 }}
               >
-                Registre-se
-              </Typography>
-            </Link>
-          </Box>
-        </Box>
-      </Paper>
+                <FormControlLabel
+                  label="Lembrar senha"
+                  sx={{ color: "common.white" }}
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      sx={{ color: "common.white" }}
+                      onChange={(e) => setRemember(e.target.checked)}
+                    />
+                  }
+                />
+                <FormControlLabel
+                  label="Mostrar Senha"
+                  sx={{ color: "common.white" }}
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      sx={{ color: "common.white" }}
+                      onChange={() => handleShowPassword(setShowPassword)}
+                    />
+                  }
+                />
+              </Stack>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                sx={card__button}
+              >
+                {"ENTRAR"}
+              </Button>
+              <Link
+                to="/forgot-password"
+                style={{
+                  textAlign: "center",
+                  color: "common.black",
+                  textDecoration: "none",
+                }}
+              >
+                <Typography
+                  color={darkMode ? "primary.lighter" : "primary.main"}
+                >
+                  Esqueci minha senha
+                </Typography>
+              </Link>
+              <Box sx={{ textAlign: "center" }}>
+                <Typography
+                  sx={{
+                    color: "common.white",
+                    display: "inline-block",
+                    mt: 1,
+                    mr: 1,
+                  }}
+                >
+                  Precisando de uma conta?
+                </Typography>
+                <Link
+                  style={{
+                    textAlign: "center",
+                    color: "common.black",
+                    textDecoration: "none",
+                    display: "inline-block",
+                  }}
+                  to={"/register"}
+                >
+                  <Typography
+                    sx={{
+                      color: darkMode ? "primary.lighter" : "primary.main",
+                    }}
+                  >
+                    Registre-se
+                  </Typography>
+                </Link>
+              </Box>
+            </Box>
+          </Paper>{" "}
+        </>
+      )}
     </ContainerUniversal>
   );
 }
