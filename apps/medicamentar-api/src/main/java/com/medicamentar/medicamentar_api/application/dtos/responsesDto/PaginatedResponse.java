@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaginatedResponse<T> extends ServiceResponse<T> {
-    private int getTotalPages;
-    private long getTotalElements;
+    private int totalPages;
+    private long totalElements;
 }

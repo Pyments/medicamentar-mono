@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.User;
@@ -30,7 +31,7 @@ public class ConsultationService {
     private final TokenService tokenService;
 
     public ServiceResponse<String> createConsultation(ConsultationRequest consultationRegister) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
         var consultation = new Consultation();
@@ -47,14 +48,14 @@ public class ConsultationService {
         return response;
     }
 
-    public ServiceResponse<List<ConsultationResponse>> getConsultations(int page, int size) {
-        ServiceResponse<List<ConsultationResponse>> response = new ServiceResponse<>();
+    public PaginatedResponse<List<ConsultationResponse>> getConsultations(int page, int size) {
+        PaginatedResponse<List<ConsultationResponse>> response = new PaginatedResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
         Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNull(
                 currentUser, PageRequest.of(page, size));
 
-        List<ConsultationResponse> consultationResponses = consultations.stream()
+        List<ConsultationResponse> consultationResponses = consultations.getContent().stream()
                 .map(consultation -> new ConsultationResponse(
                         consultation.getId(),
                         consultation.getDate(),
@@ -66,15 +67,24 @@ public class ConsultationService {
         response.setData(consultationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage("Exibindo consultas.");
-
+        response.setTotalPages(consultations.getTotalPages());
+        response.setTotalElements(consultations.getTotalElements());
         return response;
     }
 
     public ServiceResponse<String> deleteConsultation(String id) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
-        var consultationId = UUID.fromString(id);
+        UUID consultationId;
+        try {
+            consultationId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            response.setMessage("ID inválido.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
+
         var consultation = consultationRepo.findByIdAndUserAndDeletedAtIsNull(consultationId, currentUser);
 
         if (consultation.isPresent()) {

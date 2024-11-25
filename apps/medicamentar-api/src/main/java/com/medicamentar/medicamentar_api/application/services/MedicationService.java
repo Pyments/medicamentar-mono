@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationRequest;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.entities.User;
@@ -32,7 +33,7 @@ public class MedicationService {
     private final TokenService tokenService;
 
     public ServiceResponse<String> createMedication(MedicationRequest medicationRegister) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
         Medication medication = new Medication();
@@ -58,8 +59,8 @@ public class MedicationService {
         return response;
     }
 
-    public ServiceResponse<List<MedicationResponse>> getMedications(int page, int size) {
-        ServiceResponse<List<MedicationResponse>> response = new ServiceResponse<>();
+    public PaginatedResponse<List<MedicationResponse>> getMedications(int page, int size) {
+        PaginatedResponse<List<MedicationResponse>> response = new PaginatedResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(page, size);
@@ -84,11 +85,13 @@ public class MedicationService {
         response.setData(medicationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage(String.format("Exibindo página %d de %d.", medicationsPage.getNumber() + 1, medicationsPage.getTotalPages()));
+        response.setTotalPages(medicationsPage.getTotalPages());
+        response.setTotalElements(medicationsPage.getTotalElements());
         return response;
     }
 
     public ServiceResponse<String> updateMedication(String id, MedicationRequest updateMedication) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
         UUID medicationId;
@@ -137,7 +140,7 @@ public class MedicationService {
     }
 
     public ServiceResponse<String> deleteMedication(String id) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
         UUID medicationId;
