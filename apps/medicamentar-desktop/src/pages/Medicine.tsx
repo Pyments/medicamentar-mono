@@ -57,8 +57,7 @@ const Medicine = () => {
           },
         }
       );
-      console.log("Lista de Medicamentos:", response.data.data);
-      setPageCount(response.data.getTotalPages);
+      setPageCount(response.data.totalPages);
       setMedications(response.data.data);
     } catch (error) {
       console.error("Erro na requisição:", error);
@@ -69,7 +68,7 @@ const Medicine = () => {
     if (token) {
       fetchMedications();
     }
-  }, [token]);
+  }, [token, page]);
 
   const handleModal = () => {
     setOpenType(!openType);
@@ -101,7 +100,6 @@ const Medicine = () => {
         );
         closeDeleteModal();
       } catch (error) {
-        console.log("Erro ao deletar medicamento: ", error);
       }
     }
   };

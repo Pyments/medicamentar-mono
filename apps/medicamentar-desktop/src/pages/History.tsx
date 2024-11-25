@@ -1,11 +1,11 @@
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
-import { lazy, Suspense, useEffect, useState } from "react";
 import GridItem from "@components/GridItem";
-import { Box, Grid, Stack } from "@mui/material";
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 const Typography = lazy(() => import("@mui/material/Typography"));
@@ -19,6 +19,9 @@ const History = () => {
   const token = user?.token?.data;
   const [data, setData] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
+
   useEffect(() => {
     try {
       const getHistory = async () => {
@@ -28,14 +31,19 @@ const History = () => {
           },
         });
         setData(response.data.data);
-        // console.log(response.data.data);
-        // console.log(response.data);
+        setPageCount(response.data.totalPages);
       };
       getHistory();
     } catch (e) {
-      console.log(e);
     }
-  }, [token]);
+  }, [token, page]);
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
+  };
 
   const displayHistoryCards = () => {
     return data.map((event: any) => {
@@ -93,6 +101,31 @@ const History = () => {
               <Suspense fallback="Carregando...">
                 <Typography>Ainda não foi realizada nenhuma ação</Typography>
               </Suspense>
+            )}
+            {pageCount > 1 && (
+              <Grid
+                item
+                xs={12}
+                sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+              >
+                <Pagination
+                  page={page + 1}
+                  color="primary"
+                  count={pageCount}
+                  onChange={handlePagination}
+                  sx={{
+                    "& .MuiPaginationItem-ellipsis": {
+                      color: darkMode ? "common.white" : "primary.main",
+                    },
+                    "& .MuiPaginationItem-page.Mui-selected": {
+                      backgroundColor: darkMode
+                        ? "primary.darker"
+                        : "primary.main",
+                      color: "white",
+                    },
+                  }}
+                />
+              </Grid>
             )}
           </Grid>
         </Stack>

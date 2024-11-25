@@ -76,7 +76,7 @@ const Profile = () => {
             }}
           ></Box>
           <Button
-            onClick={() => console.log("Trocar foto")}
+            onClick={() => {}}
             disableRipple
             sx={{
               top: "50%",

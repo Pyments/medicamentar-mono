@@ -67,7 +67,6 @@ export default function SignIn() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "Ocorreu um erro no login");
-        console.log(error);
       } else {
         setError("Ocorreu um erro inesperado");
       }

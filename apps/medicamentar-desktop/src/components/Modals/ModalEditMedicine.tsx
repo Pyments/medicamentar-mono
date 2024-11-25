@@ -98,7 +98,6 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
 
   if (!isOpen) return null;
-  console.log(currentMedication);
   
 
   useEffect(() => {
@@ -117,7 +116,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await axiosInstance({
+      await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "put",
         url: `/medication/${id}`,
@@ -140,7 +139,6 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           }, */
         },
       });
-      console.log(response.data);
       setOpen(false);
       fetchMedications();
     } catch (error) {

@@ -20,7 +20,7 @@ interface CardUniversalProps {
   dose?: number;
   qtpDose?: number;
   period?: number;
-  dateTime: dayjs.Dayjs;
+  dateTime: dayjs.Dayjs | string;
   description?: string;
   onDelete?: () => void;
   onEdit?: () => void;
