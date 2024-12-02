@@ -33,9 +33,9 @@ function GridItem({
   description,
 }: gridItemTypes) {
   const { darkMode } = useTheme();
- const cards: Record<actionTypes, () => React.ReactNode> = {
-  
-    "Consulta Criado": () => (
+
+  if (actionType == "Consulta Criado") {
+    return (
       <StyledPaper>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
           <Typography
@@ -73,8 +73,9 @@ function GridItem({
           </Typography>
         </Stack>
       </StyledPaper>
-    ),
-    "Exame Criado": () => (
+    );
+  } else if (actionType == "Exame Criado") {
+    return (
       <StyledPaper>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
           <Typography
@@ -114,8 +115,9 @@ function GridItem({
           </Typography>
         </Stack>
       </StyledPaper>
-    ),
-    "Medicamento Criado": () => (
+    );
+  } else if (actionType == "Medicamento Criado") {
+    return (
       <StyledPaper>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
           <Typography
@@ -148,10 +150,9 @@ function GridItem({
           {eventDate}
         </Typography>
       </StyledPaper>
-    ),
-    warning: () => <StyledPaper></StyledPaper>,
-    alarmAnswered: () => <StyledPaper></StyledPaper>,
-    "Medicamento Deletado": () => (
+    );
+  } else if (actionType == "Medicamento Deletado") {
+    return (
       <StyledPaper>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
           <Typography
@@ -184,9 +185,8 @@ function GridItem({
           {eventDate}
         </Typography>
       </StyledPaper>
-    ),
-  };
-  return cards[actionType]();
+    );
+  }
 }
 
 export default GridItem;
