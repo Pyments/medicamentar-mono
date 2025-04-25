@@ -8,6 +8,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import { longDate, shortDate } from "../types/sanitizeDate";
 const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
@@ -52,8 +53,8 @@ const History = () => {
       const processedEvent = {
         id: event.id,
         name: event.eventData.name,
-        date: new Date(event.eventData.date).toLocaleString(),
-        eventDate: new Date(event.eventDate).toLocaleString(),
+        date: longDate(event.eventData.date),
+        eventDate: shortDate(event.eventDate),
         doctorName: event.eventData.doctorName,
         local: event.eventData.local,
         description: event.eventData.description,
