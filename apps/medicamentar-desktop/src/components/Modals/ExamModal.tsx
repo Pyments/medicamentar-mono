@@ -224,6 +224,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
               views={["day", "hours", "minutes"]}
               label="DATA E HORA"
               value={selectedDate}
+              minDateTime={dayjs().startOf('minute')}
               components={{
                 OpenPickerIcon: CalendarTodayIcon,
               }}
