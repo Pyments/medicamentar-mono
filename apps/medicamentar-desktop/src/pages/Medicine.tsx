@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AddBtn } from "@components/AddBtn";
 import SideBar from "@components/SideBar.tsx";
 import axiosInstance from "@utils/axiosInstance";
-import { Typography, Grid, Stack } from "@mui/material";
+import { Typography, Grid, Stack, AlertColor } from "@mui/material";
 import ModalDelete from "@components/Modals/ModalDelete";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -14,6 +14,7 @@ import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
 import ModalNewMedication from "@components/Modals/ModalNewMedication";
 
 import { useTheme } from "@theme/useTheme";
+import { Feedback } from "@components/Feedback";
 
 interface MedicationData {
   id: string;
@@ -45,21 +46,24 @@ const Medicine = () => {
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
 
-  useEffect(() => {
-    const fetchMedications = async () => {
-      try {
-        const response = await axiosInstance.get("/medication", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("Lista de Medicamentos:",response.data.data);
-        setMedications(response.data.data);
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      }
-    };
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
 
+  const fetchMedications = async () => {
+    try {
+      const response = await axiosInstance.get("/medication", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Lista de Medicamentos:", response.data.data);
+      setMedications(response.data.data);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    }
+  };
+  useEffect(() => {
     if (token) {
       fetchMedications();
     }
@@ -89,9 +93,16 @@ const Medicine = () => {
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );
+        setFeedbackMessage("Medicamento deletado com sucesso!");
+        setFeedbackSeverity("success");
+        setFeedbackOpen(true);
+
         closeDeleteModal();
       } catch (error) {
         console.log("Erro ao deletar medicamento: ", error);
+        setFeedbackMessage("Erro ao deletar medicamento!");
+        setFeedbackSeverity("error");
+        setFeedbackOpen(true);
       }
     }
   };
@@ -107,6 +118,11 @@ const Medicine = () => {
   };
   return (
     <ContainerUniversal>
+      <Feedback
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        severity={feedbackSeverity}
+        message={feedbackMessage}/>
       <Header />
       <SideBar />
       <SectionContainer>
@@ -173,6 +189,7 @@ const Medicine = () => {
               type={type}
               open={openNew}
               setOpen={setOpenNew}
+              fetchMedication={fetchMedications}
             />
           )}
           {isDeleteModalOpen && (
