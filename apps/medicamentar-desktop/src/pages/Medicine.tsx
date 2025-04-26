@@ -14,6 +14,7 @@ import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
+import { PageTitle } from "@components/PageTitle";
 
 interface MedicationData {
   id: string;
@@ -138,7 +139,7 @@ const Medicine = () => {
               textAlign: { sm: "center", md: "left" },
             }}
           >
-            MEDICAMENTOS
+            <PageTitle>MEDICAMENTOS</PageTitle>
           </Typography>
 
           <AddBtn handleModal={handleModal} text="medicamento" />

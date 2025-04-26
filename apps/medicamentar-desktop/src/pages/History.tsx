@@ -8,6 +8,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import { PageTitle } from "@components/PageTitle";
 const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
@@ -93,7 +94,7 @@ const History = () => {
               alignSelf: "start",
             }}
           >
-            HISTÓRICO
+            <PageTitle>HISTÓRICO</PageTitle>
           </Box>
           <Grid container spacing={2}>
             {displayHistoryCards() || (

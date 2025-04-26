@@ -13,6 +13,7 @@ import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
+import { PageTitle } from "@components/PageTitle";
 
 interface ExamData {
   id: string;
@@ -131,7 +132,7 @@ const Exam = () => {
                 color: darkMode ? "common.white" : "primary.main",
               }}
             >
-              CONSULTAS E EXAMES
+              <PageTitle>CONSULTAS E EXAMES</PageTitle>
             </Box>
           </Typography>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
