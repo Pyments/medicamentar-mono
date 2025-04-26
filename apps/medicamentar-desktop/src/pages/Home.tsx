@@ -9,6 +9,7 @@ import { ContainerUniversal } from "@components/ContainerUniversal";
 
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
+import { PageTitle } from "@components/PageTitle";
 
 interface EventData {
   id: string;
@@ -92,7 +93,7 @@ const Home: React.FC = () => {
               color: darkMode ? "common.white" : "primary.main",
             }}
           >
-            EVENTOS PRÓXIMOS
+            <PageTitle>EVENTOS PRÓXIMOS</PageTitle>
           </Box>
         </Typography>
 

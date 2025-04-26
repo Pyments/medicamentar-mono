@@ -1,9 +1,4 @@
-// themeConfig.ts
-import {
-  ThemeOptions,
-  PaletteOptions,
-  PaletteColorOptions,
-} from "@mui/material/styles";
+import { ThemeOptions, PaletteOptions, PaletteColorOptions, Theme } from "@mui/material/styles";
 
 declare module "@mui/material/styles" {
   interface PaletteColor {
@@ -23,6 +18,20 @@ declare module "@mui/material/styles" {
     warning?: PaletteColorOptions;
     info?: PaletteColorOptions;
     success?: PaletteColorOptions;
+  }
+
+  interface TypographyVariants {
+    inputFontSize: string;
+  }
+
+  interface TypographyVariantsOptions {
+    inputFontSize?: string;
+  }
+}
+
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    inputFontSize: true;
   }
 }
 
@@ -59,9 +68,45 @@ const CustomComponentProps = {
       },
     },
   },
+  MuiTextField: {
+    styleOverrides: {
+      root: ({ theme }: { theme: Theme }) => ({
+        "& .MuiInputLabel-root": {
+          fontSize: theme.typography.fontSize,
+          "&.Mui-focused": {
+            fontSize: theme.typography.fontSize,
+          },
+        },
+        "& .MuiInputBase-input": {
+          fontSize: theme.typography.inputFontSize,
+        },
+        "& .MuiOutlinedInput-root": {
+          "& fieldset": {
+            transition: "border-color 250ms ease-out",
+          },
+        }
+      })
+    }
+  },
+  MuiSelect: {
+    styleOverrides: {
+      root: ({ theme }: { theme: Theme }) => ({
+        fontSize: theme.typography.inputFontSize,
+      })
+    }
+  }
 };
 
 const lightTheme: CustomThemeOptions = {
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: 14,
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
+    inputFontSize: "0.875rem",
+  },
   palette: {
     mode: "light",
     primary: {
@@ -84,6 +129,15 @@ const lightTheme: CustomThemeOptions = {
 };
 
 const darkTheme: CustomThemeOptions = {
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: 14,
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
+    inputFontSize: "0.875rem",
+  },
   palette: {
     mode: "dark",
     primary: {

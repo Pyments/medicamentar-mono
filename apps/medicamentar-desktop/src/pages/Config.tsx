@@ -6,28 +6,19 @@ import {
   FormControl,
   FormControlLabel,
 } from "@mui/material";
-import { useState } from "react";
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
 import Arrow from "@assets/icons/Arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-
 import { useTheme } from "@constants/theme/useTheme";
+import { PageTitle } from "@components/PageTitle";
 
 const Config = () => {
-  const { darkMode, toggleTheme } = useTheme();
-  const [switchStates, setSwitchStates] = useState({
-    letrasGigantes: false,
-  });
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSwitchStates({
-      ...switchStates,
-      [event.target.name]: event.target.checked,
-    });
-  };
+  const { darkMode, toggleTheme, largeFont, toggleFontSize } = useTheme();
   const navigate = useNavigate();
+
   return (
     <ContainerUniversal>
       <Header />
@@ -35,12 +26,12 @@ const Config = () => {
       <SectionContainer>
         <Box
           sx={{
-            fontSize: "2rem",
+            fontSize: largeFont ? "2.2rem" : "2rem",
             fontWeight: "bold",
             color: darkMode ? "text.primary" : "primary.darker",
           }}
         >
-          CONFIGURAÇÕES
+          <PageTitle>CONFIGURAÇÕES</PageTitle>
         </Box>
         <FormControl component="fieldset" variant="standard">
           <FormGroup sx={{ gap: "20px", width: "300px" }}>
@@ -67,8 +58,8 @@ const Config = () => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={switchStates.letrasGigantes}
-                  onChange={handleChange}
+                  checked={largeFont}
+                  onChange={toggleFontSize}
                   name="letrasGigantes"
                   aria-label="Letras Gigantes"
                 />
