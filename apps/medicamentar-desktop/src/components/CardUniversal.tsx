@@ -258,7 +258,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   color: "common.black",
                 }}
               >
-                {dateTime.toString()}
+                {typeof dateTime === 'string' ? longDate(dateTime) : dateTime.toString()}
               </Typography>
             </Box>
           </Box>
