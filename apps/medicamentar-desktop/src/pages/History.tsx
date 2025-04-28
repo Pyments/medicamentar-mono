@@ -1,13 +1,15 @@
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
-import { useEffect, useState } from "react";
 import GridItem from "@components/GridItem";
-import { Box, Grid, Stack } from "@mui/material";
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import { longDate, shortDate } from "../types/sanitizeDate";
+const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
   const { darkMode } = useTheme();
@@ -18,6 +20,9 @@ const History = () => {
   const token = user?.token?.data;
   const [data, setData] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
+
   useEffect(() => {
     try {
       const getHistory = async () => {
@@ -27,25 +32,30 @@ const History = () => {
           },
         });
         setData(response.data.data);
-        console.log(response.data.data);
-        console.log(response.data);
+        setPageCount(response.data.totalPages);
       };
       getHistory();
     } catch (e) {
-      console.log(e);
     }
-  }, [token]);
+  }, [token, page]);
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
+  };
 
   const displayHistoryCards = () => {
     return data.map((event: any) => {
       if (!event?.eventData) return null;
 
       const processedEvent = {
-        id: event.eventData.id,
+        id: event.id,
         name: event.eventData.name,
-        date: new Date(event.eventData.date).toLocaleString(),
-        eventDate: new Date(event.eventDate).toLocaleString(),
-        doctorName: event.eventData.doctorName || null,
+        date: longDate(event.eventData.date),
+        eventDate: shortDate(event.eventDate),
+        doctorName: event.eventData.doctorName,
         local: event.eventData.local,
         description: event.eventData.description,
         action: event.eventAction,
@@ -59,7 +69,7 @@ const History = () => {
             actionType={processedEvent.action}
             date={processedEvent.date}
             eventDate={processedEvent.eventDate}
-            medic={
+            doctorName={
               processedEvent.doctorName &&
               "CONSULTA COM DOUTOR(A) " +
                 processedEvent.doctorName.toUpperCase()
@@ -87,7 +97,36 @@ const History = () => {
             HISTÓRICO
           </Box>
           <Grid container spacing={2}>
-            {displayHistoryCards()}
+            {displayHistoryCards() || (
+              <Suspense fallback="Carregando...">
+                <Typography>Ainda não foi realizada nenhuma ação</Typography>
+              </Suspense>
+            )}
+            {pageCount > 1 && (
+              <Grid
+                item
+                xs={12}
+                sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+              >
+                <Pagination
+                  page={page + 1}
+                  color="primary"
+                  count={pageCount}
+                  onChange={handlePagination}
+                  sx={{
+                    "& .MuiPaginationItem-ellipsis": {
+                      color: darkMode ? "common.white" : "primary.main",
+                    },
+                    "& .MuiPaginationItem-page.Mui-selected": {
+                      backgroundColor: darkMode
+                        ? "primary.darker"
+                        : "primary.main",
+                      color: "white",
+                    },
+                  }}
+                />
+              </Grid>
+            )}
           </Grid>
         </Stack>
       </SectionContainer>

@@ -100,7 +100,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
 
     try {
       if (tabValue === "exame") {
-        const response = await axiosInstance.post(
+        await axiosInstance.post(
           "/exam",
           {
             date: formattedDate,
@@ -112,13 +112,15 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
+  
         setFeedbackMessage("Exame adicionado com sucesso!");
         setFeedbackSeverity("success");
         setFeedbackOpen(true);
 
         console.log(response.data);
+
       } else {
-        const response = await axiosInstance.post(
+        await axiosInstance.post(
           "/consultation",
           {
             date: formattedDate,
@@ -130,10 +132,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
+
         setFeedbackMessage("Consulta adicionada com sucesso!");
         setFeedbackSeverity("success");
         setFeedbackOpen(true);
         console.log(response.data);
+
       }
       await fetchExams();
     } catch (error) {

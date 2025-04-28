@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,7 @@ import com.medicamentar.medicamentar_api.application.dtos.consultationDto.Consul
 import com.medicamentar.medicamentar_api.application.dtos.eventsHistoryDto.EventLogResponse;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
-import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Consultation;
 import com.medicamentar.medicamentar_api.domain.entities.EventLog;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
@@ -85,61 +87,62 @@ public class EventLogService {
     }
   }
 
-  public ServiceResponse<List<EventLogResponse>> getHistory() {
-    var response = new ServiceResponse<List<EventLogResponse>>();
+  public PaginatedResponse<List<EventLogResponse>> getHistory(int page, int size) {
+    var response = new PaginatedResponse<List<EventLogResponse>>();
     User currentUser = tokenService.getCurrentUser();
 
-    var history = eventLogRepository.findByUser(currentUser);
+    Pageable pageable = PageRequest.of(page, size);
 
-    var eventLogResponse = history.stream()
+    var history = eventLogRepository.findByUser(currentUser, pageable);
+
+    var eventLogResponse = history.getContent().stream()
         .map(h -> {
-          switch (h.getEventType()) {
-            case "Medicamento":
-              Optional<Medication> optionalMedication = medicationRepository.findById(h.getEventReferenceId());
-              MedicationResponse medicationResponse = optionalMedication.map(medication -> new MedicationResponse(
-                  medication.getId(),
-                  medication.getName(),
-                  medication.getType(),
-                  medication.getDose(),
-                  medication.getAmount(),
-                  medication.getUnity(),
-                  medication.getPeriod(),
-                  medication.isContinuousUse(),
-                  medication.getStart_date(),
-                  medication.getEnd_date(),
-                  medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
-                  .orElse(null);
+            switch (h.getEventType()) {
+                case "Medicamento":
+                    Optional<Medication> optionalMedication = medicationRepository.findById(h.getEventReferenceId());
+                    MedicationResponse medicationResponse = optionalMedication.map(medication -> new MedicationResponse(
+                        medication.getId(),
+                        medication.getName(),
+                        medication.getType(),
+                        medication.getDose(),
+                        medication.getAmount(),
+                        medication.getUnity(),
+                        medication.getPeriod(),
+                        medication.isContinuousUse(),
+                        medication.getStart_date(),
+                        medication.getEnd_date(),
+                        medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
+                        .orElse(null);
 
-              return new EventLogResponse(medicationResponse, h.getEventAction(), h.getEventDate());
+                    return new EventLogResponse(h.getId(), medicationResponse, h.getEventAction(), h.getEventDate());
 
-            case "Exame":
-              Optional<Exam> optionalExam = this.examRepository.findById(h.getEventReferenceId());
-              ExamResponse examResponse = optionalExam.map(exam -> new ExamResponse(
-                  exam.getId(),
-                  exam.getDate(),
-                  exam.getName(),
-                  exam.getLocal(),
-                  exam.getDescription())).orElse(null);
+                case "Exame":
+                    Optional<Exam> optionalExam = examRepository.findById(h.getEventReferenceId());
+                    ExamResponse examResponse = optionalExam.map(exam -> new ExamResponse(
+                        exam.getId(),
+                        exam.getDate(),
+                        exam.getName(),
+                        exam.getLocal(),
+                        exam.getDescription())).orElse(null);
 
-              return new EventLogResponse(examResponse, h.getEventAction(), h.getEventDate());
+                    return new EventLogResponse(h.getId(), examResponse, h.getEventAction(), h.getEventDate());
 
-            case "Consulta":
-              Optional<Consultation> optionalConsultation = this.consultationRepository
-                  .findById(h.getEventReferenceId());
-              ConsultationResponse consultationResponse = optionalConsultation
-                  .map(consultation -> new ConsultationResponse(
-                      consultation.getId(),
-                      consultation.getDate(),
-                      consultation.getDoctorName(),
-                      consultation.getLocal(),
-                      consultation.getDescription()))
-                  .orElse(null);
+                case "Consulta":
+                    Optional<Consultation> optionalConsultation = consultationRepository.findById(h.getEventReferenceId());
+                    ConsultationResponse consultationResponse = optionalConsultation
+                        .map(consultation -> new ConsultationResponse(
+                            consultation.getId(),
+                            consultation.getDate(),
+                            consultation.getDoctorName(),
+                            consultation.getLocal(),
+                            consultation.getDescription()))
+                        .orElse(null);
 
-              return new EventLogResponse(consultationResponse, h.getEventAction(), h.getEventDate());
+                    return new EventLogResponse(h.getId(), consultationResponse, h.getEventAction(), h.getEventDate());
 
-            default:
-              return null;
-          }
+                default:
+                    return null;
+            }
         })
         .filter(eventLogResponseItem -> eventLogResponseItem != null)
         .collect(Collectors.toList());
@@ -147,8 +150,10 @@ public class EventLogService {
     response.setData(eventLogResponse);
     response.setStatus(HttpStatus.OK);
     response.setMessage("Successfully returned history");
+    response.setTotalPages(history.getTotalPages());
+    response.setTotalElements(history.getTotalElements());
     return response;
-  }
+}
 
   private static final Map<String, String> entityTranslations = Map.of(
       "Medication", "Medicamento",

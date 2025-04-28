@@ -41,7 +41,7 @@ interface FormErrors {
 }
 
 interface NewMedicationProps {
-  type: string;
+  type: number;
   open: boolean;
   setOpen: (open: boolean) => void;
   fetchMedication: () => Promise<void>;
@@ -83,6 +83,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
   const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [errors, _setErrors] = useState<FormErrors>({});
 
   //feedbacks
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -97,6 +98,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
     CPS = 3,
     SC = 4,
   }
+
 
   const [errors, _setErrors] = useState<FormErrors>({});
   const calcEndDate = (startDate: dayjs.Dayjs | null, period: number) => {
@@ -117,7 +119,11 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
       return;
     }
     _setEndDate(calcEndDate(startDate, newPeriod));
+
   }
+
+  };
+
   /*  const validadeForm = () => {
     const newErrors: FormErrors = {};
     const requiredFields = {
@@ -161,7 +167,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
     }
 
     try {
-      const response = await axiosInstance({
+      await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "post",
         url: "/medication",
@@ -176,6 +182,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
           start_date: startDate,
         },
       });
+
       setFeedbackMessage("Medicamento adicionado com sucesso!");
       setFeedbackSeverity("success");
       setFeedbackOpen(true);
@@ -185,6 +192,9 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
         setOpen(false);
       }, 700);
       console.log(response.data);
+
+      setOpen(false);
+
     } catch (error) {
       setFeedbackOpen(true);
       setFeedbackMessage("Erro ao adicionar medicamento!");
@@ -342,6 +352,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
                       fontSize: "0.9rem",
                       transition: "all 0.3s ease-in-out",
                     }}
+
                     fullWidth
                     type="number"
                     value={amount}
@@ -352,6 +363,14 @@ const NewMedication = ({ open, setOpen, type, fetchMedication }: NewMedicationPr
                         setAmount(1);
                       } else {
                         setAmount(Number(event.target.value));
+
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const numValue = Number(
+                          newValue.replace(/[^0-9]/g, "")
+                        );
+                        handlePeriodChange(Math.max(1, numValue));
+
                       }
                     }}
                   />

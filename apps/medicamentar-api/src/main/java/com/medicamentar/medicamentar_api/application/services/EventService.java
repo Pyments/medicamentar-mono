@@ -123,8 +123,8 @@ public class EventService {
             response.setData(eventResponse);
             response.setMessage("Exibindo eventos.");
             response.setStatus(HttpStatus.OK);
-            response.setGetTotalPages((int) Math.ceil((double) allEvents.size() / size));
-            response.setGetTotalElements((long) allEvents.size());
+            response.setTotalPages((int) Math.ceil((double) allEvents.size() / size));
+            response.setTotalElements((long) allEvents.size());
 
         } catch (Exception e) {
             response.setMessage("Ocorreu um erro ao tentar mostrar os eventos: " + e.getMessage());

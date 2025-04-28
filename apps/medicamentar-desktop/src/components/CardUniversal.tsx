@@ -1,206 +1,270 @@
-import { Box, Card, Grid, IconButton, Typography } from "@mui/material";
-import EditOutlinedIcon from '@assets/icons/EditOutlined';
-import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
+import {
+  Box,
+  Card,
+  Grid,
+  Tooltip,
+  Typography,
+  IconButton,
+} from "@mui/material";
+import { useLocation } from "react-router-dom";
+import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
+import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
+
+import dayjs from "dayjs";
+import { longDate } from "../types/sanitizeDate";
 import { useTheme } from "@constants/theme/useTheme";
 
-interface CardUniversalProps{
-    type: "medication" | "events";
-    title:string;
-    continuousUse?:boolean;
-    dose?:string;
-    qtpDose?:string;
-    period?:string;
-    expirationDate?:string;
-    dateTime:string;
-    description?:string;
-    onDelete?: () => void; 
-    onEdit?: () => void;
-
+interface CardUniversalProps {
+  type: "medication" | "events";
+  title: string;
+  continuousUse?: boolean;
+  dose?: number;
+  qtpDose?: number;
+  period?: number;
+  dateTime: dayjs.Dayjs | string;
+  description?: string;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-const CardUniversal:React.FC<CardUniversalProps>=({type,title,continuousUse,dose,qtpDose,period,expirationDate,dateTime,description,onDelete, onEdit})=>{
-    const { darkMode } = useTheme();
-    const isMedication = type ==="medication";
-    const isEvents = type ==="events";
+const CardUniversal: React.FC<CardUniversalProps> = ({
+  type,
+  title,
+  continuousUse,
+  dose,
+  qtpDose,
+  period,
+  dateTime,
+  description,
+  onDelete,
+  onEdit,
+}) => {
+  const { darkMode } = useTheme();
+  const isMedication = type === "medication";
+  const isEvents = type === "events";
+  const location = useLocation().pathname;
 
-    const titleCard = {
-        fontSize: "12px",
-        textAlign: "center",
-        fontWeight: "bold",
-        wordWrap: "break-word",   
-        minWidth:"30%", 
-        maxHeigth:"50px",
-        marginInline:"5%"        
-    };
-    const cardButton = {
-        height:"30px",
-        display:"flex", 
-        alignItems:"center", 
-        justifyContent:"center",
-        cursor:"pointer",
-        boxShadow: "none",
-    };
-    
-    const infoCard = {  
-        fontSize:"12px",
-        wordWrap: "break-word",
-        color:darkMode?"common.black":"common.black",
-        }
+  const titleCard = {
+    width: 1,
+    minWidth: "30%",
+    fontSize: "12px",
+    maxHeigth: "50px",
+    marginInline: "5%",
+    fontWeight: "bold",
+    textAlign: "center",
+    wordWrap: "break-word",
+    py: location === "/home" ? "5px" : 0,
+    color: darkMode ? "text.primary" : "background.default",
+  };
+  const cardButton = {
+    height: "30px",
+    display: "flex",
+    cursor: "pointer",
+    boxShadow: "none",
+    alignItems: "center",
+    justifyContent: "center",
+  };
 
+  const infoCard = {
+    fontSize: "12px",
+    wordWrap: "break-word",
+    color: darkMode ? "common.black" : "common.black",
+  };
 
-    return(
-        <Grid item xs={12} sm={6} md={4}>
-            {isMedication &&(
-            <Card sx ={{ 
-                maxWidth:"300px",
-                width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
-                minWidth:"120px",
-                minHeight: 260,
-                backgroundColor: darkMode?"text.secondary":"background.paper",
-                borderRadius:"5px",
-                display:"flex",
-                flexDirection:"column",
-                justifyContent:"space-between",
-                boxShadow: "none",
-}}>
-                <Box sx={{
-                        backgroundColor: darkMode ? "primary.dark" : "primary.light",
-                        padding: "2px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        maxHeight:"100px"
-                        
-                        }}>
-                    
-                        <IconButton onClick={onEdit}>
-                            <EditOutlinedIcon/>
-                        </IconButton>
-                 
-                    <Typography sx={{...titleCard, color: darkMode ?"text.primary" : "background.default"}}>
-                        {title}
-                    </Typography>
-                  
-                        <IconButton onClick={onDelete}>
-                            <DeleteOutlineOutlinedIcon/>
-                        </IconButton>
-                   
-                </Box>
-                <Box sx={{
-                    height:"72%", 
-                    width:"100%", 
-                    display:"flex",
-                    flexDirection:"column",
-                    alignItems:"center",
-                    justifyContent:"center"
-                }}>
-                    <Box sx={{ 
-                        width:"219px", 
-                        maxWidth:"100%", 
-                        }}>
-                          <Typography sx ={infoCard}>USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}</Typography>
-                          <Typography sx ={infoCard}>QUANTIDADE: {qtpDose}</Typography>  
-                          <Typography sx ={infoCard}>DOSE: {dose}</Typography>
-                          <Typography sx ={infoCard}>PERÍODO: {period}</Typography>
-                          <Typography sx ={infoCard}>VENCIMENTO: {expirationDate}</Typography>  
-  
-  
-                    </Box>
-                    <Box sx={{
-                        display: "flex", 
-                        justifyContent: "center", 
-                        alignItems: "center", 
-                        margin:"6%",
-                    }}>
-                        <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
-                        <Typography sx={{
-                            fontWeight: "700", 
-                            paddingLeft:"5px",
-                            fontSize:"12px",
-                            textAlign:"center",
-                            color: "common.black",
-                        }}>
-                            {dateTime}
-                        </Typography>
-                    </Box>
-                </Box>
-                <Box sx={{
-                    ...cardButton, 
-                    backgroundColor: darkMode ?"text.primary" :"text.secondary"
-                    }}>
-                    <Typography sx={{
-                        color:darkMode ?"background.paper":"background.default", 
-                        fontWeight:"700",
-                        fontSize:"8px", 
-                        textAlign:"center"
-                    }}>
-                        CLIQUE APÓS TOMAR O MEDICAMENTO</Typography>
-                </Box>
-            </Card>
-        )}
+  return (
+    <Grid item xs={12} sm={6} md={4}>
+      {isMedication && (
+        <Card
+          sx={{
+            minHeight: 260,
+            display: "flex",
+            maxWidth: "300px",
+            minWidth: "120px",
+            boxShadow: "none",
+            borderRadius: "5px",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
+            backgroundColor: darkMode ? "text.secondary" : "background.paper",
+          }}
+        >
+          <Box
+            sx={{
+              padding: "2px",
+              display: "flex",
+              maxHeight: "100px",
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: darkMode ? "primary.dark" : "primary.light",
+            }}
+          >
+            <Tooltip title="Editar" placement="top">
+              <IconButton onClick={onEdit}>
+                <EditOutlinedIcon />
+              </IconButton>
+            </Tooltip>
 
-        {isEvents && (
-            <Card sx={{
-                height: 175,
-                margin: "auto",
+            <Typography sx={{ ...titleCard }}>{title}</Typography>
+
+            <Tooltip title="Deletar" placement="top">
+              <IconButton onClick={onDelete}>
+                <DeleteOutlineOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Box
+            sx={{
+              height: "72%",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              sx={{
+                width: "219px",
+                maxWidth: "100%",
+              }}
+            >
+              <Typography sx={infoCard}>
+                USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}
+              </Typography>
+              <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
+              <Typography sx={infoCard}>DOSE: {dose}</Typography>
+              <Typography sx={infoCard}>PERÍODO: {period}</Typography>
+            </Box>
+            <Box
+              sx={{
+                margin: "6%",
                 display: "flex",
-                flexDirection: "column",
-                backgroundColor: darkMode?"text.secondary":"background.paper",
-                width: { xs: "100%", sm: "95%", md: "90%", lg: "90%" },
-            }}>
-                <Box sx={{
-                    backgroundColor: darkMode ? "primary.dark" : "primary.light",
-                    padding: "12px",
-                }}>
-                    <Typography sx={{
-                        fontSize: 12,
-                        color:darkMode ?"text.primary" : "background.default",
-                        fontWeight: "bold",
-                        textAlign: "center",
-                        wordBreak: "break-word",  
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: "700",
+                  paddingLeft: "5px",
+                  textAlign: "center",
+                  color: "common.black",
+                }}
+              >
+                {longDate(dateTime)}
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              ...cardButton,
+              backgroundColor: darkMode ? "text.primary" : "text.secondary",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: "8px",
+                fontWeight: "700",
+                textAlign: "center",
+                color: darkMode ? "background.paper" : "background.default",
+              }}
+            >
+              CLIQUE APÓS TOMAR O MEDICAMENTO
+            </Typography>
+          </Box>
+        </Card>
+      )}
 
-                    }}>
-                        {title}
-                    </Typography>
-                </Box>
-                <Box sx={{
-                     width: "100%",
-                     height: "100%",
-                     display: "flex",
-                     alignItems: "center",
-                     justifyContent: "center",
-                }}>
-                        
-                    <Box sx={{
-                         height: "70%",
-                         display: "flex",
-                         alignItems: "center",
-                         flexDirection: "column",
-                    }}>
-                        <Typography sx={{
-                            fontSize: 12,
-                            width: "auto",
-                            color: "#62636C",
-                            maxWidth: "150px",
-                            textAlign: "center",
-                        }}>
-                            {description}
-                        </Typography>
-                        <Typography sx={{
-                             m: 1,
-                             fontSize: 15,
-                             fontWeight: "bold",
-                             textAlign: "center",
-                             color: "common.black",
-                        }}>
-                            {dateTime}
-                        </Typography>
-                    </Box>
-                </Box>
-            </Card>
-        )}
-        </Grid>
-    );
-}
+      {isEvents && (
+        <Card
+          sx={{
+            height: 180,
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: darkMode ? "text.secondary" : "background.paper",
+            width: { xs: "100%", sm: "95%", md: "90%", lg: "90%" },
+          }}
+        >
+          <Box
+            sx={{
+              px: "8px",
+              py: "4px",
+              backgroundColor: darkMode ? "primary.dark" : "primary.light",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                maxHeight: "100px",
+                alignItems: "center",
+                backgroundColor: darkMode ? "primary.dark" : "primary.light",
+              }}
+            >
+              {location !== "/home" && (
+                <Tooltip title="Editar" placement="top">
+                  <IconButton onClick={onEdit}>
+                    <EditOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Typography sx={{ ...titleCard }}>{title}</Typography>
+              {location !== "/home" && (
+                <Tooltip title="Deletar" placement="top">
+                  <IconButton onClick={onDelete}>
+                    <DeleteOutlineOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              sx={{
+                height: "70%",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  width: "auto",
+                  color: "#62636C",
+                  maxWidth: "150px",
+                  textAlign: "center",
+                }}
+              >
+                {description}
+              </Typography>
+              <Typography
+                sx={{
+                  m: 1,
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "common.black",
+                }}
+              >
+                {typeof dateTime === 'string' ? longDate(dateTime) : dateTime.toString()}
+              </Typography>
+            </Box>
+          </Box>
+        </Card>
+      )}
+    </Grid>
+  );
+};
 export default CardUniversal;

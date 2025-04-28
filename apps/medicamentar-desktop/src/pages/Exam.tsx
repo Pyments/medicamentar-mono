@@ -1,22 +1,25 @@
-import { useEffect, useState } from "react";
 import Header from "@components/Header";
 import SideBar from "@components/SideBar";
+import { useEffect, useState } from "react";
 import { AddBtn } from "@components/AddBtn";
+import axiosInstance from "@utils/axiosInstance";
 import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
-import { Box, Grid, Typography, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import axiosInstance from "@utils/axiosInstance";
+import { Box, Grid, Typography, Stack, Pagination } from "@mui/material";
+import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import ModalDelete from "@components/Modals/ModalDelete";
+import ExamEditModal from "@components/Modals/ExamEditModal";
 
-interface ExamData{
-  id:string,
-  type:string,
-  name: string,
-  local:string,
-  date:string,
+interface ExamData {
+  id: string;
+  name: string;
+  date: dayjs.Dayjs;
+  local: string;
+  description: string;
 }
 interface User {
   token: {
@@ -29,31 +32,78 @@ const Exam = () => {
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
   const [exams, setExams] = useState<ExamData[]>([]);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
 
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
+  const [selectedExam, setSelectedExam] = useState<ExamData | null>(null);
 
-  
-    const fetchExams  = async () => {
+  const fetchExams = async () => {
+    try {
+      const response = await axiosInstance.get(`/exam?page=${page}&size=9`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setExams(response.data.data);
+      setPageCount(response.data.totalPages);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchExams();
+    }
+  }, [token, page]);
+
+  const handleModal = () => {
+    setOpen(!open);
+  };
+
+  const openDeleteModal = (id: string) => {
+    setSelectedExamId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedExamId(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleDeleteExams = async () => {
+    if (selectedExamId) {
       try {
-        const response = await axiosInstance.get("/exam", {
+        await axiosInstance.delete(`/exam/${selectedExamId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Lista de Exames e Consultas:",response.data.data);
-        setExams(response.data.data);
+        setExams(exams.filter((med) => med.id !== selectedExamId));
+        closeDeleteModal();
       } catch (error) {
-        console.error("Erro na requisição:", error);
       }
-    };
+    }
+  };
 
-    useEffect(() => {
-      if (token) {
-        fetchExams();
-      }
-    }, [token]);
+  const openEditModal = (exam: ExamData) => {
+    setSelectedExam(exam);
+    setEditModalOpen(true);
+  };
 
-  const handleModal = () => {
-    setOpen(!open);
+  const closeEditModal = () => {
+    setSelectedExamId(null);
+    setEditModalOpen(false);
+  };
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value - 1);
   };
 
   return (
@@ -87,7 +137,7 @@ const Exam = () => {
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
         <Grid container spacing={3} pb="75px">
-        {exams.length > 0 ? (
+          {exams.length > 0 ? (
             exams.map((exam) => (
               <CardUniversal
                 key={exam.id}
@@ -95,6 +145,8 @@ const Exam = () => {
                 dateTime={exam.date}
                 description={exam.local}
                 type="events"
+                onDelete={() => openDeleteModal(exam.id)}
+                onEdit={() => openEditModal(exam)}
               />
             ))
           ) : (
@@ -108,10 +160,51 @@ const Exam = () => {
               Nenhuma consulta ou exame encontrado.
             </Typography>
           )}
-         
+          {pageCount > 1 && (
+            <Grid
+              item
+              xs={12}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+            >
+              <Pagination
+                page={page + 1}
+                color="primary"
+                count={pageCount}
+                onChange={handlePagination}
+                sx={{
+                  "& .MuiPaginationItem-ellipsis": {
+                    color: darkMode ? "common.white" : "primary.main",
+                  },
+                  "& .MuiPaginationItem-page.Mui-selected": {
+                    backgroundColor: darkMode
+                      ? "primary.darker"
+                      : "primary.main",
+                    color: "white",
+                  },
+                }}
+              />
+            </Grid>
+          )}
         </Grid>
       </SectionContainer>
-      {open && <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />}
+      {open && (
+        <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />
+      )}
+      {isDeleteModalOpen && (
+        <ModalDelete
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onDelete={handleDeleteExams}
+        />
+      )}
+      {isEditModalOpen && (
+        <ExamEditModal
+          currentExam={selectedExam}
+          isOpen={isEditModalOpen}
+          onClose={() => closeEditModal()}
+          fetchExams={fetchExams}
+        />
+      )}
     </ContainerUniversal>
   );
 };

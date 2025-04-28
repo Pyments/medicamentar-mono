@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamRequest;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
+import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
 import com.medicamentar.medicamentar_api.domain.entities.Exam;
 import com.medicamentar.medicamentar_api.domain.entities.User;
@@ -30,8 +31,8 @@ public class ExamService {
     private final EventLogService eLogService;
     private final TokenService tokenService;
     
-    public ServiceResponse<List<ExamResponse>> getAllexams(int page, int size) {
-        var response = new ServiceResponse<List<ExamResponse>>();
+    public PaginatedResponse<List<ExamResponse>> getAllexams(int page, int size) {
+        var response = new PaginatedResponse<List<ExamResponse>>();
         User currentUser = tokenService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(page, size);
@@ -50,12 +51,14 @@ public class ExamService {
         response.setData(examsResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage(String.format("Exibindo página %d de %d.", examsPage.getNumber() + 1, examsPage.getTotalPages()));
+        response.setTotalPages(examsPage.getTotalPages());
+        response.setTotalElements(examsPage.getTotalElements());
 
         return response;
     }
 
     public ServiceResponse<ExamResponse> updateExam(UUID examId, ExamRequest examRequest) {
-        ServiceResponse<ExamResponse> response = new ServiceResponse<>();
+        var response = new ServiceResponse<ExamResponse>();
         User currentUser = tokenService.getCurrentUser();
 
         Optional<Exam> examOptional = repository.findByIdAndUserAndDeletedAtIsNull(examId, currentUser);
@@ -88,7 +91,7 @@ public class ExamService {
     }
 
     public ServiceResponse<ExamResponse> registerExam(ExamRequest data) {
-        ServiceResponse<ExamResponse> response = new ServiceResponse<>();
+        var response = new ServiceResponse<ExamResponse>();
         User currentUser = tokenService.getCurrentUser();
 
         if (data == null) {
@@ -123,7 +126,7 @@ public class ExamService {
     }
 
     public ServiceResponse<String> deleteExam(UUID id) {
-        ServiceResponse<String> response = new ServiceResponse<>();
+        var response = new ServiceResponse<String>();
         User currentUser = tokenService.getCurrentUser();
 
         Optional<Exam> examOptional = repository.findByIdAndUserAndDeletedAtIsNull(id, currentUser);

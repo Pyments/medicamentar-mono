@@ -18,7 +18,7 @@ interface ModalMedicineTypeProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   setOpenNew: (open: boolean) => void;
-  setType: (type: string) => void;
+  setType: (type: number) => void;
 }
 
 export default function ModalMedicineType({
@@ -34,12 +34,12 @@ export default function ModalMedicineType({
 
   enum Type {
     ORAL = 0,
-    TÓPICO = 1,
-    OFTÁLMICO = 2,
+    TOPICO = 1,
+    OFTALMICO = 2,
     INTRANASAL = 3,
-    INJETÁVEL = 4,
+    INJETAVEL = 4,
     SUBLINGUAL = 5,
-    TRANSDÉRMICO = 6,
+    TRANSDERMICO = 6,
     RETAL = 7,
     VAGINAL = 8,
   }
@@ -97,12 +97,12 @@ export default function ModalMedicineType({
                 }
               >
                 <MenuItem value={Type.ORAL}>ORAL</MenuItem>
-                <MenuItem value={Type.TÓPICO}>TÓPICO</MenuItem>
-                <MenuItem value={Type.OFTÁLMICO}>OFTÁLMICO</MenuItem>
+                <MenuItem value={Type.TOPICO}>TÓPICO</MenuItem>
+                <MenuItem value={Type.OFTALMICO}>OFTÁLMICO</MenuItem>
                 <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
-                <MenuItem value={Type.INJETÁVEL}>INJETÁVEL</MenuItem>
+                <MenuItem value={Type.INJETAVEL}>INJETÁVEL</MenuItem>
                 <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
-                <MenuItem value={Type.TRANSDÉRMICO}>TRANSDÉRMICO</MenuItem>
+                <MenuItem value={Type.TRANSDERMICO}>TRANSDÉRMICO</MenuItem>
                 <MenuItem value={Type.RETAL}>RETAL</MenuItem>
                 <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
               </Select>
@@ -111,7 +111,7 @@ export default function ModalMedicineType({
               variant="contained"
               disabled={tipoMedicamento < 0}
               onClick={() => {
-                setType(String(tipoMedicamento));
+                setType(Number(tipoMedicamento));
                 setOpen(false);
                 setOpenNew(true);
               }}
