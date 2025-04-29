@@ -5,6 +5,7 @@ import {
   TextField,
   IconButton,
   Typography,
+  AlertColor,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useState, useEffect } from "react";
@@ -14,6 +15,7 @@ import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { Feedback } from "@components/Feedback";
 
 interface ExamEditModalProps {
   isOpen: boolean;
@@ -56,6 +58,10 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   const [user] = useLocalStorage<User | null>("user", null);
 
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
 
   const { darkMode } = useTheme();
 
@@ -108,8 +114,15 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
           description: description,
         },
       });
+      
+      setFeedbackMessage("Exame ou consulta editado com sucesso!");
+      setFeedbackSeverity("success");
+      setFeedbackOpen(true);
       fetchExams();
     } catch (error) {
+      setFeedbackMessage("Erro ao editar exame ou consulta!");
+      setFeedbackSeverity("error");
+      setFeedbackOpen(true);
       console.error("Erro na requisição:", error);
     }
     setSelectedDate(null);
@@ -118,196 +131,207 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     setDescription("");
     setDoctorName("");
     setErrors({});
-    onClose();
+    setTimeout(() => {
+      onClose();
+    }, 1900);
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 500,
-          p: "60px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "10px",
-          boxShadow: 24,
-          borderRadius: "5px",
-          backgroundColor: darkMode ? "grey.900" : "common.white",
-        }}
-      >
-        <IconButton
-          onClick={onClose}
+    <>
+      <Feedback
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        severity={feedbackSeverity}
+        message={feedbackMessage} />
+
+      <Modal open={isOpen} onClose={onClose}>
+        <Box
           sx={{
             position: "absolute",
-            right: 30,
-            top: 30,
-            color: "#80828D",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 500,
+            p: "60px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "10px",
+            boxShadow: 24,
+            borderRadius: "5px",
+            backgroundColor: darkMode ? "grey.900" : "common.white",
           }}
         >
-          <CloseIcon />
-        </IconButton>
-        <Typography
-          sx={{
-            mb: "10px",
-            fontSize: "1.8rem",
-            fontWeight: "bold",
-            color: darkMode ? "primary.light" : "primary.main",
-          }}
-        >
-          EDITAR
-        </Typography>
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "20px" }}
-        >
-          <TextField
-            sx={{ margin: 0 }}
-            fullWidth
-            label="NOME"
-            variant="outlined"
-            value={examName}
-            onChange={(e) => {
-              setExamName(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, location: undefined }));
-              }
+          <IconButton
+            onClick={onClose}
+            sx={{
+              position: "absolute",
+              right: 30,
+              top: 30,
+              color: "#80828D",
             }}
-            margin="normal"
-            error={Boolean(errors.location)}
-            helperText={errors.location}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-          />
-          <DateTimePicker
-            views={["day", "hours", "minutes"]}
-            label="DATA E HORA"
-            value={selectedDate}
-            components={{
-              OpenPickerIcon: CalendarTodayIcon,
-            }}
-            onChange={(newValue) => {
-              setSelectedDate(newValue as Dayjs);
-              if (newValue) {
-                setErrors((prev) => ({ ...prev, selectedDate: undefined }));
-              }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                fullWidth
-                error={Boolean(errors.selectedDate)}
-                helperText={errors.selectedDate}
-                InputProps={{
-                  ...params.InputProps,
-                  sx: {
-                    "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-                      color: darkMode ? "#CDCED7" : "-moz-initial",
-                    },
-                    fontSize: "0.9rem",
-                    color: darkMode ? "common.white" : "text.primary",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode
-                        ? "rgba(128, 128, 128, 0.6)"
-                        : "-moz-initial",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode ? "common.white" : "primary.main",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode ? "#103952" : "primary.main",
-                    },
-                  },
-                }}
-                InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                    color: darkMode ? "common.white" : "text.primary",
-                    "&.Mui-focused": {
-                      color: darkMode ? "common.white" : "primary.main",
-                    },
-                  },
-                }}
-              />
-            )}
-          />
-          <TextField
-            sx={{ margin: 0 }}
-            fullWidth
-            label="LOCAL"
-            variant="outlined"
-            value={location}
-            onChange={(e) => {
-              setLocation(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, location: undefined }));
-              }
-            }}
-            margin="normal"
-            error={Boolean(errors.location)}
-            helperText={errors.location}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-          />
-          <TextField
-            sx={{ margin: 0 }}
-            fullWidth
-            multiline
-            rows={3}
-            label="DESCRIÇÃO"
-            variant="outlined"
-            value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, description: undefined }));
-              }
-            }}
-            margin="normal"
-            error={Boolean(errors.description)}
-            helperText={errors.description}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{ mt: "20px", backgroundColor: "#0078B6" }}
           >
-            editar
-          </Button>
-        </form>
-      </Box>
-    </Modal>
+            <CloseIcon />
+          </IconButton>
+          <Typography
+            sx={{
+              mb: "10px",
+              fontSize: "1.8rem",
+              fontWeight: "bold",
+              color: darkMode ? "primary.light" : "primary.main",
+            }}
+          >
+            EDITAR
+          </Typography>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+          >
+            <TextField
+              sx={{ margin: 0 }}
+              fullWidth
+              label="NOME"
+              variant="outlined"
+              value={examName}
+              onChange={(e) => {
+                setExamName(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, location: undefined }));
+                }
+              }}
+              margin="normal"
+              error={Boolean(errors.location)}
+              helperText={errors.location}
+              InputProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+            />
+            <DateTimePicker
+              views={["day", "hours", "minutes"]}
+              label="DATA E HORA"
+              minDateTime={dayjs().startOf('minute')}
+              value={selectedDate}
+              components={{
+                OpenPickerIcon: CalendarTodayIcon,
+              }}
+              onChange={(newValue) => {
+                setSelectedDate(newValue as Dayjs);
+                if (newValue) {
+                  setErrors((prev) => ({ ...prev, selectedDate: undefined }));
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  error={Boolean(errors.selectedDate)}
+                  helperText={errors.selectedDate}
+                  InputProps={{
+                    ...params.InputProps,
+                    sx: {
+                      "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+                        color: darkMode ? "#CDCED7" : "-moz-initial",
+                      },
+                      fontSize: "0.9rem",
+                      color: darkMode ? "common.white" : "text.primary",
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: darkMode
+                          ? "rgba(128, 128, 128, 0.6)"
+                          : "-moz-initial",
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: darkMode ? "common.white" : "primary.main",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: darkMode ? "#103952" : "primary.main",
+                      },
+                    },
+                  }}
+                  InputLabelProps={{
+                    sx: {
+                      fontSize: "0.9rem",
+                      color: darkMode ? "common.white" : "text.primary",
+                      "&.Mui-focused": {
+                        color: darkMode ? "common.white" : "primary.main",
+                      },
+                    },
+                  }}
+                />
+              )}
+            />
+            <TextField
+              sx={{ margin: 0 }}
+              fullWidth
+              label="LOCAL"
+              variant="outlined"
+              value={location}
+              onChange={(e) => {
+                setLocation(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, location: undefined }));
+                }
+              }}
+              margin="normal"
+              error={Boolean(errors.location)}
+              helperText={errors.location}
+              InputProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+            />
+            <TextField
+              sx={{ margin: 0 }}
+              fullWidth
+              multiline
+              rows={3}
+              label="DESCRIÇÃO"
+              variant="outlined"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, description: undefined }));
+                }
+              }}
+              margin="normal"
+              error={Boolean(errors.description)}
+              helperText={errors.description}
+              InputProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  fontSize: "0.9rem",
+                },
+              }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+            >
+              editar
+            </Button>
+          </form>
+        </Box>
+      </Modal>
+    </>
   );
 };
 

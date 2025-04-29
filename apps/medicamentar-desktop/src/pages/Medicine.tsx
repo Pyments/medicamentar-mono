@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pagination, Typography, Grid, Stack } from "@mui/material";
+import { Pagination, Typography, Grid, Stack,AlertColor } from "@mui/material";
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -14,6 +14,7 @@ import ModalEditMedicine from "@components/Modals/ModalEditMedicine";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
+import { Feedback } from "@components/Feedback";
 
 interface MedicationData {
   id: string;
@@ -46,6 +47,10 @@ const Medicine = () => {
   const token = user?.token.data;
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
 
   const fetchMedications = async () => {
     try {
@@ -98,8 +103,16 @@ const Medicine = () => {
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );
+        setFeedbackMessage("Medicamento deletado com sucesso!");
+        setFeedbackSeverity("success");
+        setFeedbackOpen(true);
+
         closeDeleteModal();
       } catch (error) {
+        setFeedbackMessage("Erro ao deletar Medicamento!");
+        setFeedbackSeverity("error");
+        setFeedbackOpen(true);
+        closeDeleteModal(); 
       }
     }
   };
@@ -118,6 +131,11 @@ const Medicine = () => {
   };
   return (
     <ContainerUniversal>
+      <Feedback
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        severity={feedbackSeverity}
+        message={feedbackMessage}/>
       <Header />
       <SideBar />
       <SectionContainer>
@@ -208,6 +226,7 @@ const Medicine = () => {
               type={type}
               open={openNew}
               setOpen={setOpenNew}
+              fetchMedications={fetchMedications}
             />
           )}
           {isDeleteModalOpen && (
