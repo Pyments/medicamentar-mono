@@ -72,7 +72,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     null
   );
   const [name, setName] = useState<string>("");
-  const [dose, setDose] = useState<number>(1);
+  const [dose, setDose] = useState<number | null>(null);
   const [amount, setAmount] = useState<number>(1);
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
@@ -274,6 +274,8 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                           newValue.replace(/[^0-9]/g, "")
                         );
                         setDose(Number(Math.max(1, numValue)));
+                      } else {
+                        setDose(null);
                       }
                     }}
                     freeSolo
@@ -282,7 +284,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                       <TextField
                         {...params}
                         label="FREQUÊNCIA"
-                        type="number"
+                        type="text"
                         value={dose?.toString()}
                         onChange={(event) => {
                           const numValue = Number(event.target.value);
