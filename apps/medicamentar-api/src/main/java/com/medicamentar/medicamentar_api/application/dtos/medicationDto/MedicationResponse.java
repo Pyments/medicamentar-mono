@@ -12,7 +12,7 @@ public record MedicationResponse (
     UUID id,
     String name,
     MedicationType type,
-    String dose,
+    Integer dose,
     Double amount,
     MedicationUnity unity,
     int period,

@@ -76,7 +76,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
     null
   );
   const [name, setName] = useState<string>("");
-  const [dose, setDose] = useState<number>(1);
+  const [dose, setDose] = useState<number | null>(null);
   const [amount, setAmount] = useState<number>(1);
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
@@ -257,6 +257,49 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
             transition: "width 0.3s ease-in-out",
           }}
         >
+<<<<<<< HEAD
+          <CloseIcon />
+        </IconButton>
+        <Typography
+          variant="h3"
+          sx={{
+            p: "20px 0 50px 0",
+            fontSize: "1.8rem",
+            fontWeight: 600,
+            textAlign: "center",
+            color: darkMode ? "common.white" : "primary.main",
+          }}
+        >
+          NOVO MEDICAMENTO
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <TextField
+                  sx={{
+                    fontSize: "0.9rem",
+                    transition: "all 0.3s ease-in-out",
+                  }}
+                  variant="outlined"
+                  label="NOME DO MEDICAMENTO"
+                  fullWidth
+                  onChange={(e) => setName(String(e.target.value))}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+                <FormControl fullWidth>
+                  <Autocomplete
+                    value={dose?.toString()}
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const numValue = Number(
+                          newValue.replace(/[^0-9]/g, "")
+                        );
+                        setDose(Number(Math.max(1, numValue)));
+                      } else {
+                        setDose(null);
+=======
           <IconButton
             onClick={() => setOpen(false)}
             sx={{
@@ -349,6 +392,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                         setAmount(1);
                       } else {
                         setAmount(Number(event.target.value));
+>>>>>>> main
                       }
                     }}
                   />
@@ -416,6 +460,18 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                     renderInput={(params) => (
                       <TextField
                         {...params}
+<<<<<<< HEAD
+                        label="FREQUÊNCIA"
+                        type="text"
+                        value={dose?.toString()}
+                        onChange={(event) => {
+                          const numValue = Number(event.target.value);
+                          setDose(Number(Math.max(1, numValue)));
+                        }}
+                        inputProps={{
+                          ...params.inputProps,
+                          min: 1,
+=======
                         fullWidth
                         helperText={errors.startDate}
                         error={Boolean(errors.startDate)}
@@ -426,6 +482,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                             ...params.inputProps,
                             readOnly: true,
                           },
+>>>>>>> main
                         }}
                       />
                     )}

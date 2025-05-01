@@ -13,8 +13,8 @@ public record MedicationRequest (
         String name,
         @NotNull(message = "O campo 'Tipo' não pode estar em branco.")
         MedicationType type,
-        @NotBlank(message = "O campo 'Dose' não pode estar em branco.")
-        String dose,
+        @NotNull(message = "O campo 'Dose' não pode estar em branco.")
+        Integer dose,
         @NotNull(message = "O campo 'Quantidade' não pode estar em branco.")
         Double amount,
         @NotNull(message = "O campo 'Unidade' não pode estar em branco.")
