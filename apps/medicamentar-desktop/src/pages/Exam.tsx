@@ -7,12 +7,13 @@ import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import { Box, Grid, Typography, Stack, Pagination } from "@mui/material";
+import { Box, Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
+import { Feedback } from "@components/Feedback";
 
 interface ExamData {
   id: string;
@@ -39,6 +40,10 @@ const Exam = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
   const [selectedExam, setSelectedExam] = useState<ExamData | null>(null);
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
 
   const fetchExams = async () => {
     try {
@@ -83,8 +88,15 @@ const Exam = () => {
           },
         });
         setExams(exams.filter((med) => med.id !== selectedExamId));
+        setFeedbackMessage("Exame ou consulta deletado com sucesso!");
+        setFeedbackSeverity("success");
+        setFeedbackOpen(true);
         closeDeleteModal();
       } catch (error) {
+        setFeedbackMessage("Erro ao deletar exame ou consulta!");
+        setFeedbackSeverity("error");
+        setFeedbackOpen(true);
+        closeDeleteModal();
       }
     }
   };
@@ -108,6 +120,11 @@ const Exam = () => {
 
   return (
     <ContainerUniversal>
+      <Feedback
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        severity={feedbackSeverity}
+        message={feedbackMessage} />
       <Header />
       <SideBar />
       <SectionContainer>
