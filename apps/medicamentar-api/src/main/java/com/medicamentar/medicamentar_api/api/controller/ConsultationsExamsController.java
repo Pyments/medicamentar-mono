@@ -3,9 +3,7 @@ package com.medicamentar.medicamentar_api.api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.dtos.consultationExamDto.consultationExamResponse;
-import com.medicamentar.medicamentar_api.application.services.ConsultationService;
-import com.medicamentar.medicamentar_api.application.services.ExamService;
+import com.medicamentar.medicamentar_api.application.services.consultationsExamsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,19 +20,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class ConsultationsExamsController {
 
-    private final ConsultationService consultationService;
-    private final ExamService examService;
+    private final consultationsExamsService consultationsExamsService;
 
     @Operation(summary = "Lista de consultas e exames", method = "GET")
     @GetMapping()
     public ResponseEntity getConsultationsExams(@RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "9") int size) {
-                                                    
-        var consultations = consultationService.getConsultations(page, size).getData();
-        var exams = examService.getAllexams(page, size).getData();
-
-        var response = new consultationExamResponse(consultations, exams);
-        return ResponseEntity.ok(response);
+                                                                                                    
+        var response = consultationsExamsService.getConsultationsAndExams(page, size);
+        return ResponseEntity.status(response.getStatus()).body(response);
 
     }
     

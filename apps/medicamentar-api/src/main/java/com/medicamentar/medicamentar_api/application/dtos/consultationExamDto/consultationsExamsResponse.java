@@ -5,7 +5,7 @@ import java.util.List;
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 
-public record consultationExamResponse(
+public record consultationsExamsResponse(
     List<ConsultationResponse> consultations,
     List<ExamResponse> exams
 ){}
