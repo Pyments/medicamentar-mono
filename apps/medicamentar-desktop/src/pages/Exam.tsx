@@ -7,7 +7,13 @@ import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import { Box, Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Stack,
+  Pagination,
+  AlertColor,
+} from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
@@ -43,7 +49,8 @@ const Exam = () => {
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackSeverity, setFeedbackSeverity] =
+    useState<AlertColor>("success");
 
   const fetchExams = async () => {
     try {
@@ -124,7 +131,8 @@ const Exam = () => {
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
+        message={feedbackMessage}
+      />
       <Header />
       <SideBar />
       <SectionContainer>
@@ -135,21 +143,15 @@ const Exam = () => {
         >
           <Typography
             sx={{
-              color: "primary.dark",
+              p: 0,
+              mt: 0,
+              fontSize: "2rem",
+              fontWeight: "bold",
+              textAlign: { xs: "center", md: "left" },
+              color: darkMode ? "common.white" : "primary.main",
             }}
           >
-            <Box
-              sx={{
-                p: 0,
-                mt: 0,
-                fontSize: "2rem",
-                fontWeight: "bold",
-                textAlign: { xs: "center", md: "left" },
-                color: darkMode ? "common.white" : "primary.main",
-              }}
-            >
-              CONSULTAS E EXAMES
-            </Box>
+            CONSULTAS E EXAMES
           </Typography>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>

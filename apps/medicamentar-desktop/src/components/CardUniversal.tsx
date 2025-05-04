@@ -22,7 +22,9 @@ interface CardUniversalProps {
   dose?: number;
   qtpDose?: number;
   period?: number;
-  dateTime: dayjs.Dayjs | string;
+  dateTime?: dayjs.Dayjs | string;
+  startDate?: string;
+  endDate?: string;
   description?: string;
   onDelete?: () => void;
   onEdit?: () => void;
@@ -36,6 +38,8 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   qtpDose,
   period,
   dateTime,
+  startDate,
+  endDate,
   description,
   onDelete,
   onEdit,
@@ -73,19 +77,19 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   return (
-    <Grid item xs={12} sm={6} md={4}>
+    <>
       {isMedication && (
         <Card
           sx={{
             minHeight: 260,
             display: "flex",
-            maxWidth: "300px",
+            width: "300px",
             minWidth: "120px",
             boxShadow: "none",
             borderRadius: "5px",
             flexDirection: "column",
             justifyContent: "space-between",
-            width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
+            // width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
           }}
         >
@@ -125,37 +129,69 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           >
             <Box
               sx={{
-                width: "219px",
-                maxWidth: "100%",
-              }}
-            >
-              <Typography sx={infoCard}>
-                USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}
-              </Typography>
-              <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
-              <Typography sx={infoCard}>DOSE: {dose}</Typography>
-              <Typography sx={infoCard}>PERÍODO: {period}</Typography>
-            </Box>
-            <Box
-              sx={{
-                margin: "6%",
+                height: "100%",
+                width: "100%",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "column",
               }}
             >
-              <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  paddingLeft: "5px",
-                  textAlign: "center",
-                  color: "common.black",
+                  width: "219px",
+                  maxWidth: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  padding: "16px",
+                  alignSelf: "center",
                 }}
               >
-                {longDate(dateTime)}
-              </Typography>
+                <Typography sx={infoCard}>
+                  USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}
+                </Typography>
+                <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
+                <Typography sx={infoCard}>DOSE: {dose}</Typography>
+                <Typography sx={infoCard}>PERÍODO: {period}</Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  width: "219px",
+                  gap: "8px",
+                  padding: "16px",
+                  alignSelf: "center",
+                  flex: 1,
+                  marginTop: "auto",
+                  marginBottom: "auto",
+                }}
+              >
+                <AccessAlarmOutlinedIcon />
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    color: "common.black",
+                    textAlign: "left",
+                    flex: 1,
+                  }}
+                >
+                  {isMedication ? (
+                    <>
+                      Início: {longDate(startDate)}
+                      {!continuousUse && endDate && (
+                        <>
+                          <br />
+                          Fim: {longDate(endDate)}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    longDate(dateTime)
+                  )}
+                </Typography>
+              </Box>
             </Box>
           </Box>
           <Box
@@ -181,12 +217,15 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
       {isEvents && (
         <Card
           sx={{
-            height: 180,
-            margin: "auto",
+            minHeight: 260,
             display: "flex",
+            width: "300px",
+            minWidth: "120px",
+            boxShadow: "none",
+            borderRadius: "5px",
             flexDirection: "column",
+            // width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
-            width: { xs: "100%", sm: "95%", md: "90%", lg: "90%" },
           }}
         >
           <Box
@@ -194,6 +233,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               px: "8px",
               py: "4px",
               backgroundColor: darkMode ? "primary.dark" : "primary.light",
+              height: "auto",
             }}
           >
             <Box
@@ -223,48 +263,43 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           </Box>
           <Box
             sx={{
-              width: "100%",
               height: "100%",
+              width: "100%",
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              padding: "16px",
+              gap: "12px",
+              flex: 1,
             }}
           >
-            <Box
+            <Typography
               sx={{
-                height: "70%",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
+                fontSize: 12,
+                color: "#62636C",
+                textAlign: "center",
               }}
             >
-              <Typography
-                sx={{
-                  fontSize: 12,
-                  width: "auto",
-                  color: "#62636C",
-                  maxWidth: "150px",
-                  textAlign: "center",
-                }}
-              >
-                {description}
-              </Typography>
-              <Typography
-                sx={{
-                  m: 1,
-                  fontSize: 15,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "common.black",
-                }}
-              >
-                {typeof dateTime === 'string' ? longDate(dateTime) : dateTime.toString()}
-              </Typography>
-            </Box>
+              {description}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 15,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "common.black",
+              }}
+            >
+              {dateTime
+                ? longDate(dateTime as string | dayjs.Dayjs)
+                : "Data não disponível"}
+            </Typography>
           </Box>
         </Card>
       )}
-    </Grid>
+    </>
+    // </Grid>
   );
 };
 export default CardUniversal;

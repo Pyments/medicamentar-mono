@@ -13,13 +13,18 @@ import { useTheme } from "@constants/theme/useTheme";
 interface EventData {
   id: string;
   type: string;
-  name: string;
-  date: string;
-  local: string;
-  unity: string;
-  amount: string;
-  doctorName: string;
-  description: string;
+  name?: string;
+  date?: string;
+  local?: string;
+  unity?: string;
+  amount?: number;
+  doctorName?: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  continuousUse?: boolean;
+  dose?: string;
+  period?: number;
 }
 interface User {
   token: {
@@ -79,34 +84,48 @@ const Home: React.FC = () => {
       <SectionContainer>
         <Typography
           sx={{
-            color: "primary.dark",
+            p: 0,
+            mt: 0,
+            fontSize: "2rem",
+            fontWeight: "bold",
+            textAlign: { xs: "center", md: "left" },
+            color: darkMode ? "common.white" : "primary.main",
           }}
         >
-          <Box
-            sx={{
-              p: 0,
-              mt: 0,
-              fontSize: "2rem",
-              fontWeight: "bold",
-              textAlign: { xs: "center", md: "left" },
-              color: darkMode ? "common.white" : "primary.main",
-            }}
-          >
-            EVENTOS PRÓXIMOS
-          </Box>
+          EVENTOS PRÓXIMOS
         </Typography>
 
-        <Grid container spacing={3} pb="75px">
+        <Grid
+          container
+          spacing={3}
+          pb="75px"
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 2,
+          }}
+        >
           {events.length > 0 ? (
-            events.map((event) => (
-              <CardUniversal
-                key={event.id}
-                type="events"
-                title={event.name || event.doctorName}
-                description={event.description || event.type}
-                dateTime={event.date}
-              />
-            ))
+            events.map((event) => {
+              const isMedication = "startDate" in event;
+              const title = event.name || event.doctorName || "Sem título";
+
+              return (
+                <CardUniversal
+                  key={event.id}
+                  type={isMedication ? "medication" : "events"}
+                  title={title}
+                  description={event.description || event.type}
+                  dateTime={!isMedication ? event.date : undefined}
+                  startDate={isMedication ? event.startDate : undefined}
+                  endDate={isMedication ? event.endDate : undefined}
+                  continuousUse={isMedication ? event.continuousUse : undefined}
+                  dose={isMedication ? Number(event.dose) : undefined}
+                  qtpDose={isMedication ? event.amount : undefined}
+                  period={isMedication ? event.period : undefined}
+                />
+              );
+            })
           ) : (
             <Typography
               sx={{
@@ -119,11 +138,7 @@ const Home: React.FC = () => {
             </Typography>
           )}
           {pageCount > 1 && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-            >
+            <Box gridColumn="1 / -1" display="flex" justifyContent="center" mt={2}>
               <Pagination
                 page={page + 1}
                 color="primary"
@@ -141,7 +156,7 @@ const Home: React.FC = () => {
                   },
                 }}
               />
-            </Grid>
+            </Box>
           )}
         </Grid>
       </SectionContainer>
