@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Pagination, Typography, Grid, Stack,AlertColor } from "@mui/material";
+import {
+  Pagination,
+  Typography,
+  Grid,
+  Stack,
+  AlertColor,
+  Box,
+} from "@mui/material";
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -15,6 +22,7 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
+import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 
 interface MedicationData {
   id: string;
@@ -37,8 +45,11 @@ const Medicine = () => {
   const [openType, setOpenType] = useState<boolean>(false);
   const [openNew, setOpenNew] = useState<boolean>(false);
   const [type, setType] = useState<number>(0);
-  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
-  const [selectedMedication, setSelectedMedication] = useState<MedicationData | null>(null);
+  const [selectedMedicationId, setSelectedMedicationId] = useState<
+    string | null
+  >(null);
+  const [selectedMedication, setSelectedMedication] =
+    useState<MedicationData | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
 
@@ -50,7 +61,8 @@ const Medicine = () => {
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackSeverity, setFeedbackSeverity] =
+    useState<AlertColor>("success");
 
   const fetchMedications = async () => {
     try {
@@ -62,6 +74,7 @@ const Medicine = () => {
           },
         }
       );
+      console.log(response.data.data);
       setPageCount(response.data.totalPages);
       setMedications(response.data.data);
     } catch (error) {
@@ -92,14 +105,11 @@ const Medicine = () => {
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
       try {
-        await axiosInstance.delete(
-          `/medication/${selectedMedicationId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setMedications(
           medications.filter((med) => med.id !== selectedMedicationId)
         );
@@ -112,7 +122,7 @@ const Medicine = () => {
         setFeedbackMessage("Erro ao deletar Medicamento!");
         setFeedbackSeverity("error");
         setFeedbackOpen(true);
-        closeDeleteModal(); 
+        closeDeleteModal();
       }
     }
   };
@@ -129,13 +139,28 @@ const Medicine = () => {
   ) => {
     setPage(value - 1);
   };
+
+  const sortedMedications = useActiveAndSorted(medications, {
+    type: "medication",
+    continuousField: "continuo",
+    startDateField: "startDate",
+  });
+
+  const pageSize = 9;
+  const totalPages = Math.ceil(sortedMedications.length / pageSize);
+  const paginatedMedications = sortedMedications.slice(
+    page * pageSize,
+    page * pageSize + pageSize
+  );
+
   return (
     <ContainerUniversal>
       <Feedback
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage}/>
+        message={feedbackMessage}
+      />
       <Header />
       <SideBar />
       <SectionContainer>
@@ -161,43 +186,47 @@ const Medicine = () => {
 
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
-        <Grid container spacing={3} mb="75px">
-          {medications.length > 0 ? (
-            medications.map((medication) => (
-              <CardUniversal
-                key={medication.id}
-                title={medication.name}
-                continuousUse={medication.continuo}
-                qtpDose={medication.amount}
-                dose={medication.dose}
-                period={medication.period}
-                dateTime={medication.startDate}
-                onDelete={() => openDeleteModal(medication.id)}
-                onEdit={() => openEditModal(medication)}
-                type="medication"
-              />
+        <Grid container spacing={3} pb="75px">
+          {paginatedMedications.length > 0 ? (
+            paginatedMedications.map((medication) => (
+              <Grid item key={medication.id}>
+                <CardUniversal
+                  title={medication.name}
+                  continuousUse={medication.continuo}
+                  qtpDose={medication.amount}
+                  dose={medication.dose}
+                  period={medication.period}
+                  dateTime={medication.startDate}
+                  onDelete={() => openDeleteModal(medication.id)}
+                  onEdit={() => openEditModal(medication)}
+                  type="medication"
+                />
+              </Grid>
             ))
           ) : (
-            <Typography
-              sx={{
-                margin: "auto",
-                mt: "50px",
-                color: darkMode ? "common.white" : "commonm.dark",
-              }}
-            >
-              Nenhum medicamento encontrado.
-            </Typography>
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "commonm.dark",
+                }}
+              >
+                Nenhum medicamento encontrado.
+              </Typography>
+            </Grid>
           )}
-          {pageCount > 1 && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+          {paginatedMedications.length > 0 && totalPages > 1 && (
+            <Box
+              gridColumn="1 / -1"
+              display="flex"
+              justifyContent="center"
+              mt={2}
             >
               <Pagination
                 page={page + 1}
                 color="primary"
-                count={pageCount}
+                count={totalPages}
                 onChange={handlePagination}
                 sx={{
                   "& .MuiPaginationItem-ellipsis": {
@@ -211,7 +240,7 @@ const Medicine = () => {
                   },
                 }}
               />
-            </Grid>
+            </Box>
           )}
           {openType && (
             <ModalMedicineType
@@ -238,11 +267,11 @@ const Medicine = () => {
           )}
           {openEdit && (
             <ModalEditMedicine
-            open={openEdit}
-            setOpen={setOpenEdit}
-            id={selectedMedicationId}
-            currentMedication={selectedMedication}
-            fetchMedications={fetchMedications}
+              open={openEdit}
+              setOpen={setOpenEdit}
+              id={selectedMedicationId}
+              currentMedication={selectedMedication}
+              fetchMedications={fetchMedications}
             />
           )}
         </Grid>
