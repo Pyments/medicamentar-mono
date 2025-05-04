@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 
-export function longDate(date: dayjs.Dayjs | string) {
+export function longDate(date: dayjs.Dayjs | string | undefined) {
+  if (!date) return 'Data não disponível';
   dayjs.locale("pt-br");
   if (dayjs.isDayjs(date)) {
     return date.format("DD/MM/YY [às] HH:mm");
