@@ -76,7 +76,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
     null
   );
   const [name, setName] = useState<string>("");
-  const [dose, setDose] = useState<number>(1);
+  const [dose, setDose] = useState<number | null>(null);
   const [amount, setAmount] = useState<number>(1);
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
