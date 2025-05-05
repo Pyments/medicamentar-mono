@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pagination, Typography, Grid, Stack,AlertColor } from "@mui/material";
+import { Pagination, Typography, Grid, Stack, AlertColor } from "@mui/material";
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
 import CardUniversal from "@components/CardUniversal.tsx";
@@ -15,6 +15,7 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface MedicationData {
   id: string;
@@ -52,7 +53,15 @@ const Medicine = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
 
+  const [loading, setLoading] = useState(false);
+  const showFeedback = (message: string, severity: AlertColor) => {
+    setFeedbackMessage(message);
+    setFeedbackSeverity(severity);
+    setFeedbackOpen(true);
+  };
+
   const fetchMedications = async () => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get(
         `/medication?page=${page}&size=9`,
@@ -66,6 +75,8 @@ const Medicine = () => {
       setMedications(response.data.data);
     } catch (error) {
       console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,6 +102,8 @@ const Medicine = () => {
 
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
+      closeDeleteModal();
+      setLoading(true);
       try {
         await axiosInstance.delete(
           `/medication/${selectedMedicationId}`,
@@ -107,12 +120,13 @@ const Medicine = () => {
         setFeedbackSeverity("success");
         setFeedbackOpen(true);
 
-        closeDeleteModal();
       } catch (error) {
         setFeedbackMessage("Erro ao deletar Medicamento!");
         setFeedbackSeverity("error");
         setFeedbackOpen(true);
-        closeDeleteModal(); 
+        closeDeleteModal();
+      }finally {
+        setLoading(false);
       }
     }
   };
@@ -135,7 +149,7 @@ const Medicine = () => {
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage}/>
+        message={feedbackMessage} />
       <Header />
       <SideBar />
       <SectionContainer>
@@ -162,7 +176,22 @@ const Medicine = () => {
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
         <Grid container spacing={3} mb="75px">
-          {medications.length > 0 ? (
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%"
+                  
+                }}
+              >
+                <Loader sx={{color: darkMode ?"common.white" : "primary.main"}}/>
+              </Stack>
+            </Grid>
+          ) : medications.length > 0 ? (
             medications.map((medication) => (
               <CardUniversal
                 key={medication.id}
@@ -178,16 +207,20 @@ const Medicine = () => {
               />
             ))
           ) : (
-            <Typography
-              sx={{
-                margin: "auto",
-                mt: "50px",
-                color: darkMode ? "common.white" : "commonm.dark",
-              }}
-            >
-              Nenhum medicamento encontrado.
-            </Typography>
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "commonm.dark",
+                  textAlign: "center"
+                }}
+              >
+                Nenhum medicamento encontrado.
+              </Typography>
+            </Grid>
           )}
+
           {pageCount > 1 && (
             <Grid
               item
@@ -227,6 +260,8 @@ const Medicine = () => {
               open={openNew}
               setOpen={setOpenNew}
               fetchMedications={fetchMedications}
+              showFeedback={showFeedback}
+
             />
           )}
           {isDeleteModalOpen && (
@@ -238,11 +273,12 @@ const Medicine = () => {
           )}
           {openEdit && (
             <ModalEditMedicine
-            open={openEdit}
-            setOpen={setOpenEdit}
-            id={selectedMedicationId}
-            currentMedication={selectedMedication}
-            fetchMedications={fetchMedications}
+              open={openEdit}
+              setOpen={setOpenEdit}
+              id={selectedMedicationId}
+              currentMedication={selectedMedication}
+              fetchMedications={fetchMedications}
+              showFeedback={showFeedback}
             />
           )}
         </Grid>

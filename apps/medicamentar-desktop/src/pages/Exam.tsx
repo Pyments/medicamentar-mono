@@ -20,6 +20,7 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface ExamData {
   id: string;
@@ -51,8 +52,15 @@ const Exam = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSeverity, setFeedbackSeverity] =
     useState<AlertColor>("success");
+  const showFeedback = (message: string, severity: AlertColor) => {
+    setFeedbackMessage(message);
+    setFeedbackSeverity(severity);
+    setFeedbackOpen(true);
+  };
+  const [loading, setLoading] = useState(false);
 
   const fetchExams = async () => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get(`/exam?page=${page}&size=9`, {
         headers: {
@@ -63,6 +71,8 @@ const Exam = () => {
       setPageCount(response.data.totalPages);
     } catch (error) {
       console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,22 +98,27 @@ const Exam = () => {
 
   const handleDeleteExams = async () => {
     if (selectedExamId) {
+      closeDeleteModal();
+      setLoading(true);
+
       try {
         await axiosInstance.delete(`/exam/${selectedExamId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        //falta os feedbacks de consultas
         setExams(exams.filter((med) => med.id !== selectedExamId));
-        setFeedbackMessage("Exame ou consulta deletado com sucesso!");
+        setFeedbackMessage("Exame deletado com sucesso!");
         setFeedbackSeverity("success");
         setFeedbackOpen(true);
-        closeDeleteModal();
       } catch (error) {
-        setFeedbackMessage("Erro ao deletar exame ou consulta!");
+        setFeedbackMessage("Erro ao deletar exame!");
         setFeedbackSeverity("error");
         setFeedbackOpen(true);
         closeDeleteModal();
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -156,29 +171,44 @@ const Exam = () => {
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
         <Grid container spacing={3} pb="75px">
-          {exams.length > 0 ? (
-            exams.map((exam) => (
-              <CardUniversal
-                key={exam.id}
-                title={exam.name}
-                dateTime={exam.date}
-                description={exam.local}
-                type="events"
-                onDelete={() => openDeleteModal(exam.id)}
-                onEdit={() => openEditModal(exam)}
-              />
-            ))
-          ) : (
-            <Typography
-              sx={{
-                margin: "auto",
-                mt: "50px",
-                color: darkMode ? "common.white" : "commonm.dark",
-              }}
-            >
-              Nenhuma consulta ou exame encontrado.
-            </Typography>
-          )}
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%"
+                }}
+              >
+                <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
+              </Stack>
+            </Grid>
+          ) :
+            exams.length > 0 ? (
+              exams.map((exam) => (
+                <CardUniversal
+                  key={exam.id}
+                  title={exam.name}
+                  dateTime={exam.date}
+                  description={exam.local}
+                  type="events"
+                  onDelete={() => openDeleteModal(exam.id)}
+                  onEdit={() => openEditModal(exam)}
+                />
+              ))
+            ) : (
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "commonm.dark",
+                }}
+              >
+                Nenhuma consulta ou exame encontrado.
+              </Typography>
+            )}
           {pageCount > 1 && (
             <Grid
               item
@@ -207,7 +237,7 @@ const Exam = () => {
         </Grid>
       </SectionContainer>
       {open && (
-        <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />
+        <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} showFeedback={showFeedback} />
       )}
       {isDeleteModalOpen && (
         <ModalDelete
@@ -222,6 +252,7 @@ const Exam = () => {
           isOpen={isEditModalOpen}
           onClose={() => closeEditModal()}
           fetchExams={fetchExams}
+          showFeedback={showFeedback}
         />
       )}
     </ContainerUniversal>

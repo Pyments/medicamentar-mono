@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import CardUniversal from "@components/CardUniversal";
 import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
 import { SectionContainer } from "@components/SectionContainer";
-import { Box, Grid, Pagination, Typography } from "@mui/material";
+import { Box, Grid, Pagination, Stack, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
+import { Loader } from "@components/Loader";
 
 interface EventData {
   id: string;
@@ -39,9 +40,13 @@ const Home: React.FC = () => {
   const token = user?.token.data;
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoading(true);
+
       try {
         const response = await axiosInstance.get(
           `/events?page=${page}&size=9`,
@@ -63,6 +68,8 @@ const Home: React.FC = () => {
         setEvents(combinedEvents);
       } catch (error) {
         console.error("Erro na requisição:", error);
+      } finally {
+        setLoading(false);
       }
     };
     if (token) {
@@ -105,7 +112,23 @@ const Home: React.FC = () => {
             gap: 2,
           }}
         >
-          {events.length > 0 ? (
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%"
+                }}
+              >
+                <Loader sx={{
+                  color: darkMode ?"common.white" : "primary.main",
+                }} />
+              </Stack>
+            </Grid>
+          ) : events.length > 0 ? (
             events.map((event) => {
               const isMedication = "startDate" in event;
               const title = event.name || event.doctorName || "Sem título";

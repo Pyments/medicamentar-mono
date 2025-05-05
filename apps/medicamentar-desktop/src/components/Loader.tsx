@@ -1,11 +1,12 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, CircularProgressProps  } from "@mui/material";
 
-export const Loader = () => {
+interface LoaderProps extends CircularProgressProps {}
+export const Loader = (props: LoaderProps) => {
   return (
     <Box
       sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}
-    >
-      <CircularProgress />
+    > 
+      <CircularProgress {...props}  />
     </Box>
   );
 };
