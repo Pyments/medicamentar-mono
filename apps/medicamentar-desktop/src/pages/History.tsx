@@ -91,7 +91,7 @@ const History = () => {
       <Header />
       <Sidebar />
       <SectionContainer>
-        {loading && (
+        {loading ? (
           <Box
             sx={{
               position: "absolute",
@@ -101,6 +101,7 @@ const History = () => {
               bottom: 0,
               zIndex: 1000,
               display: "flex",
+              flexGrow: 100,
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: darkMode ? "primary.darker" : "background.default",
@@ -108,7 +109,7 @@ const History = () => {
           >
             <Loader />
           </Box>
-        )}
+        ): (
         <Stack sx={{ alignItems: "center" }} spacing="67px">
           <Box
             sx={{
@@ -152,7 +153,7 @@ const History = () => {
               </Grid>
             )}
           </Grid>
-        </Stack>
+        </Stack>)}
       </SectionContainer>
     </ContainerUniversal>
   );
