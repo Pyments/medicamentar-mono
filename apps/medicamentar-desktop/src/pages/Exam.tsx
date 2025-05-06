@@ -7,13 +7,7 @@ import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import {
-  Grid,
-  Typography,
-  Stack,
-  Pagination,
-  AlertColor,
-} from "@mui/material";
+import { Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
@@ -21,6 +15,8 @@ import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
+import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+
 
 interface ExamData {
   id: string;
@@ -39,7 +35,8 @@ const Exam = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
-  const [exams, setExams] = useState<ExamData[]>([]);
+  const [exams, setExams] = useState<any[]>([]);
+  const [consultations, setConsultations] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
 
@@ -59,15 +56,21 @@ const Exam = () => {
   };
   const [loading, setLoading] = useState(false);
 
+  const sortedExams = useActiveAndSorted(exams, {
+    type: "exam",
+    dateField: "date",
+  });
+
   const fetchExams = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/exam?page=${page}&size=9`, {
+      const response = await axiosInstance.get(`/consultations?page=${page}&size=9`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setExams(response.data.data);
+      setConsultations(response.data.data.consultations || []);
+      setExams(response.data.data.exams || []);
       setPageCount(response.data.totalPages);
     } catch (error) {
       console.error("Erro na requisição:", error);
@@ -140,6 +143,22 @@ const Exam = () => {
     setPage(value - 1);
   };
 
+  // Unir exames e consultas para exibir juntos
+  const allEvents = [
+    ...sortedExams,
+    ...useActiveAndSorted(consultations, {
+      type: "exam",
+      dateField: "date",
+    }),
+  ];
+
+  const pageSize = 9;
+  const totalPages = Math.ceil(allEvents.length / pageSize);
+  const paginatedEvents = allEvents.slice(
+    page * pageSize,
+    page * pageSize + pageSize
+  );
+
   return (
     <ContainerUniversal>
       <Feedback
@@ -170,71 +189,77 @@ const Exam = () => {
           </Typography>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
-        <Grid container spacing={3} pb="75px">
-          {loading ? (
-            <Grid item xs={12}>
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                sx={{
-                  minHeight: "50vh",
-                  width: "100%"
-                }}
-              >
-                <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
-              </Stack>
-            </Grid>
-          ) :
-            exams.length > 0 ? (
-              exams.map((exam) => (
-                <CardUniversal
-                  key={exam.id}
-                  title={exam.name}
-                  dateTime={exam.date}
-                  description={exam.local}
-                  type="events"
-                  onDelete={() => openDeleteModal(exam.id)}
-                  onEdit={() => openEditModal(exam)}
-                />
-              ))
-            ) : (
-              <Typography
-                sx={{
-                  margin: "auto",
-                  mt: "50px",
-                  color: darkMode ? "common.white" : "commonm.dark",
-                }}
-              >
-                Nenhuma consulta ou exame encontrado.
-              </Typography>
-            )}
-          {pageCount > 1 && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-            >
-              <Pagination
-                page={page + 1}
-                color="primary"
-                count={pageCount}
-                onChange={handlePagination}
-                sx={{
-                  "& .MuiPaginationItem-ellipsis": {
-                    color: darkMode ? "common.white" : "primary.main",
-                  },
-                  "& .MuiPaginationItem-page.Mui-selected": {
-                    backgroundColor: darkMode
-                      ? "primary.darker"
-                      : "primary.main",
-                    color: "white",
-                  },
-                }}
-              />
-            </Grid>
-          )}
+       <Grid container spacing={3} pb="75px">
+  {loading ? (
+    <Grid item xs={12}>
+      <Stack
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          minHeight: "50vh",
+          width: "100%",
+        }}
+      >
+        <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
+      </Stack>
+    </Grid>
+  ) : paginatedEvents.length > 0 ? (
+    paginatedEvents.map((event: any) => {
+      const isConsultation = !!event.doctorName;
+      return (
+        <Grid item key={event.id}>
+          <CardUniversal
+            title={isConsultation ? `${event.doctorName}` : event.name}
+            dateTime={event.date}
+            description={event.local || event.description}
+            type="events"
+            onDelete={() => openDeleteModal(event.id)}
+            onEdit={() => openEditModal(event)}
+          />
         </Grid>
+      );
+    })
+  ) : (
+    <Grid item xs={12}>
+      <Typography
+        sx={{
+          margin: "auto",
+          mt: "50px",
+          color: darkMode ? "common.white" : "commonm.dark",
+        }}
+      >
+        Nenhuma consulta ou exame encontrado.
+      </Typography>
+    </Grid>
+  )}
+  {paginatedEvents.length > 0 && totalPages > 1 && (
+    <Grid
+      item
+      xs={12}
+      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+    >
+      <Pagination
+        page={page + 1}
+        color="primary"
+        count={totalPages}
+        onChange={handlePagination}
+        sx={{
+          "& .MuiPaginationItem-ellipsis": {
+            color: darkMode ? "common.white" : "primary.main",
+          },
+          "& .MuiPaginationItem-page.Mui-selected": {
+            backgroundColor: darkMode
+              ? "primary.darker"
+              : "primary.main",
+            color: "white",
+          },
+        }}
+      />
+    </Grid>
+  )}
+</Grid>
+
       </SectionContainer>
       {open && (
         <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} showFeedback={showFeedback} />
