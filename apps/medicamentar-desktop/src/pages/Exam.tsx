@@ -17,10 +17,10 @@ import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 
-
 interface ExamData {
   id: string;
-  name: string;
+  name?: string;
+  doctorName?: string;
   date: dayjs.Dayjs;
   local: string;
   description: string;
@@ -30,33 +30,60 @@ interface User {
     data: string;
   };
 }
+interface FeedbackState {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+}
+interface ModalState {
+  add: boolean;
+  delete: boolean;
+  edit: boolean;
+}
+
 const Exam = () => {
   const { darkMode } = useTheme();
-  const [open, setOpen] = useState<boolean>(false);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
-  const [exams, setExams] = useState<any[]>([]);
-  const [consultations, setConsultations] = useState<any[]>([]);
-  const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState<number>(0);
-
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
-  const [selectedExam, setSelectedExam] = useState<ExamData | null>(null);
-
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] =
-    useState<AlertColor>("success");
-  const showFeedback = (message: string, severity: AlertColor) => {
-    setFeedbackMessage(message);
-    setFeedbackSeverity(severity);
-    setFeedbackOpen(true);
-  };
   const [loading, setLoading] = useState(false);
 
-  const sortedExams = useActiveAndSorted(exams, {
+  const [events, setEvents] = useState<{
+    exams: ExamData[];
+    consultations: ExamData[];
+  }>({ exams: [], consultations: [] });
+  const [pagination, setPagination] = useState({
+    page: 0,
+    pageCount: 0,
+  });
+  const [modals, setModals] = useState<ModalState>({
+    add: false,
+    delete: false,
+    edit: false,
+  });
+  const [selected, setSelected] = useState<{
+    id: string | null;
+    item: ExamData | null;
+  }>({ id: null, item: null });
+  const [feedback, setFeedback] = useState<FeedbackState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showFeedback = (message: string, severity: AlertColor) => {
+    setFeedback({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  const sortedExams = useActiveAndSorted(events.exams, {
+    type: "exam",
+    dateField: "date",
+  });
+
+  const sortedConsultations = useActiveAndSorted(events.consultations, {
     type: "exam",
     dateField: "date",
   });
@@ -64,14 +91,24 @@ const Exam = () => {
   const fetchExams = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/consultations?page=${page}&size=9`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await axiosInstance.get(
+        `/consultations?page=${pagination.page}&size=9`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setEvents({
+        consultations: response.data.data.consultations || [],
+        exams: response.data.data.exams || [],
       });
-      setConsultations(response.data.data.consultations || []);
-      setExams(response.data.data.exams || []);
-      setPageCount(response.data.totalPages);
+
+      setPagination((prev) => ({
+        ...prev,
+        pageCount: response.data.data.totalPages || 0,
+      }));
     } catch (error) {
       console.error("Erro na requisição:", error);
     } finally {
@@ -79,101 +116,87 @@ const Exam = () => {
     }
   };
 
+  const allEvents = [...sortedExams, ...sortedConsultations];
+
   useEffect(() => {
     if (token) {
       fetchExams();
     }
-  }, [token, page]);
+  }, [token, pagination.page]);
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPagination((prev) => ({ ...prev, page: value - 1 }));
+  };
 
   const handleModal = () => {
-    setOpen(!open);
+    setModals((prev) => ({ ...prev, add: !prev.add }));
   };
 
   const openDeleteModal = (id: string) => {
-    setSelectedExamId(id);
-    setDeleteModalOpen(true);
+    setSelected({ id, item: null });
+    setModals((prev) => ({ ...prev, delete: true }));
   };
 
   const closeDeleteModal = () => {
-    setSelectedExamId(null);
-    setDeleteModalOpen(false);
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, delete: false }));
+  };
+
+  const openEditModal = (exam: ExamData) => {
+    setSelected({ id: exam.id, item: exam });
+    setModals((prev) => ({ ...prev, edit: true }));
+  };
+
+  const closeEditModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, edit: false }));
   };
 
   const handleDeleteExams = async () => {
-    if (selectedExamId) {
+    if (selected.id) {
       closeDeleteModal();
       setLoading(true);
-
       try {
-        await axiosInstance.delete(`/exam/${selectedExamId}`, {
+        await axiosInstance.delete(`/consultation/${selected.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        //falta os feedbacks de consultas
-        setExams(exams.filter((med) => med.id !== selectedExamId));
-        setFeedbackMessage("Exame deletado com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
+
+        setEvents((prev) => ({
+          exams: prev.exams.filter((item) => item.id !== selected.id),
+          consultations: prev.consultations.filter(
+            (item) => item.id !== selected.id
+          ),
+        }));
+
+        showFeedback("Exame ou consulta deletado com sucesso!", "success");
       } catch (error) {
-        setFeedbackMessage("Erro ao deletar exame!");
-        setFeedbackSeverity("error");
-        setFeedbackOpen(true);
-        closeDeleteModal();
+        showFeedback("Erro ao deletar exame!", "error");
       } finally {
         setLoading(false);
       }
     }
   };
 
-  const openEditModal = (exam: ExamData) => {
-    setSelectedExam(exam);
-    setEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setSelectedExamId(null);
-    setEditModalOpen(false);
-  };
-
-  const handlePagination = (
-    _event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value - 1);
-  };
-
-  // Unir exames e consultas para exibir juntos
-  const allEvents = [
-    ...sortedExams,
-    ...useActiveAndSorted(consultations, {
-      type: "exam",
-      dateField: "date",
-    }),
-  ];
-
-  const pageSize = 9;
-  const totalPages = Math.ceil(allEvents.length / pageSize);
-  const paginatedEvents = allEvents.slice(
-    page * pageSize,
-    page * pageSize + pageSize
-  );
-
   return (
     <ContainerUniversal>
       <Feedback
-        open={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        severity={feedbackSeverity}
-        message={feedbackMessage}
+        open={feedback.open}
+        message={feedback.message}
+        severity={feedback.severity}
+        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
       />
       <Header />
       <SideBar />
       <SectionContainer>
         <Stack
           flexDirection="row"
-          justifyContent="space-between"
           alignItems="center"
+          justifyContent="space-between"
         >
           <Typography
             sx={{
@@ -189,94 +212,110 @@ const Exam = () => {
           </Typography>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
-       <Grid container spacing={3} pb="75px">
-  {loading ? (
-    <Grid item xs={12}>
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-        sx={{
-          minHeight: "50vh",
-          width: "100%",
-        }}
-      >
-        <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
-      </Stack>
-    </Grid>
-  ) : paginatedEvents.length > 0 ? (
-    paginatedEvents.map((event: any) => {
-      const isConsultation = !!event.doctorName;
-      return (
-        <Grid item key={event.id}>
-          <CardUniversal
-            title={isConsultation ? `${event.doctorName}` : event.name}
-            dateTime={event.date}
-            description={event.local || event.description}
-            type="events"
-            onDelete={() => openDeleteModal(event.id)}
-            onEdit={() => openEditModal(event)}
-          />
+        <Grid container spacing={3} pb="75px">
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%",
+                }}
+              >
+                <Loader
+                  sx={{ color: darkMode ? "common.white" : "primary.main" }}
+                />
+              </Stack>
+            </Grid>
+          ) : allEvents.length > 0 ? (
+            allEvents.map((event: ExamData) => {
+              const isConsultation = !!event.doctorName;
+              return (
+                <Grid item key={event.id}>
+                  <CardUniversal
+                    title={
+                      isConsultation
+                        ? `${event.doctorName || ""}`
+                        : event.name || ""
+                    }
+                    dateTime={event.date}
+                    description={event.local || event.description}
+                    type="events"
+                    onDelete={() => openDeleteModal(event.id)}
+                    onEdit={() => openEditModal(event)}
+                  />
+                </Grid>
+              );
+            })
+          ) : (
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "commonm.dark",
+                }}
+              >
+                Nenhuma consulta ou exame encontrado.
+              </Typography>
+            </Grid>
+          )}
+          {allEvents.length > 0 && pagination.pageCount > 1 && (
+            <Grid
+              item
+              xs={12}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+            >
+              <Pagination
+                page={pagination.page + 1}
+                color="primary"
+                count={pagination.pageCount}
+                onChange={handlePagination}
+                sx={{
+                  "& .MuiPaginationItem-ellipsis": {
+                    color: darkMode ? "common.white" : "primary.main",
+                  },
+                  "& .MuiPaginationItem-page.Mui-selected": {
+                    backgroundColor: darkMode
+                      ? "primary.darker"
+                      : "primary.main",
+                    color: "white",
+                  },
+                }}
+              />
+            </Grid>
+          )}
         </Grid>
-      );
-    })
-  ) : (
-    <Grid item xs={12}>
-      <Typography
-        sx={{
-          margin: "auto",
-          mt: "50px",
-          color: darkMode ? "common.white" : "commonm.dark",
-        }}
-      >
-        Nenhuma consulta ou exame encontrado.
-      </Typography>
-    </Grid>
-  )}
-  {paginatedEvents.length > 0 && totalPages > 1 && (
-    <Grid
-      item
-      xs={12}
-      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-    >
-      <Pagination
-        page={page + 1}
-        color="primary"
-        count={totalPages}
-        onChange={handlePagination}
-        sx={{
-          "& .MuiPaginationItem-ellipsis": {
-            color: darkMode ? "common.white" : "primary.main",
-          },
-          "& .MuiPaginationItem-page.Mui-selected": {
-            backgroundColor: darkMode
-              ? "primary.darker"
-              : "primary.main",
-            color: "white",
-          },
-        }}
-      />
-    </Grid>
-  )}
-</Grid>
-
       </SectionContainer>
-      {open && (
-        <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} showFeedback={showFeedback} />
+      {modals.add && (
+        <ExamModal
+          open={modals.add}
+          onClose={handleModal}
+          fetchExams={fetchExams}
+          showFeedback={showFeedback}
+        />
       )}
-      {isDeleteModalOpen && (
+      {modals.delete && (
         <ModalDelete
-          isOpen={isDeleteModalOpen}
+          isOpen={modals.delete}
           onClose={closeDeleteModal}
           onDelete={handleDeleteExams}
         />
       )}
-      {isEditModalOpen && (
+      {modals.edit && selected.item && (
         <ExamEditModal
-          currentExam={selectedExam}
-          isOpen={isEditModalOpen}
-          onClose={() => closeEditModal()}
+          currentExam={{
+            id: selected.item.id,
+            date: selected.item.date,
+            local: selected.item.local,
+            name: selected.item.name || "",
+            description: selected.item.description,
+          }}
+          isOpen={modals.edit}
           fetchExams={fetchExams}
+          onClose={closeEditModal}
           showFeedback={showFeedback}
         />
       )}

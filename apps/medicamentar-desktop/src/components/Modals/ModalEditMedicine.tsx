@@ -259,7 +259,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
               fontSize: "1.8rem",
               fontWeight: 600,
               textAlign: "center",
-              color: darkMode ? "common.white" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             }}
           >
             EDITAR MEDICAMENTO
