@@ -4,7 +4,6 @@ import {
   Tabs,
   Modal,
   Button,
-  TextField,
   IconButton,
 } from "@mui/material";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import ThemedTextField from "@components/ThemedTextField";
 
 interface ExamModalProps {
   open: boolean;
@@ -36,7 +36,7 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
+const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
   const [tabValue, setTabValue] = useState("exame");
   const [isOpen] = useState<boolean>(true);
   const [examName, setExamName] = useState<string>("");
@@ -48,7 +48,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
 
   const tabValues = ["exame", "consulta"];
 
@@ -133,6 +133,18 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
     onClose();
   };
 
+  const fontSizeStyle = {
+    fontSize: largeFont ? "1.4rem" : "0.9rem",
+  };
+
+  const labelFontSizeStyle = {
+    fontSize: largeFont ? "1.2rem" : "0.9rem",
+  };
+
+  const buttonFontSizeStyle = {
+    fontSize: largeFont ? "1.4rem" : "1rem",
+  };
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -142,7 +154,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           backgroundColor: darkMode ? "grey.900" : "common.white",
-          width: 500,
+          width: largeFont ? 600 : 500, 
           p: "60px",
           display: "flex",
           flexDirection: "column",
@@ -159,9 +171,10 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
             right: 30,
             top: 30,
             color: "#80828D",
+            fontSize: largeFont ? "2rem" : "1.5rem", 
           }}
         >
-          <CloseIcon />
+          <CloseIcon fontSize="inherit" />
         </IconButton>
         <Tabs
           onChange={handleChange}
@@ -179,7 +192,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
           {tabValues.map((tab) => (
             <Tab
               sx={{
-                fontSize: "20px",
+                fontSize: largeFont ? "1.8rem" : "20px",
                 textTransform: "uppercase",
                 color: darkMode ? "common.white" : "-moz-initial",
               }}
@@ -192,7 +205,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+          style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}
         >
           <DateTimePicker
             views={["day", "hours", "minutes"]}
@@ -208,7 +221,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
               }
             }}
             renderInput={(params) => (
-              <TextField
+              <ThemedTextField
                 {...params}
                 fullWidth
                 error={Boolean(errors.selectedDate)}
@@ -218,8 +231,9 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
                   sx: {
                     "& .MuiInputAdornment-root .MuiSvgIcon-root": {
                       color: darkMode ? "#CDCED7" : "-moz-initial",
+                      fontSize: largeFont ? "1.8rem" : "1.5rem", 
                     },
-                    fontSize: "0.9rem",
+                    ...fontSizeStyle,
                     color: darkMode ? "common.white" : "text.primary",
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: darkMode
@@ -236,7 +250,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
                 }}
                 InputLabelProps={{
                   sx: {
-                    fontSize: "0.9rem",
+                    ...labelFontSizeStyle,
                     color: darkMode ? "common.white" : "text.primary",
                     "&.Mui-focused": {
                       color: darkMode ? "common.white" : "primary.main",
@@ -248,68 +262,44 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
           />
 
           {tabValue === "exame" && (
-            <>
-              <TextField
-                sx={{ margin: 0 }}
-                fullWidth
-                label="NOME DO EXAME"
-                variant="outlined"
-                value={examName}
-                onChange={(e) => {
-                  setExamName(e.target.value);
-                  if (e.target.value) {
-                    setErrors((prev) => ({ ...prev, examName: undefined }));
-                  }
-                }}
-                margin="normal"
-                error={Boolean(errors.examName)}
-                helperText={errors.examName}
-                InputProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-                InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-              />
-            </>
+            <ThemedTextField
+              sx={{ margin: 0 }}
+              fullWidth
+              label="NOME DO EXAME"
+              variant="outlined"
+              value={examName}
+              onChange={(e) => {
+                setExamName(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, examName: undefined }));
+                }
+              }}
+              margin="normal"
+              error={Boolean(errors.examName)}
+              helperText={errors.examName}
+            />
           )}
 
           {tabValue === "consulta" && (
-            <>
-              <TextField
-                sx={{ margin: 0 }}
-                fullWidth
-                label="NOME DO MÉDICO"
-                variant="outlined"
-                value={doctorName}
-                onChange={(e) => {
-                  setDoctorName(e.target.value);
-                  if (e.target.value) {
-                    setErrors((prev) => ({ ...prev, doctorName: undefined }));
-                  }
-                }}
-                margin="normal"
-                error={Boolean(errors.doctorName)}
-                helperText={errors.doctorName}
-                InputProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-                InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                  },
-                }}
-              />
-            </>
+            <ThemedTextField
+              sx={{ margin: 0 }}
+              fullWidth
+              label="NOME DO MÉDICO"
+              variant="outlined"
+              value={doctorName}
+              onChange={(e) => {
+                setDoctorName(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, doctorName: undefined }));
+                }
+              }}
+              margin="normal"
+              error={Boolean(errors.doctorName)}
+              helperText={errors.doctorName}
+            />
           )}
 
-          <TextField
+          <ThemedTextField
             sx={{ margin: 0 }}
             fullWidth
             label="LOCAL"
@@ -324,19 +314,9 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
             margin="normal"
             error={Boolean(errors.location)}
             helperText={errors.location}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
           />
 
-          <TextField
+          <ThemedTextField
             sx={{ margin: 0 }}
             fullWidth
             multiline
@@ -353,23 +333,18 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose,fetchExams }) => {
             margin="normal"
             error={Boolean(errors.description)}
             helperText={errors.description}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
           />
 
           <Button
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+            sx={{ 
+              mt: "20px", 
+              backgroundColor: "#0078B6",
+              ...buttonFontSizeStyle,
+              py: largeFont ? "15px" : "8px", 
+            }}
           >
             adicionar
           </Button>

@@ -7,7 +7,6 @@ import {
   Checkbox,
   MenuItem,
   FormGroup,
-  TextField,
   InputLabel,
   Typography,
   IconButton,
@@ -23,7 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
+import ThemedTextField from "@components/ThemedTextField";
 import { useTheme } from "@theme/useTheme";
 
 interface FormErrors {
@@ -65,12 +64,9 @@ const periodOptions = [
 ];
 
 const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const [isOpen] = useState<boolean>(true);
-  const [user] = useLocalStorage<{ token: { data: string } } | null>(
-    "user",
-    null
-  );
+  const [user] = useLocalStorage<{ token: { data: string } } | null>("user", null);
   const [name, setName] = useState<string>("");
   const [dose, setDose] = useState<number>(1);
   const [amount, setAmount] = useState<number>(1);
@@ -78,8 +74,8 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
-  const [errors, _setErrors] = useState<FormErrors>({});
+  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   enum Unity {
     ML = 0,
@@ -88,6 +84,7 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     CPS = 3,
     SC = 4,
   }
+
   const calcEndDate = (startDate: dayjs.Dayjs | null, period: number) => {
     if (!startDate || period <= 0) return null;
     return startDate.add(period, "day");
@@ -96,70 +93,33 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
   const handlePeriodChange = (newPeriod: number | null) => {
     if (!newPeriod || newPeriod <= 0) {
       setPeriod(1);
-      _setEndDate(null);
+      setEndDate(null);
       return;
     }
     setPeriod(newPeriod);
     if (!startDate) {
-      _setEndDate(null);
+      setEndDate(null);
       return;
     }
-    _setEndDate(calcEndDate(startDate, newPeriod));
+    setEndDate(calcEndDate(startDate, newPeriod));
   };
-  /*  const validadeForm = () => {
-    const newErrors: FormErrors = {};
-    const requiredFields = {
-      name: "O nome do medicamento é obrigatório.",
-      dose: "A frequência (dose) é obrigatória.",
-      amount: "A quantidade é obrigatória.",
-      unity: "A unidade é obrigatória.",
-      period: "O período é obrigatório.",
-      startDate: "A data de início é obrigatória.",
-      continuo: "O uso contínuo é obrigatório.",
-    };
-    Object.entries(requiredFields).forEach(([field, message]) => {
-      if (!eval(field)) {
-        newErrors[field as keyof FormErrors] = message;
-      }
-    });
-    return newErrors;
-  }; */
-
-  if (!isOpen) return null;
-
-  // Request
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* 
-    const validationErrors = validadeForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    } */
-
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "post",
         url: "/medication",
         data: {
-          name: name, // string
-          type: Number(type), // presets
-          dose: dose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
-          amount: amount, // num
-          unity: Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
-          period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
-          isContinuousUse: continuo, // bool
+          name,
+          type: Number(type),
+          dose,
+          amount,
+          unity: Number(unity),
+          period,
+          isContinuousUse: continuo,
           start_date: startDate,
-          /*ophthalmicDetails: {
-            leftEyeFrequency: null, 
-            leftEyeQuantity: null, 
-            leftEyeDrops: null, 
-            rightEyeFrequency: null, 
-            rightEyeQuantity: null, 
-            rightEyeDrops: null, 
-          }, */
         },
       });
       setOpen(false);
@@ -168,41 +128,9 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
     }
   };
 
-  const themedProps = {
-    textField: {
-      InputProps: {
-        sx: {
-          "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-            color: darkMode ? "#CDCED7" : "-moz-initial",
-          },
-          fontSize: "0.9rem",
-          color: darkMode ? "common.white" : "text.primary",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
-          },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "common.white" : "primary.main",
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "#103952" : "primary.main",
-          },
-        },
-      },
-      InputLabelProps: {
-        sx: {
-          fontSize: "0.9rem",
-          color: darkMode ? "common.white" : "text.primary",
-          "&.Mui-focused": {
-            color: darkMode ? "#103952" : "primary.main",
-          },
-        },
-      },
-    },
-  };
+  if (!isOpen) return null;
 
-  const gridTransition = {
-    transition: "all 0.3s ease-in-out",
-  };
+  const fontSize = largeFont ? "1.5rem" : "1rem";
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
@@ -212,18 +140,14 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
           position: "absolute",
           p: "60px",
           top: "50%",
-          gap: "10px",
           left: "50%",
           boxShadow: 24,
-          display: "flex",
           borderRadius: "5px",
-          alignItems: "center",
-          flexDirection: "column",
-          width: { xs: "1", md: "720px" },
-          height: { xs: "1", md: "auto" },
           transform: "translate(-50%, -50%)",
           backgroundColor: darkMode ? "grey.900" : "common.white",
-          transition: "width 0.3s ease-in-out",
+          width: { xs: "90vw", md: "720px" },
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
         <IconButton
@@ -240,10 +164,10 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
         <Typography
           variant="h3"
           sx={{
-            p: "20px 0 50px 0",
-            fontSize: "1.8rem",
+            fontSize: largeFont ? "2rem" : "1.8rem",
             fontWeight: 600,
             textAlign: "center",
+            mb: 4,
             color: darkMode ? "common.white" : "primary.main",
           }}
         >
@@ -252,86 +176,61 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
         <form onSubmit={handleSubmit}>
           <FormGroup>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6} sx={gridTransition}>
-                <TextField
-                  sx={{
-                    fontSize: "0.9rem",
-                    transition: "all 0.3s ease-in-out",
-                  }}
-                  variant="outlined"
+              <Grid item xs={12} md={6}>
+                <ThemedTextField
                   label="NOME DO MEDICAMENTO"
                   fullWidth
                   onChange={(e) => setName(String(e.target.value))}
+                  inputProps={{ style: { fontSize } }}
                 />
               </Grid>
-              <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <Autocomplete
                     value={dose?.toString()}
                     onChange={(_event, newValue) => {
                       if (newValue) {
-                        const numValue = Number(
-                          newValue.replace(/[^0-9]/g, "")
-                        );
-                        setDose(Number(Math.max(1, numValue)));
+                        const numValue = Number(newValue.replace(/[^0-9]/g, ""));
+                        setDose(Math.max(1, numValue));
                       }
                     }}
                     freeSolo
-                    options={frequencyOptions.map((option) => option.label)}
+                    options={frequencyOptions.map((o) => o.label)}
                     renderInput={(params) => (
-                      <TextField
+                      <ThemedTextField
                         {...params}
                         label="FREQUÊNCIA"
                         type="number"
                         value={dose?.toString()}
                         onChange={(event) => {
                           const numValue = Number(event.target.value);
-                          setDose(Number(Math.max(1, numValue)));
+                          setDose(Math.max(1, numValue));
                         }}
-                        inputProps={{
-                          ...params.inputProps,
-                          min: 1,
-                        }}
+                        inputProps={{ ...params.inputProps, min: 1, style: { fontSize } }}
                       />
                     )}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-                <TextField
-                  sx={{
-                    fontSize: "0.9rem",
-                    transition: "all 0.3s ease-in-out",
-                  }}
+              <Grid item xs={12} md={6}>
+                <ThemedTextField
                   fullWidth
                   type="number"
                   value={amount}
-                  variant="outlined"
                   label="QUANTIDADE"
-                  onChange={(event) => {
-                    if (Number(event.target.value) < 1) {
-                      setAmount(1);
-                    } else {
-                      setAmount(Number(event.target.value));
-                    }
-                  }}
+                  onChange={(e) => setAmount(Math.max(1, Number(e.target.value)))}
+                  inputProps={{ min: 1, style: { fontSize } }}
                 />
               </Grid>
-              <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-                <FormControl
-                  fullWidth
-                  sx={{
-                    fontSize: "0.9rem",
-                    transition: "all 0.3s ease-in-out",
-                  }}
-                >
-                  <InputLabel id="unity-label">UNIDADE</InputLabel>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel sx={{ fontSize }} id="unity-label">UNIDADE</InputLabel>
                   <Select
-                    id="unidade"
+                    labelId="unity-label"
                     value={unity}
                     label="UNIDADE"
-                    labelId="unity-label"
-                    onChange={(event) => setUnity(String(event.target.value))}
+                    onChange={(e) => setUnity(String(e.target.value))}
+                    sx={{ fontSize }}
                   >
                     <MenuItem value={Unity.ML}>Mililitros (ML)</MenuItem>
                     <MenuItem value={Unity.MG}>Miligramas (MG)</MenuItem>
@@ -341,94 +240,67 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sx={gridTransition}>
+              <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox
-                      checked={continuo}
-                      onChange={(e) => setContinuo(e.currentTarget.checked)}
-                    />
+                    <Checkbox checked={continuo} onChange={(e) => setContinuo(e.target.checked)} />
                   }
                   label="USO CONTÍNUO"
-                  sx={{
-                    color: darkMode ? "common.white" : "common.black",
-                    transition: "all 0.3s ease-in-out",
-                    opacity: continuo ? 1 : 0.35,
-                  }}
+                  sx={{ fontSize }}
                 />
               </Grid>
-              <Grid item xs={12} sx={gridTransition}>
+              <Grid item xs={12}>
                 <DateTimePicker
                   views={["day", "hours", "minutes"]}
                   value={startDate}
                   label="DATA DE INÍCIO"
-                  components={{
-                    OpenPickerIcon: CalendarTodayIcon,
-                  }}
                   onChange={(newValue) => setStartDate(newValue)}
+                  components={{ OpenPickerIcon: CalendarTodayIcon }}
                   renderInput={(params) => (
-                    <TextField
+                    <ThemedTextField
                       {...params}
                       fullWidth
-                      helperText={errors.startDate}
-                      error={Boolean(errors.startDate)}
-                      InputProps={{
-                        ...params.InputProps,
-                        ...themedProps.textField.InputProps,
-                      }}
+                      inputProps={{ ...params.inputProps, style: { fontSize } }}
                     />
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} sx={gridTransition}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <Autocomplete
                     disabled={continuo}
                     value={period?.toString() || ""}
-                    sx={{
-                      opacity: continuo ? 0.5 : 1,
-                    }}
-                    onChange={(_event, newValue) => {
+                    onChange={(_e, newValue) => {
                       if (newValue) {
-                        const numValue = Number(
-                          newValue.replace(/[^0-9]/g, "")
-                        );
-                        handlePeriodChange(Math.max(1, numValue));
+                        const num = Number(newValue.replace(/[^0-9]/g, ""));
+                        handlePeriodChange(Math.max(1, num));
                       }
                     }}
                     freeSolo
-                    options={periodOptions.map((option) => option.label)}
+                    options={periodOptions.map((o) => o.label)}
                     renderInput={(params) => (
-                      <TextField
+                      <ThemedTextField
                         {...params}
                         type="number"
-                        value={period ? period.toString() : ""}
                         label="PERÍODO"
                         disabled={continuo}
                         onChange={(e) => {
-                          const numValue = Number(e.target.value);
-                          handlePeriodChange(Math.max(1, numValue));
+                          const num = Number(e.target.value);
+                          handlePeriodChange(Math.max(1, num));
                         }}
-                        inputProps={{
-                          ...params.inputProps,
-                          min: 1,
-                        }}
+                        inputProps={{ ...params.inputProps, min: 1, style: { fontSize } }}
                       />
                     )}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6} sx={gridTransition}>
-                <TextField
+              <Grid item xs={12} md={6}>
+                <ThemedTextField
                   disabled
                   fullWidth
                   value={endDate ? dayjs(endDate).format("DD/MM/YYYY") : ""}
                   label="FINAL DO TRATAMENTO"
-                  helperText={errors.endDate}
-                  error={Boolean(errors.endDate)}
-                  sx={{
-                    opacity: continuo ? 0.5 : 1,
-                  }}
+                  inputProps={{ style: { fontSize } }}
                 />
               </Grid>
             </Grid>
@@ -438,10 +310,10 @@ const NewMedication = ({ open, setOpen, type }: NewMedicationProps) => {
               sx={{
                 px: "20%",
                 mx: "auto",
-                my: "30px",
-                py: "18px",
+                my: 4,
+                py: 2,
                 fontWeight: 800,
-                fontSize: "1.2rem",
+                fontSize,
               }}
             >
               SALVAR

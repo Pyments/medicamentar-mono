@@ -2,7 +2,6 @@ import {
   Box,
   Modal,
   Button,
-  TextField,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -14,6 +13,7 @@ import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import ThemedTextField from "@components/ThemedTextField";
 
 interface ExamEditModalProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamEditModalProps> = ({
+const EditExamModal: React.FC<ExamEditModalProps> = ({
   isOpen,
   onClose,
   fetchExams,
@@ -54,10 +54,9 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   const [doctorName, setDoctorName] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
   const [user] = useLocalStorage<User | null>("user", null);
-
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
 
   if (!isOpen) return null;
 
@@ -68,19 +67,12 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
       setDescription(currentExam.description || "");
       setSelectedDate(currentExam.date ? dayjs(currentExam.date) : null);
     }
-  }, [open, currentExam]);
+  }, [isOpen, currentExam]);
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
-
-    if (!selectedDate) {
-      newErrors.selectedDate = "A data e hora são obrigatórias.";
-    }
-
-    if (!location) {
-      newErrors.location = "O local é obrigatório.";
-    }
-
+    if (!selectedDate) newErrors.selectedDate = "A data e hora são obrigatórias.";
+    if (!location) newErrors.location = "O local é obrigatório.";
     return newErrors;
   };
 
@@ -121,6 +113,10 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     onClose();
   };
 
+  const fontSizeStyle = largeFont ? "1.2rem" : "1rem";
+  const labelFontSizeStyle = largeFont ? "1.2rem" : "1rem";
+  const formHelperTextStyle = largeFont ? "1rem" : "0.875rem";
+
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -154,7 +150,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
         <Typography
           sx={{
             mb: "10px",
-            fontSize: "1.8rem",
+            fontSize: largeFont ? "2rem" : "1.8rem",
             fontWeight: "bold",
             color: darkMode ? "primary.light" : "primary.main",
           }}
@@ -165,11 +161,11 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
-          <TextField
+          <ThemedTextField
             sx={{ margin: 0 }}
             fullWidth
             label="NOME"
-            variant="outlined"
+            variant="outlined" 
             value={examName}
             onChange={(e) => {
               setExamName(e.target.value);
@@ -180,16 +176,6 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
             margin="normal"
             error={Boolean(errors.location)}
             helperText={errors.location}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
           />
           <DateTimePicker
             views={["day", "hours", "minutes"]}
@@ -205,45 +191,25 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               }
             }}
             renderInput={(params) => (
-              <TextField
+              <ThemedTextField
                 {...params}
                 fullWidth
                 error={Boolean(errors.selectedDate)}
                 helperText={errors.selectedDate}
                 InputProps={{
                   ...params.InputProps,
-                  sx: {
-                    "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-                      color: darkMode ? "#CDCED7" : "-moz-initial",
-                    },
-                    fontSize: "0.9rem",
-                    color: darkMode ? "common.white" : "text.primary",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode
-                        ? "rgba(128, 128, 128, 0.6)"
-                        : "-moz-initial",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode ? "common.white" : "primary.main",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: darkMode ? "#103952" : "primary.main",
-                    },
-                  },
+                  sx: { fontSize: fontSizeStyle },
                 }}
                 InputLabelProps={{
-                  sx: {
-                    fontSize: "0.9rem",
-                    color: darkMode ? "common.white" : "text.primary",
-                    "&.Mui-focused": {
-                      color: darkMode ? "common.white" : "primary.main",
-                    },
-                  },
+                  sx: { fontSize: labelFontSizeStyle },
+                }}
+                FormHelperTextProps={{
+                  sx: { fontSize: formHelperTextStyle },
                 }}
               />
             )}
           />
-          <TextField
+          <ThemedTextField
             sx={{ margin: 0 }}
             fullWidth
             label="LOCAL"
@@ -258,18 +224,8 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
             margin="normal"
             error={Boolean(errors.location)}
             helperText={errors.location}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
           />
-          <TextField
+          <ThemedTextField
             sx={{ margin: 0 }}
             fullWidth
             multiline
@@ -286,22 +242,16 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
             margin="normal"
             error={Boolean(errors.description)}
             helperText={errors.description}
-            InputProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "0.9rem",
-              },
-            }}
           />
           <Button
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+            sx={{
+              mt: "20px",
+              backgroundColor: "#0078B6",
+              fontSize: largeFont ? "1.2rem" : "1rem",
+            }}
           >
             editar
           </Button>
@@ -311,4 +261,4 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   );
 };
 
-export default ExamModal;
+export default EditExamModal;

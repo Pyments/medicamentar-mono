@@ -40,7 +40,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   onDelete,
   onEdit,
 }) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const isMedication = type === "medication";
   const isEvents = type === "events";
   const location = useLocation().pathname;
@@ -48,8 +48,8 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   const titleCard = {
     width: 1,
     minWidth: "30%",
-    fontSize: "12px",
-    maxHeigth: "50px",
+    fontSize: largeFont ? "1.2rem" : "12px", // Reduzindo o tamanho da fonte do título
+    maxHeight: "50px",
     marginInline: "5%",
     fontWeight: "bold",
     textAlign: "center",
@@ -57,6 +57,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     py: location === "/home" ? "5px" : 0,
     color: darkMode ? "text.primary" : "background.default",
   };
+
   const cardButton = {
     height: "30px",
     display: "flex",
@@ -67,17 +68,34 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   const infoCard = {
-    fontSize: "12px",
+    fontSize: largeFont ? "1rem" : "12px", // Reduzindo o tamanho da fonte das informações
     wordWrap: "break-word",
     color: darkMode ? "common.black" : "common.black",
   };
+
+  const buttonText = {
+    fontSize: largeFont ? "0.9rem" : "8px", // Ajustando o tamanho da fonte do botão
+    fontWeight: "700",
+    textAlign: "center",
+    color: darkMode ? "background.paper" : "background.default",
+  };
+
+  const dateText = {
+    fontSize: largeFont ? "1rem" : "12px", // Reduzindo o tamanho da fonte da data
+    fontWeight: "700",
+    paddingLeft: "5px",
+    textAlign: "center",
+    color: "common.black",
+  };
+
+  const iconSize = largeFont ? "1.5rem" : "1.5rem"; // Reduzindo o tamanho do ícone
 
   return (
     <Grid item xs={12} sm={6} md={4}>
       {isMedication && (
         <Card
           sx={{
-            minHeight: 260,
+            minHeight: largeFont ? 300 : 260, // Aumentando altura mínima quando fonte grande
             display: "flex",
             maxWidth: "300px",
             minWidth: "120px",
@@ -87,6 +105,12 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             justifyContent: "space-between",
             width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
+            "& .MuiIconButton-root": {
+              "& svg": {
+                width: largeFont ? "16px" : "10px",
+                height: largeFont ? "16px" : "10px",
+              },
+            },
           }}
         >
           <Box
@@ -99,16 +123,34 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               backgroundColor: darkMode ? "primary.dark" : "primary.light",
             }}
           >
-            <Tooltip title="Editar" placement="top">
-              <IconButton onClick={onEdit}>
-                <EditOutlinedIcon />
-              </IconButton>
-            </Tooltip>
+            {location !== "/home" && (
+              <Tooltip title="Editar" placement="top">
+                <IconButton
+                  onClick={onEdit}
+                  sx={{
+                    "& svg": {
+                      width: largeFont ? "16px" : "10px",
+                      height: largeFont ? "16px" : "10px",
+                    },
+                  }}
+                >
+                  <EditOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            )}
 
             <Typography sx={{ ...titleCard }}>{title}</Typography>
 
             <Tooltip title="Deletar" placement="top">
-              <IconButton onClick={onDelete}>
+              <IconButton
+                onClick={onDelete}
+                sx={{
+                  "& svg": {
+                    width: largeFont ? "16px" : "10px",
+                    height: largeFont ? "16px" : "10px",
+                  },
+                }}
+              >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
             </Tooltip>
@@ -144,18 +186,10 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                 justifyContent: "center",
               }}
             >
-              <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
-              <Typography
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  paddingLeft: "5px",
-                  textAlign: "center",
-                  color: "common.black",
-                }}
-              >
-                {longDate(dateTime)}
-              </Typography>
+              <Box sx={{ fontSize: iconSize }}>
+                <AccessAlarmOutlinedIcon />
+              </Box>
+              <Typography sx={dateText}>{longDate(dateTime)}</Typography>
             </Box>
           </Box>
           <Box
@@ -164,14 +198,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               backgroundColor: darkMode ? "text.primary" : "text.secondary",
             }}
           >
-            <Typography
-              sx={{
-                fontSize: "8px",
-                fontWeight: "700",
-                textAlign: "center",
-                color: darkMode ? "background.paper" : "background.default",
-              }}
-            >
+            <Typography sx={buttonText}>
               CLIQUE APÓS TOMAR O MEDICAMENTO
             </Typography>
           </Box>
@@ -206,7 +233,15 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             >
               {location !== "/home" && (
                 <Tooltip title="Editar" placement="top">
-                  <IconButton onClick={onEdit}>
+                  <IconButton
+                    onClick={onEdit}
+                    sx={{
+                      "& svg": {
+                        width: largeFont ? "16px" : "10px",
+                        height: largeFont ? "16px" : "10px",
+                      },
+                    }}
+                  >
                     <EditOutlinedIcon />
                   </IconButton>
                 </Tooltip>
@@ -214,7 +249,15 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               <Typography sx={{ ...titleCard }}>{title}</Typography>
               {location !== "/home" && (
                 <Tooltip title="Deletar" placement="top">
-                  <IconButton onClick={onDelete}>
+                  <IconButton
+                    onClick={onDelete}
+                    sx={{
+                      "& svg": {
+                        width: largeFont ? "16px" : "10px",
+                        height: largeFont ? "16px" : "10px",
+                      },
+                    }}
+                  >
                     <DeleteOutlineOutlinedIcon />
                   </IconButton>
                 </Tooltip>

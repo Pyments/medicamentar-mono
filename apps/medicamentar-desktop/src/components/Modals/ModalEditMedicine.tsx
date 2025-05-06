@@ -1,13 +1,14 @@
 import axiosInstance from "@utils/axiosInstance";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
-import { Box, Grid, Modal, Button, Select, Checkbox, MenuItem, FormGroup, TextField, InputLabel, Typography, IconButton, FormControl, Autocomplete, FormControlLabel} from "@mui/material";
+import { Box, Grid, Modal, Button, Select, Checkbox, MenuItem, FormGroup, InputLabel, Typography, IconButton, FormControl, FormControlLabel, TextField } from "@mui/material";
 import { useTheme } from "@theme/useTheme";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import ThemedTextField from "@components/ThemedTextField";
+import Autocomplete from "@mui/material/Autocomplete";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
 
 interface ModalEditMedicineProps{
     open:boolean;
@@ -80,9 +81,8 @@ enum Unity {
   subcutanea = 4,
 }
 
-
 const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication}: ModalEditMedicineProps) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
@@ -97,8 +97,20 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
 
+  // Estilos baseados no tamanho da fonte
+  const fontSizeStyle = {
+    fontSize: largeFont ? "1.4rem" : "0.9rem",
+  };
+
+  const labelFontSizeStyle = {
+    fontSize: largeFont ? "1.2rem" : "0.9rem",
+  };
+
+  const buttonFontSizeStyle = {
+    fontSize: largeFont ? "1.4rem" : "1rem",
+  };
+
   if (!isOpen) return null;
-  
 
   useEffect(() => {
     if (open && currentMedication) {
@@ -129,14 +141,6 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           period: period,
           isContinuousUse: continuo,
           start_date: startDate
-          /*ophthalmicDetails: {
-            leftEyeFrequency: null, 
-            leftEyeQuantity: null, 
-            leftEyeDrops: null, 
-            rightEyeFrequency: null, 
-            rightEyeQuantity: null, 
-            rightEyeDrops: null, 
-          }, */
         },
       });
       setOpen(false);
@@ -154,8 +158,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
         sx: {
           "& .MuiInputAdornment-root .MuiSvgIcon-root": {
             color: darkMode ? "#CDCED7" : "-moz-initial",
+            fontSize: largeFont ? "1.8rem" : "1.5rem",
           },
-          fontSize: "0.9rem",
+          ...fontSizeStyle,
           color: darkMode ? "common.white" : "text.primary",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -170,7 +175,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
       },
       InputLabelProps: {
         sx: {
-          fontSize: "0.9rem",
+          ...labelFontSizeStyle,
           color: darkMode ? "common.white" : "text.primary",
           "&.Mui-focused": {
             color: darkMode ? "#103952" : "primary.main",
@@ -184,282 +189,239 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
     transition: "all 0.3s ease-in-out",
   };
 
-return (
-  <Modal open={open} onClose={() => setOpen(false)}>
-    <Box
-      component="div"
-      sx={{
-        position: "absolute",
-        p: "60px",
-        top: "50%",
-        gap: "10px",
-        left: "50%",
-        boxShadow: 24,
-        display: "flex",
-        borderRadius: "5px",
-        alignItems: "center",
-        flexDirection: "column",
-        width: { xs: "1", md: "720px" },
-        height: { xs: "1", md: "auto" },
-        transform: "translate(-50%, -50%)",
-        backgroundColor: darkMode ? "grey.900" : "common.white",
-        transition: "width 0.3s ease-in-out",
-      }}
-    >
-      <IconButton
-        onClick={() => setOpen(false)}
+  return (
+    <Modal open={open} onClose={() => setOpen(false)}>
+      <Box
+        component="div"
         sx={{
-          top: 30,
-          right: 30,
           position: "absolute",
-          color: "#80828D",
+          p: "60px",
+          top: "50%",
+          gap: "10px",
+          left: "50%",
+          boxShadow: 24,
+          display: "flex",
+          borderRadius: "5px",
+          alignItems: "center",
+          flexDirection: "column",
+          width: largeFont ? "800px" : { xs: "1", md: "720px" },
+          height: { xs: "1", md: "auto" },
+          transform: "translate(-50%, -50%)",
+          backgroundColor: darkMode ? "grey.900" : "common.white",
+          transition: "width 0.3s ease-in-out",
         }}
       >
-        <CloseIcon />
-      </IconButton>
-      <Typography
-        variant="h3"
-        sx={{
-          p: "20px 0 50px 0",
-          fontSize: "1.8rem",
-          fontWeight: 600,
-          textAlign: "center",
-          color: darkMode ? "common.white" : "primary.main",
-        }}
-      >
-        EDITAR MEDICAMENTO
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6} sx={gridTransition}>
-                <FormControl
-                  fullWidth
-                  sx={{
-                    fontSize: "0.9rem",
-                    transition: "all 0.3s ease-in-out",
-                  }}
-                >
-                  <InputLabel id="type-label">TIPO DE MEDICAMENTO</InputLabel>
+        <IconButton
+          onClick={() => setOpen(false)}
+          sx={{
+            top: 30,
+            right: 30,
+            position: "absolute",
+            color: "#80828D",
+            fontSize: largeFont ? "2rem" : "1.5rem",
+          }}
+        >
+          <CloseIcon fontSize="inherit" />
+        </IconButton>
+        <Typography
+          variant="h3"
+          sx={{
+            p: "20px 0 50px 0",
+            fontSize: largeFont ? "2.2rem" : "1.8rem",
+            fontWeight: 600,
+            textAlign: "center",
+            color: darkMode ? "common.white" : "primary.main",
+          }}
+        >
+          EDITAR MEDICAMENTO
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <FormControl fullWidth>
+                  <InputLabel sx={labelFontSizeStyle}>TIPO DE MEDICAMENTO</InputLabel>
                   <Select
                     id="tipo"
                     value={tipoMedicamento}
                     label="TIPO DE MEDICAMENTO"
-                    labelId="type-label"
+                    sx={fontSizeStyle}
                     onChange={(event) => setTipoMedicamento(Number(event.target.value))}
                   >
-                    <MenuItem value={Type.ORAL}>ORAL</MenuItem>
-                    <MenuItem value={Type.TOPICO}>TÓPICO</MenuItem>
-                    <MenuItem value={Type.OFTALMICO}>OFTÁLMICO</MenuItem>
-                    <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
-                    <MenuItem value={Type.INJETAVEL}>INJETÁVEL</MenuItem>
-                    <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
-                    <MenuItem value={Type.TRANSDERMICO}>TRANSDÉRMICO</MenuItem>
-                    <MenuItem value={Type.RETAL}>RETAL</MenuItem>
-                    <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
+                    <MenuItem value={Type.ORAL} sx={fontSizeStyle}>ORAL</MenuItem>
+                    <MenuItem value={Type.TOPICO} sx={fontSizeStyle}>TÓPICO</MenuItem>
+                    <MenuItem value={Type.OFTALMICO} sx={fontSizeStyle}>OFTÁLMICO</MenuItem>
+                    <MenuItem value={Type.INTRANASAL} sx={fontSizeStyle}>INTRANASAL</MenuItem>
+                    <MenuItem value={Type.INJETAVEL} sx={fontSizeStyle}>INJETÁVEL</MenuItem>
+                    <MenuItem value={Type.SUBLINGUAL} sx={fontSizeStyle}>SUBLINGUAL</MenuItem>
+                    <MenuItem value={Type.TRANSDERMICO} sx={fontSizeStyle}>TRANSDÉRMICO</MenuItem>
+                    <MenuItem value={Type.RETAL} sx={fontSizeStyle}>RETAL</MenuItem>
+                    <MenuItem value={Type.VAGINAL} sx={fontSizeStyle}>VAGINAL</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-            <Grid item xs={12} md={6} sx={gridTransition}>
-              <TextField
-                sx={{
-                  fontSize: "0.9rem",
-                  transition: "all 0.3s ease-in-out",
-                }}
-                variant="outlined"
-                label="NOME DO MEDICAMENTO"
-                value={name}
-                fullWidth
-                onChange={(e) => setName(String(e.target.value))}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-              <FormControl fullWidth>
-                <Autocomplete
-                  value={dose?.toString()}
-                  onChange={(_event, newValue) => {
-                    if (newValue) {
-                      const numValue = Number(
-                        newValue.replace(/[^0-9]/g, "")
-                      );
-                      setDose(Number(Math.max(1, numValue)));
-                    }
-                  }}
-                  freeSolo
-                  options={frequencyOptions.map((option) => option.label)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="FREQUÊNCIA"
-                      type="number"
-                      value={dose?.toString()}
-                      onChange={(event) => {
-                        const numValue = Number(event.target.value);
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <ThemedTextField
+                  variant="outlined"
+                  label="NOME DO MEDICAMENTO"
+                  value={name}
+                  fullWidth
+                  onChange={(e) => setName(String(e.target.value))}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <FormControl fullWidth>
+                  <Autocomplete
+                    value={dose?.toString()}
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const numValue = Number(
+                          newValue.replace(/[^0-9]/g, "")
+                        );
                         setDose(Number(Math.max(1, numValue)));
-                      }}
-                      inputProps={{
-                        ...params.inputProps,
-                        min: 1,
-                      }}
+                      }
+                    }}
+                    freeSolo
+                    options={frequencyOptions.map((option) => option.label)}
+                    renderInput={(params) => (
+                      <ThemedTextField
+                        {...params}
+                        label="FREQUÊNCIA"
+                        type="number"
+                        value={dose}
+                        onChange={(event) => {
+                          const numValue = Number(event.target.value);
+                          setDose(Number(Math.max(1, numValue)));
+                        }}
+                        inputProps={{
+                          ...params.inputProps,
+                          min: 1,
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <ThemedTextField
+                  variant="outlined"
+                  label="QUANTIDADE"
+                  type="number"
+                  value={amount}
+                  fullWidth
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <FormControl fullWidth>
+                  <InputLabel sx={labelFontSizeStyle}>UNIDADE</InputLabel>
+                  <Select
+                    id="unidade"
+                    value={unity}
+                    label="UNIDADE"
+                    sx={fontSizeStyle}
+                    onChange={(event) => setUnity(Number(event.target.value))}
+                  >
+                    <MenuItem value={Unity.mililitros} sx={fontSizeStyle}>Mililitros</MenuItem>
+                    <MenuItem value={Unity.miligramas} sx={fontSizeStyle}>Miligramas</MenuItem>
+                    <MenuItem value={Unity.gotas} sx={fontSizeStyle}>Gotas</MenuItem>
+                    <MenuItem value={Unity.comprimidos} sx={fontSizeStyle}>Comprimidos</MenuItem>
+                    <MenuItem value={Unity.subcutanea} sx={fontSizeStyle}>Subcutânea</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={continuo}
+                      onChange={(e) => setContinuo(e.target.checked)}
+                      sx={{ ...fontSizeStyle }}
+                    />
+                  }
+                  label="Uso contínuo"
+                  labelPlacement="end"
+                  sx={{ fontSize: largeFont ? "1.4rem" : "1rem" }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} sx={gridTransition}>
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disabled={continuo}
+                    value={period?.toString()}
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const numValue = Number(
+                          newValue.replace(/[^0-9]/g, "")
+                        );
+                        setPeriod(Number(Math.max(1, numValue)));
+                      }
+                    }}
+                    freeSolo
+                    options={periodOptions.map((option) => option.label)}
+                    renderInput={(params) => (
+                      <ThemedTextField
+                        {...params}
+                        label="PERÍODO"
+                        type="number"
+                        value={period}
+                        disabled={continuo}
+                        onChange={(event) => {
+                          const numValue = Number(event.target.value);
+                          setPeriod(Number(Math.max(1, numValue)));
+                        }}
+                        inputProps={{
+                          ...params.inputProps,
+                          min: 1,
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sx={gridTransition}>
+                <DateTimePicker
+                  views={["day", "hours", "minutes"]}
+                  value={startDate}
+                  label="DATA DE INÍCIO"
+                  onChange={(newValue) => setStartDate(newValue)}
+                  components={{ OpenPickerIcon: CalendarTodayIcon }}
+                  renderInput={(params) => (
+                    <ThemedTextField
+                      {...params}
+                      fullWidth
+                      error={Boolean(errors.startDate)}
+                      helperText={errors.startDate}
                     />
                   )}
                 />
-              </FormControl>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-              <TextField
-                sx={{
-                  fontSize: "0.9rem",
-                  transition: "all 0.3s ease-in-out",
-                }}
+          </FormGroup>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} md={6}>
+              <Button
+                variant="contained"
+                type="submit"
                 fullWidth
-                type="number"
-                value={amount}
-                variant="outlined"
-                label="QUANTIDADE"
-                onChange={(event) => {
-                  if (Number(event.target.value) < 1) {
-                    setAmount(1);
-                  } else {
-                    setAmount(Number(event.target.value));
+                sx={{
+                  py: 1.5,
+                  backgroundColor: darkMode ? "#103952" : "#32B5D2",
+                  color: "white",
+                  ...buttonFontSizeStyle,
+                  '&:hover': {
+                    backgroundColor: darkMode ? "#1a4f6d" : "#2999b3"
                   }
                 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-              <FormControl
-                fullWidth
-                sx={{
-                  fontSize: "0.9rem",
-                  transition: "all 0.3s ease-in-out",
-                }}
               >
-                <InputLabel id="unity-label">UNIDADE</InputLabel>
-                <Select
-                  id="unidade"
-                  value={unity}
-                  label="UNIDADE"
-                  labelId="unity-label"
-                  onChange={(event) => setUnity(Number(event.target.value))}
-                >
-                  <MenuItem value={Unity.mililitros}>Mililitros (ML)</MenuItem>
-                  <MenuItem value={Unity.miligramas}>Miligramas (MG)</MenuItem>
-                  <MenuItem value={Unity.gotas}>Gotas (GTS)</MenuItem>
-                  <MenuItem value={Unity.comprimidos}>Comprimidos (CPS)</MenuItem>
-                  <MenuItem value={Unity.subcutanea}>Subcutânea (SC)</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sx={gridTransition}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={continuo}
-                    onChange={(e) => setContinuo(e.currentTarget.checked)}
-                  />
-                }
-                label="USO CONTÍNUO"
-                sx={{
-                  color: darkMode ? "common.white" : "common.black",
-                  transition: "all 0.3s ease-in-out",
-                  opacity: continuo ? 1 : 0.35,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sx={gridTransition}>
-              <DateTimePicker
-                views={["day", "hours", "minutes"]}
-                value={startDate}
-                label="DATA DE INÍCIO"
-                components={{
-                  OpenPickerIcon: CalendarTodayIcon,
-                }}
-                onChange={(newValue) => setStartDate(newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    helperText={errors.startDate}
-                    error={Boolean(errors.startDate)}
-                    InputProps={{
-                      ...params.InputProps,
-                      ...themedProps.textField.InputProps,
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} sx={gridTransition}>
-              <FormControl fullWidth>
-                <Autocomplete
-                  disabled={continuo}
-                  value={period?.toString()}
-                  sx={{
-                    opacity: continuo ? 0.5 : 1,
-                  }}
-                  onChange={(_, newValue) => {
-                    if (newValue) {
-                      const numValue = Number(
-                        newValue.replace(/[^0-9]/g, "")
-                      );
-                      setPeriod(Math.max(1, numValue));
-                    }
-                  }}
-                  freeSolo
-                  options={periodOptions.map((option) => option.label)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      type="number"
-                      value={period}
-                      label="PERÍODO"
-                      disabled={continuo}
-                      onChange={(e) => {
-                        const numValue = Number(e.target.value);
-                        setPeriod(Math.max(1, numValue));
-                      }}
-                      inputProps={{
-                        ...params.inputProps,
-                        min: 1,
-                      }}
-                    />
-                  )}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} sx={gridTransition}>
-              <TextField
-                disabled
-                fullWidth
-                value={""}
-                label="FINAL DO TRATAMENTO"
-                helperText={errors.endDate}
-                error={Boolean(errors.endDate)}
-                sx={{
-                  opacity: continuo ? 0.5 : 1,
-                }}
-              />
+                SALVAR
+              </Button>
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              px: "20%",
-              mx: "auto",
-              my: "30px",
-              py: "18px",
-              fontWeight: 800,
-              fontSize: "1.2rem",
-            }}
-          >
-            SALVAR
-          </Button>
-        </FormGroup>
-      </form>
-    </Box>
-  </Modal>
-);
+        </form>
+      </Box>
+    </Modal>
+  );
 };
 
 export default ModalEditMedicine;

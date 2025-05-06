@@ -4,7 +4,6 @@ import {
   Button,
   Select,
   MenuItem,
-  TextField,
   InputLabel,
   Typography,
   FormControl,
@@ -19,6 +18,7 @@ import { ContainerUniversal } from "@components/ContainerUniversal.tsx";
 import { useTheme } from "@constants/theme/useTheme";
 import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
+import ThemedTextField from "@components/ThemedTextField";
 
 const Profile = () => {
   const { darkMode, largeFont } = useTheme();
@@ -127,82 +127,77 @@ const Profile = () => {
 
         <Grid container spacing={3} sx={{ maxWidth: 800 }}>
           <Grid item xs={12} md={8}>
-            <TextField
+            <ThemedTextField
               label="NOME COMPLETO"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              sx={textFieldStyles}
             />
           </Grid>
 
           <Grid item xs={6} md={2}>
-            <TextField
+            <ThemedTextField
               label="IDADE"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              sx={textFieldStyles}
             />
           </Grid>
 
           <Grid item xs={6} md={2}>
-            <TextField
+            <ThemedTextField
               label="PESO (kg)"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              sx={textFieldStyles}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
+            <ThemedTextField
               label="ENDEREÇO"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              sx={textFieldStyles}
             />
           </Grid>
 
           <Grid item xs={12} md={3}>
-  <FormControl fullWidth>
-    <InputLabel
-      shrink
-      sx={{
-        fontSize: labelFontSize,
-        color: darkMode ? "text.primary" : "#B9BBC6",
-      }}
-    >
-      SANGUE
-    </InputLabel>
-    <Select
-      label="SANGUE"
-      value={sangue}
-      onChange={handleSangueChange}
-      input={<OutlinedInput notched label="SANGUE" />}
-      sx={{
-        ...textFieldStyles,
-        "& .MuiSelect-select": {
-          fontSize: inputFontSize,
-        },
-        "& .MuiOutlinedInput-notchedOutline": {
-          borderColor: darkMode ? "text.primary" : "#B9BBC6",
-        },
-      }}
-    >
-      {tiposSanguineos.map((tipo) => (
-        <MenuItem key={tipo} value={tipo}>
-          {tipo}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</Grid>
+            <FormControl fullWidth>
+              <InputLabel
+                shrink
+                sx={{
+                  fontSize: labelFontSize,
+                  color: darkMode ? "text.primary" : "#B9BBC6",
+                }}
+              >
+                SANGUE
+              </InputLabel>
+              <Select
+                label="SANGUE"
+                value={sangue}
+                onChange={handleSangueChange}
+                input={<OutlinedInput notched label="SANGUE" />}
+                sx={{
+                  ...textFieldStyles,
+                  "& .MuiSelect-select": {
+                    fontSize: inputFontSize,
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: darkMode ? "text.primary" : "#B9BBC6",
+                  },
+                }}
+              >
+                {tiposSanguineos.map((tipo) => (
+                  <MenuItem key={tipo} value={tipo}>
+                    {tipo}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
           <Grid item xs={12} md={3}>
-            <TextField
+            <ThemedTextField
               label="ALTURA (cm)"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              sx={textFieldStyles}
             />
           </Grid>
 
