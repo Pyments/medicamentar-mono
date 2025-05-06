@@ -28,6 +28,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 import { useTheme } from "@theme/useTheme";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface FormErrors {
   name?: string;
@@ -45,6 +46,7 @@ interface NewMedicationProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   fetchMedications: () => void;
+  showFeedback: (message: string, severity: "success" | "error") => void;
 }
 
 const frequencyOptions = [
@@ -68,7 +70,7 @@ const periodOptions = [
   { value: 30, label: "30 Dias" },
 ];
 
-const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationProps) => {
+const NewMedication = ({ open, setOpen, type, fetchMedications, showFeedback }: NewMedicationProps) => {
   const { darkMode } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
@@ -86,8 +88,11 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   const [errors, _setErrors] = useState<FormErrors>({});
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
+
 
   enum Unity {
     ML = 0,
@@ -155,7 +160,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
       _setErrors(validationErrors); // Atualiza os erros
       return; // Se tiver erro, não faz a requisição
     }
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -177,19 +182,19 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
             rightEyeFrequency: null, 
             rightEyeQuantity: null, 
             rightEyeDrops: null, 
-          }, */
-        },
-      });
-      setFeedbackMessage("Medicamento adicionado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
-
+            }, */
+          },
+        });
+      setOpen(false);
+      showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
-      setTimeout(() => {
-        setOpen(false);
-      }, 1500);
+
+
+
     } catch (error) {
       console.error("Erro na requisição:", error);
+    }finally {
+      setLoading(false); 
     }
   };
 
@@ -495,7 +500,11 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                   fontSize: "1.2rem",
                 }}
               >
-                SALVAR
+                {loading ? (
+                  <Loader sx={{color:"white"}}/>
+                ):(
+                  "SALVAR"
+                )}
               </Button>
             </FormGroup>
           </form>
