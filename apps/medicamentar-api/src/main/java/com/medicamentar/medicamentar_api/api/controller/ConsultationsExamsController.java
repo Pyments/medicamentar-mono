@@ -3,7 +3,7 @@ package com.medicamentar.medicamentar_api.api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicamentar.medicamentar_api.application.services.consultationsExamsService;
+import com.medicamentar.medicamentar_api.application.services.ConsultationsExamsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class ConsultationsExamsController {
 
-    private final consultationsExamsService consultationsExamsService;
+    private final ConsultationsExamsService consultationsExamsService;
 
     @Operation(summary = "Lista de consultas e exames", method = "GET")
     @GetMapping()
