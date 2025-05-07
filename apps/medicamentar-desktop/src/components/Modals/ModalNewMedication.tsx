@@ -77,7 +77,7 @@ const NewMedication = ({
   fetchMedications,
   showFeedback,
 }: NewMedicationProps) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
@@ -89,7 +89,7 @@ const NewMedication = ({
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
-  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -161,8 +161,8 @@ const NewMedication = ({
     event.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors); // Atualiza os erros
-      return; // Se tiver erro, não faz a requisição
+      setErrors(validationErrors);
+      return;
     }
     setLoading(true);
     try {
@@ -171,22 +171,14 @@ const NewMedication = ({
         method: "post",
         url: "/medication",
         data: {
-          name: name, // string
-          type: Number(type), // presets
-          dose: dose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
-          amount: amount, // num
-          unity: Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
-          period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
-          isContinuousUse: continuo, // bool
-          start_date: startDate,
-          /*ophthalmicDetails: {
-            leftEyeFrequency: null, 
-            leftEyeQuantity: null, 
-            leftEyeDrops: null, 
-            rightEyeFrequency: null, 
-            rightEyeQuantity: null, 
-            rightEyeDrops: null, 
-            }, */
+          name: name,
+          type: Number(type),
+          dose: dose,
+          amount: amount,
+          unity: Number(unity),
+          period: period,
+          isContinuousUse: continuo,
+          start_date: startDate ? startDate.format("YYYY-MM-DD HH:mm:ss") : null,
         },
       });
       setOpen(false);
@@ -194,6 +186,7 @@ const NewMedication = ({
       fetchMedications();
     } catch (error) {
       console.error("Erro na requisição:", error);
+      showFeedback("Erro ao adicionar medicamento", "error");
     } finally {
       setLoading(false);
     }
@@ -205,8 +198,9 @@ const NewMedication = ({
         sx: {
           "& .MuiInputAdornment-root .MuiSvgIcon-root": {
             color: darkMode ? "#CDCED7" : "-moz-initial",
+            fontSize: largeFont ? "1.4rem" : "1.2rem",
           },
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.4rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -221,7 +215,7 @@ const NewMedication = ({
       },
       InputLabelProps: {
         sx: {
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.2rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "&.Mui-focused": {
             color: darkMode ? "#103952" : "primary.main",
@@ -311,30 +305,44 @@ const NewMedication = ({
                 <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
                   <FormControl fullWidth>
                     <Autocomplete
-                      value={dose?.toString()}
+                      value={dose ? frequencyOptions.find(opt => opt.value === dose)?.label || "" : ""}
                       onChange={(_event, newValue) => {
                         if (newValue) {
-                          const numValue = Number(
-                            newValue.replace(/[^0-9]/g, "")
-                          );
-                          setDose(Number(Math.max(1, numValue)));
+                          const option = frequencyOptions.find(opt => opt.label === newValue);
+                          if (option) {
+                            setDose(option.value);
+                          }
                         }
                       }}
-                      freeSolo
-                      options={frequencyOptions.map((option) => option.label)}
+                      options={frequencyOptions.map(option => option.label)}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label="FREQUÊNCIA"
-                          type="number"
-                          value={dose?.toString()}
-                          onChange={(event) => {
-                            const numValue = Number(event.target.value);
-                            setDose(Number(Math.max(1, numValue)));
+                          error={Boolean(errors.dose)}
+                          helperText={errors.dose}
+                          sx={{
+                            fontSize: "0.9rem",
+                            transition: "all 0.3s ease-in-out",
+                            "& .MuiAutocomplete-input": {
+                              padding: largeFont ? "16px 14px" : "10px 14px !important",
+                              fontSize: largeFont ? "1.4rem" : "0.9rem",
+                            },
+                            "& .MuiFormHelperText-root": {
+                              fontSize: largeFont ? "1rem" : "0.75rem",
+                            },
                           }}
-                          inputProps={{
-                            ...params.inputProps,
-                            min: 1,
+                          InputProps={{
+                            ...params.InputProps,
+                            ...themedProps.textField.InputProps,
+                          }}
+                          InputLabelProps={{
+                            ...params.InputLabelProps,
+                            ...themedProps.textField.InputLabelProps,
+                            style: {
+                              fontSize: largeFont ? "1.2rem" : "0.9rem",
+                              transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                            },
                           }}
                         />
                       )}
@@ -424,6 +432,9 @@ const NewMedication = ({
                           ...prev,
                           startDate: undefined,
                         }));
+                      if (newValue && period) {
+                        setEndDate(calcEndDate(newValue, period));
+                      }
                     }}
                     renderInput={(params) => (
                       <TextField
@@ -437,6 +448,23 @@ const NewMedication = ({
                           inputProps: {
                             ...params.inputProps,
                             readOnly: true,
+                            style: {
+                              fontSize: largeFont ? "1.4rem" : "0.9rem",
+                              padding: largeFont ? "16px 14px" : "10px 14px",
+                            },
+                          },
+                        }}
+                        InputLabelProps={{
+                          ...params.InputLabelProps,
+                          ...themedProps.textField.InputLabelProps,
+                          style: {
+                            fontSize: largeFont ? "1.2rem" : "0.9rem",
+                            transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                          },
+                        }}
+                        sx={{
+                          "& .MuiFormHelperText-root": {
+                            fontSize: largeFont ? "1rem" : "0.75rem",
                           },
                         }}
                       />

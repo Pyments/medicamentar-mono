@@ -67,8 +67,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   const [feedbackSeverity] = useState<AlertColor>("success");
   const [loading, setLoading] = useState(false);
 
-
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
 
   if (!isOpen) return null;
 
@@ -79,7 +78,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
       setDescription(currentExam.description || "");
       setSelectedDate(currentExam.date ? dayjs(currentExam.date) : null);
     }
-  }, [open, currentExam]);
+  }, [isOpen, currentExam]);
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
@@ -177,7 +176,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
           <Typography
             sx={{
               mb: "10px",
-              fontSize: "1.8rem",
+              fontSize: largeFont ? "2rem" : "1.8rem",
               fontWeight: "bold",
               color: darkMode ? "primary.light" : "primary.main",
             }}
@@ -205,12 +204,14 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               helperText={errors.location}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -239,8 +240,9 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
                     sx: {
                       "& .MuiInputAdornment-root .MuiSvgIcon-root": {
                         color: darkMode ? "#CDCED7" : "-moz-initial",
+                        fontSize: largeFont ? "1.4rem" : "1.2rem",
                       },
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
                       color: darkMode ? "common.white" : "text.primary",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: darkMode
@@ -257,7 +259,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
                       color: darkMode ? "common.white" : "text.primary",
                       "&.Mui-focused": {
                         color: darkMode ? "common.white" : "primary.main",
@@ -284,12 +286,14 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               helperText={errors.location}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -312,12 +316,14 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               helperText={errors.description}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -325,14 +331,18 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+              sx={{ 
+                mt: "20px", 
+                backgroundColor: "#0078B6",
+                fontSize: largeFont ? "1.2rem" : "1rem",
+                padding: largeFont ? "16px" : "12px",
+              }}
             >
               {loading ?(
                 <Loader sx={{ color: "white" }} />
               ):(
                 "editar"
               )}
-              
             </Button>
           </form>
         </Box>

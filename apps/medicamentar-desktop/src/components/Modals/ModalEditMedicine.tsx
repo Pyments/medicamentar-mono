@@ -86,7 +86,7 @@ enum Unity {
 
 
 const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication, showFeedback }: ModalEditMedicineProps) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
@@ -183,8 +183,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
         sx: {
           "& .MuiInputAdornment-root .MuiSvgIcon-root": {
             color: darkMode ? "#CDCED7" : "-moz-initial",
+            fontSize: largeFont ? "1.4rem" : "1.2rem",
           },
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.4rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -199,7 +200,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
       },
       InputLabelProps: {
         sx: {
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.2rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "&.Mui-focused": {
             color: darkMode ? "#103952" : "primary.main",
@@ -430,6 +431,23 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                           inputProps: {
                             ...params.inputProps,
                             readOnly: true,
+                            style: {
+                              fontSize: largeFont ? "1.4rem" : "0.9rem",
+                              padding: largeFont ? "16px 14px" : "10px 14px",
+                            },
+                          },
+                        }}
+                        InputLabelProps={{
+                          ...params.InputLabelProps,
+                          ...themedProps.textField.InputLabelProps,
+                          style: {
+                            fontSize: largeFont ? "1.2rem" : "0.9rem",
+                            transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                          },
+                        }}
+                        sx={{
+                          "& .MuiFormHelperText-root": {
+                            fontSize: largeFont ? "1rem" : "0.75rem",
                           },
                         }}
                       />
