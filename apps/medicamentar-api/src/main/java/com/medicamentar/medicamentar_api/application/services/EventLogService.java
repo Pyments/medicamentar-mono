@@ -91,7 +91,7 @@ public class EventLogService {
     var response = new PaginatedResponse<List<EventLogResponse>>();
     User currentUser = tokenService.getCurrentUser();
 
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by("eventDate").descending());
 
     var history = eventLogRepository.findByUser(currentUser, pageable);
 
