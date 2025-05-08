@@ -111,6 +111,7 @@ public class EventLogService {
                         medication.isContinuousUse(),
                         medication.getStart_date(),
                         medication.getEnd_date(),
+                        medication.isCompleted(),
                         medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                         .orElse(null);
 
@@ -123,7 +124,8 @@ public class EventLogService {
                         exam.getDate(),
                         exam.getName(),
                         exam.getLocal(),
-                        exam.getDescription())).orElse(null);
+                        exam.getDescription(),
+                        exam.isCompleted())).orElse(null);
 
                     return new EventLogResponse(h.getId(), examResponse, h.getEventAction(), h.getEventDate());
 
@@ -135,7 +137,8 @@ public class EventLogService {
                             consultation.getDate(),
                             consultation.getDoctorName(),
                             consultation.getLocal(),
-                            consultation.getDescription()))
+                            consultation.getDescription(),
+                            consultation.isCompleted()))
                         .orElse(null);
 
                     return new EventLogResponse(h.getId(), consultationResponse, h.getEventAction(), h.getEventDate());

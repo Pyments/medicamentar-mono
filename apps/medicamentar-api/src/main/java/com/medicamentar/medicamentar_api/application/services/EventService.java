@@ -67,6 +67,7 @@ public class EventService {
                             medication.isContinuousUse(),
                             medication.getStart_date(),
                             medication.getEnd_date(),
+                            medication.isCompleted(),
                             medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                     .collect(Collectors.toList());
 
@@ -76,7 +77,8 @@ public class EventService {
                             E.getDate(),
                             E.getName(),
                             E.getLocal(),
-                            E.getDescription()))
+                            E.getDescription(),
+                            E.isCompleted()))
                     .collect(Collectors.toList());
 
             List<ConsultationResponse> consultationsResponses = consultations.stream()
@@ -85,7 +87,8 @@ public class EventService {
                             C.getDate(),
                             C.getDoctorName(),
                             C.getLocal(),
-                            C.getDescription()))
+                            C.getDescription(),
+                            C.isCompleted()))
                     .collect(Collectors.toList());
 
             List<Object> allEvents = new ArrayList<>();
