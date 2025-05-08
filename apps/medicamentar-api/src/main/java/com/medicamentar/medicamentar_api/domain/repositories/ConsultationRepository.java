@@ -17,4 +17,6 @@ import jakarta.annotation.Nullable;
 public interface ConsultationRepository extends JpaRepository<Consultation, UUID> {
     Page<Consultation> findByUserAndDeletedAtIsNull(User user, @Nullable Pageable pageable);
     Optional<Consultation> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
+    Page<Consultation> findByUserAndDeletedAtIsNullAndCompleted(User user, boolean completed, @Nullable Pageable pageable);
+    Optional<Consultation> findByIdAndUserAndDeletedAtIsNullAndCompleted(UUID id, User user, boolean completed);
 }

@@ -76,7 +76,8 @@ public class EventService {
                             E.getDate(),
                             E.getName(),
                             E.getLocal(),
-                            E.getDescription()))
+                            E.getDescription(),
+                            E.isCompleted()))
                     .collect(Collectors.toList());
 
             List<ConsultationResponse> consultationsResponses = consultations.stream()
@@ -85,7 +86,8 @@ public class EventService {
                             C.getDate(),
                             C.getDoctorName(),
                             C.getLocal(),
-                            C.getDescription()))
+                            C.getDescription(),
+                            C.isCompleted()))
                     .collect(Collectors.toList());
 
             List<Object> allEvents = new ArrayList<>();

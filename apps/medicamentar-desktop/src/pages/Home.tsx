@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import CardUniversal from "@components/CardUniversal";
 import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
 import { SectionContainer } from "@components/SectionContainer";
-import { Box, Grid, Pagination, Typography } from "@mui/material";
+import { Box, Grid, Pagination, Stack, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
+import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 
 interface EventData {
@@ -40,9 +41,13 @@ const Home: React.FC = () => {
   const token = user?.token.data;
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoading(true);
+
       try {
         const response = await axiosInstance.get(
           `/events?page=${page}&size=9`,
@@ -62,6 +67,8 @@ const Home: React.FC = () => {
         ]);
       } catch (error) {
         console.error("Erro na requisição:", error);
+      } finally {
+        setLoading(false);
       }
     };
     if (token) {
@@ -109,8 +116,35 @@ const Home: React.FC = () => {
           EVENTOS PRÓXIMOS
         </Typography>
 
-        <Grid container spacing={3} pb="75px">
-          {paginatedEvents.length > 0 ? (
+        <Grid
+          container
+          spacing={3}
+          pb="75px"
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 2,
+          }}
+        >
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%",
+                }}
+              >
+                <Loader
+                  sx={{
+                    color: darkMode ? "common.white" : "primary.main",
+                  }}
+                />
+              </Stack>
+            </Grid>
+          ) : paginatedEvents.length > 0 ? (
             paginatedEvents.map((event) => {
               const isMedication = "startDate" in event;
               const title = event.name || event.doctorName || "Sem título";
@@ -138,13 +172,14 @@ const Home: React.FC = () => {
                 sx={{
                   margin: "auto",
                   mt: "50px",
-                  color: darkMode ? "common.white" : "commonm.dark",
+                  color: darkMode ? "common.white" : "common.dark",
                 }}
               >
                 Nenhum evento encontrado.
               </Typography>
             </Grid>
           )}
+
           {paginatedEvents.length > 0 && totalPages > 1 && (
             <Box
               gridColumn="1 / -1"
@@ -172,6 +207,7 @@ const Home: React.FC = () => {
             </Box>
           )}
         </Grid>
+
       </SectionContainer>
     </ContainerUniversal>
   );

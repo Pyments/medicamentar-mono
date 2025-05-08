@@ -16,11 +16,13 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface ExamEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   fetchExams: () => Promise<void>;
+  showFeedback: (message: string, severity: "success" | "error") => void;
   currentExam: {
     id: string;
     date: dayjs.Dayjs;
@@ -49,6 +51,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   onClose,
   fetchExams,
   currentExam,
+  showFeedback
 }) => {
   const [examName, setExamName] = useState<string>("");
   const [location, setLocation] = useState<string>("");
@@ -60,8 +63,10 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage ] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+  const [loading, setLoading] = useState(false);
+
 
   const { darkMode } = useTheme();
 
@@ -100,7 +105,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     }
 
     const formattedDate = selectedDate?.toISOString();
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -114,16 +119,15 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
           description: description,
         },
       });
-      
-      setFeedbackMessage("Exame ou consulta editado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
+      onClose();
+      showFeedback("Exame editado com sucesso!", "success");
       fetchExams();
     } catch (error) {
-      setFeedbackMessage("Erro ao editar exame ou consulta!");
-      setFeedbackSeverity("error");
+      showFeedback("Erro ao editar exame!", "error");
       setFeedbackOpen(true);
       console.error("Erro na requisição:", error);
+    }finally {
+      setLoading(false);
     }
     setSelectedDate(null);
     setExamName("");
@@ -131,9 +135,6 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     setDescription("");
     setDoctorName("");
     setErrors({});
-    setTimeout(() => {
-      onClose();
-    }, 1900);
   };
 
   return (
@@ -326,7 +327,12 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               fullWidth
               sx={{ mt: "20px", backgroundColor: "#0078B6" }}
             >
-              editar
+              {loading ?(
+                <Loader sx={{ color: "white" }} />
+              ):(
+                "editar"
+              )}
+              
             </Button>
           </form>
         </Box>

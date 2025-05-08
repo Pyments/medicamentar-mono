@@ -11,11 +11,11 @@ import {
   InputLabel,
   Typography,
   IconButton,
+  AlertColor,
   FormControl,
   Autocomplete,
-  FormControlLabel,
-  AlertColor,
   FormHelperText,
+  FormControlLabel,
 } from "@mui/material";
 
 import dayjs from "dayjs";
@@ -28,6 +28,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 import { useTheme } from "@theme/useTheme";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface FormErrors {
   name?: string;
@@ -45,6 +46,7 @@ interface NewMedicationProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   fetchMedications: () => void;
+  showFeedback: (message: string, severity: "success" | "error") => void;
 }
 
 const frequencyOptions = [
@@ -68,7 +70,13 @@ const periodOptions = [
   { value: 30, label: "30 Dias" },
 ];
 
-const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationProps) => {
+const NewMedication = ({
+  open,
+  setOpen,
+  type,
+  fetchMedications,
+  showFeedback,
+}: NewMedicationProps) => {
   const { darkMode } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
@@ -82,12 +90,14 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
-  const [errors, _setErrors] = useState<FormErrors>({});
+  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
 
   enum Unity {
     ML = 0,
@@ -104,15 +114,15 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   const handlePeriodChange = (newPeriod: number | null) => {
     if (!newPeriod || newPeriod <= 0) {
       setPeriod(1);
-      _setEndDate(null);
+      setEndDate(null);
       return;
     }
     setPeriod(newPeriod);
     if (!startDate) {
-      _setEndDate(null);
+      setEndDate(null);
       return;
     }
-    _setEndDate(calcEndDate(startDate, newPeriod));
+    setEndDate(calcEndDate(startDate, newPeriod));
   };
   /*  const validadeForm = () => {
     const newErrors: FormErrors = {};
@@ -148,14 +158,13 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   // Request
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      _setErrors(validationErrors); // Atualiza os erros
+      setErrors(validationErrors); // Atualiza os erros
       return; // Se tiver erro, não faz a requisição
     }
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -177,19 +186,16 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
             rightEyeFrequency: null, 
             rightEyeQuantity: null, 
             rightEyeDrops: null, 
-          }, */
+            }, */
         },
       });
-      setFeedbackMessage("Medicamento adicionado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
-
+      setOpen(false);
+      showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
-      setTimeout(() => {
-        setOpen(false);
-      }, 1500);
     } catch (error) {
       console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -235,7 +241,8 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
+        message={feedbackMessage}
+      />
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           component="div"
@@ -275,7 +282,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
               fontSize: "1.8rem",
               fontWeight: 600,
               textAlign: "center",
-              color: darkMode ? "common.white" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             }}
           >
             NOVO MEDICAMENTO
@@ -294,7 +301,8 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                     fullWidth
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) _setErrors((prev) => ({ ...prev, name: undefined }));
+                      if (errors.name)
+                        setErrors((prev) => ({ ...prev, name: undefined }));
                     }}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
@@ -370,7 +378,8 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                       labelId="unity-label"
                       onChange={(event) => {
                         setUnity(String(event.target.value));
-                        if (errors.unity) _setErrors((prev) => ({ ...prev, unity: undefined }));
+                        if (errors.unity)
+                          setErrors((prev) => ({ ...prev, unity: undefined }));
                       }}
                     >
                       <MenuItem value={Unity.ML}>Mililitros (ML)</MenuItem>
@@ -410,9 +419,12 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                     }}
                     onChange={(newValue) => {
                       setStartDate(newValue);
-                      if (errors.startDate) _setErrors((prev) => ({ ...prev, startDate: undefined }));
+                      if (errors.startDate)
+                        setErrors((prev) => ({
+                          ...prev,
+                          startDate: undefined,
+                        }));
                     }}
-
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -492,10 +504,11 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                   my: "30px",
                   py: "18px",
                   fontWeight: 800,
+                  backgroundColor: darkMode ? "primary.light" : "primary.main",
                   fontSize: "1.2rem",
                 }}
               >
-                SALVAR
+                {loading ? <Loader sx={{ color: "white" }} /> : "SALVAR"}
               </Button>
             </FormGroup>
           </form>

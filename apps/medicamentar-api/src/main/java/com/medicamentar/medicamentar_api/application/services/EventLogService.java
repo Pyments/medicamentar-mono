@@ -123,7 +123,8 @@ public class EventLogService {
                         exam.getDate(),
                         exam.getName(),
                         exam.getLocal(),
-                        exam.getDescription())).orElse(null);
+                        exam.getDescription(),
+                        exam.isCompleted())).orElse(null);
 
                     return new EventLogResponse(h.getId(), examResponse, h.getEventAction(), h.getEventDate());
 
@@ -135,7 +136,8 @@ public class EventLogService {
                             consultation.getDate(),
                             consultation.getDoctorName(),
                             consultation.getLocal(),
-                            consultation.getDescription()))
+                            consultation.getDescription(),
+                            consultation.isCompleted()))
                         .orElse(null);
 
                     return new EventLogResponse(h.getId(), consultationResponse, h.getEventAction(), h.getEventDate());

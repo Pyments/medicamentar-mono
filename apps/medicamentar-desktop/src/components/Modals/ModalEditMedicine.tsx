@@ -8,12 +8,15 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 
 interface ModalEditMedicineProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   fetchMedications: () => Promise<void>;
+  showFeedback: (message: string, severity: "success" | "error") => void;
+
   currentMedication: {
     id: string;
     name: string;
@@ -82,7 +85,7 @@ enum Unity {
 }
 
 
-const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication }: ModalEditMedicineProps) => {
+const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication, showFeedback }: ModalEditMedicineProps) => {
   const { darkMode } = useTheme();
   const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
@@ -99,8 +102,11 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
+
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
@@ -132,7 +138,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
       _setErrors(validationErrors);
       return;
     }
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -154,21 +160,18 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
             rightEyeFrequency: null, 
             rightEyeQuantity: null, 
             rightEyeDrops: null, 
-          }, */
+            }, */
         },
       });
-      setFeedbackMessage("Medicamento editado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
-      setTimeout(() => {
-        setOpen(false);
-      }, 1500);
+      setOpen(false);
+      showFeedback("Medicamento editado com sucesso!", "success");
       fetchMedications();
     } catch (error) {
       console.error("Erro na requisição:", error);
-      setFeedbackMessage("Erro ao editar medicamento!");
-      setFeedbackSeverity("error");
-      setFeedbackOpen(true);
+      showFeedback("Medicamento editado com sucesso!", "success");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -256,7 +259,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
               fontSize: "1.8rem",
               fontWeight: 600,
               textAlign: "center",
-              color: darkMode ? "common.white" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             }}
           >
             EDITAR MEDICAMENTO
@@ -497,7 +500,11 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                   fontSize: "1.2rem",
                 }}
               >
-                SALVAR
+                {loading ? (
+                  <Loader sx={{ color: "white" }} />
+                ) : (
+                  "SALVAR"
+                )}
               </Button>
             </FormGroup>
           </form>

@@ -22,6 +22,7 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 
 interface MedicationData {
@@ -40,45 +41,45 @@ interface User {
     data: string;
   };
 }
+
 const Medicine = () => {
   const { darkMode } = useTheme();
-  const [openType, setOpenType] = useState<boolean>(false);
-  const [openNew, setOpenNew] = useState<boolean>(false);
-  const [type, setType] = useState<number>(0);
-  const [selectedMedicationId, setSelectedMedicationId] = useState<
-    string | null
-  >(null);
-  const [selectedMedication, setSelectedMedication] =
-    useState<MedicationData | null>(null);
+  const [openType, setOpenType] = useState(false);
+  const [openNew, setOpenNew] = useState(false);
+  const [type, setType] = useState(0);
+  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
+  const [selectedMedication, setSelectedMedication] = useState<MedicationData | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState<number>(0);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] =
-    useState<AlertColor>("success");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
+
+  const showFeedback = (message: string, severity: AlertColor) => {
+    setFeedbackMessage(message);
+    setFeedbackSeverity(severity);
+    setFeedbackOpen(true);
+  };
 
   const fetchMedications = async () => {
+    setLoading(true);
     try {
-      const response = await axiosInstance.get(
-        `/medication?page=${page}&size=9`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data.data);
-      setPageCount(response.data.totalPages);
+      const response = await axiosInstance.get(`/medication?page=${page}&size=9`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setMedications(response.data.data);
     } catch (error) {
       console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,9 +89,7 @@ const Medicine = () => {
     }
   }, [token, page]);
 
-  const handleModal = () => {
-    setOpenType(!openType);
-  };
+  const handleModal = () => setOpenType(!openType);
 
   const openDeleteModal = (id: string) => {
     setSelectedMedicationId(id);
@@ -104,25 +103,18 @@ const Medicine = () => {
 
   const handleDeleteMedication = async () => {
     if (selectedMedicationId) {
+      closeDeleteModal();
+      setLoading(true);
       try {
         await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setMedications(
-          medications.filter((med) => med.id !== selectedMedicationId)
-        );
-        setFeedbackMessage("Medicamento deletado com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
-
-        closeDeleteModal();
+        setMedications(medications.filter((med) => med.id !== selectedMedicationId));
+        showFeedback("Medicamento deletado com sucesso!", "success");
       } catch (error) {
-        setFeedbackMessage("Erro ao deletar Medicamento!");
-        setFeedbackSeverity("error");
-        setFeedbackOpen(true);
-        closeDeleteModal();
+        showFeedback("Erro ao deletar Medicamento!", "error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -133,10 +125,7 @@ const Medicine = () => {
     setOpenEdit(true);
   };
 
-  const handlePagination = (
-    _event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
+  const handlePagination = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value - 1);
   };
 
@@ -164,11 +153,7 @@ const Medicine = () => {
       <Header />
       <SideBar />
       <SectionContainer>
-        <Stack
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Stack flexDirection="row" justifyContent="space-between" alignItems="center">
           <Typography
             component="h2"
             sx={{
@@ -183,11 +168,22 @@ const Medicine = () => {
           >
             MEDICAMENTOS
           </Typography>
-
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
+
         <Grid container spacing={3} pb="75px">
-          {paginatedMedications.length > 0 ? (
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ minHeight: "50vh", width: "100%" }}
+              >
+                <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
+              </Stack>
+            </Grid>
+          ) : paginatedMedications.length > 0 ? (
             paginatedMedications.map((medication) => (
               <Grid item key={medication.id}>
                 <CardUniversal
@@ -209,20 +205,17 @@ const Medicine = () => {
                 sx={{
                   margin: "auto",
                   mt: "50px",
-                  color: darkMode ? "common.white" : "commonm.dark",
+                  color: darkMode ? "common.white" : "common.dark",
+                  textAlign: "center",
                 }}
               >
                 Nenhum medicamento encontrado.
               </Typography>
             </Grid>
           )}
-          {paginatedMedications.length > 0 && totalPages > 1 && (
-            <Box
-              gridColumn="1 / -1"
-              display="flex"
-              justifyContent="center"
-              mt={2}
-            >
+
+          {!loading && totalPages > 1 && (
+            <Box gridColumn="1 / -1" display="flex" justifyContent="center" mt={2}>
               <Pagination
                 page={page + 1}
                 color="primary"
@@ -233,15 +226,14 @@ const Medicine = () => {
                     color: darkMode ? "common.white" : "primary.main",
                   },
                   "& .MuiPaginationItem-page.Mui-selected": {
-                    backgroundColor: darkMode
-                      ? "primary.darker"
-                      : "primary.main",
+                    backgroundColor: darkMode ? "primary.darker" : "primary.main",
                     color: "white",
                   },
                 }}
               />
             </Box>
           )}
+
           {openType && (
             <ModalMedicineType
               open={openType}
@@ -256,6 +248,7 @@ const Medicine = () => {
               open={openNew}
               setOpen={setOpenNew}
               fetchMedications={fetchMedications}
+              showFeedback={showFeedback}
             />
           )}
           {isDeleteModalOpen && (
@@ -272,6 +265,7 @@ const Medicine = () => {
               id={selectedMedicationId}
               currentMedication={selectedMedication}
               fetchMedications={fetchMedications}
+              showFeedback={showFeedback}
             />
           )}
         </Grid>

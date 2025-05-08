@@ -17,11 +17,14 @@ import { useLocalStorage } from "@hooks/UseLocalStorage";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface ExamModalProps {
   open: boolean;
   onClose: () => void;
   fetchExams: () => Promise<void>;
+  showFeedback: (message: string, severity: "success" | "error") => void;
+
 }
 
 interface FormErrors {
@@ -38,7 +41,7 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
+const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams, showFeedback }) => {
   const [tabValue, setTabValue] = useState("exame");
   const [isOpen] = useState<boolean>(true);
   const [examName, setExamName] = useState<string>("");
@@ -55,8 +58,11 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
   const tabValues = ["exame", "consulta"];
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
+
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -96,7 +102,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
     }
 
     const formattedDate = selectedDate?.toISOString();
-
+    setLoading(true);
     try {
       if (tabValue === "exame") {
         await axiosInstance.post(
@@ -111,9 +117,9 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
-        setFeedbackMessage("Exame adicionado com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
+        onClose();
+        showFeedback("Exame adicionado com sucesso!", "success");
+
       } else {
         await axiosInstance.post(
           "/consultation",
@@ -127,15 +133,15 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
-        setFeedbackMessage("Consulta adicionada com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
+        onClose();
+        showFeedback("Consulta adicionada com sucesso!", "success");
+
       }
       await fetchExams();
     } catch (error) {
-      setFeedbackMessage("Erro ao adicionar consulta ou exame!");
-      setFeedbackSeverity("error");
-      setFeedbackOpen(true);
+      onClose();
+      showFeedback("Erro ao adicionar consulta ou exame!", "error");
+
       console.error("Erro na requisição:", error);
     }
 
@@ -145,7 +151,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
     setDoctorName("");
     setSelectedDate(null);
     setErrors({});
-    onClose();
   };
 
   return (
@@ -397,7 +402,11 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
               fullWidth
               sx={{ mt: "20px", backgroundColor: "#0078B6" }}
             >
-              adicionar
+              {loading ? (
+                <Loader sx={{ color: "white" }} />
+              ) : (
+                "adicionar"
+              )}
             </Button>
           </form>
         </Box>

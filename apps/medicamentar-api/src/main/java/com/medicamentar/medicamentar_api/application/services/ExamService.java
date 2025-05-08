@@ -37,7 +37,7 @@ public class ExamService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNull(currentUser, pageable);
+        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndCompleted(currentUser, false, pageable);
 
         List<ExamResponse> examsResponses = examsPage.getContent().stream()
                 .map(exam -> new ExamResponse(
@@ -45,12 +45,40 @@ public class ExamService {
                         exam.getDate(),
                         exam.getName(),
                         exam.getLocal(),
-                        exam.getDescription()))
+                        exam.getDescription(),
+                        exam.isCompleted()))
                 .collect(Collectors.toList());
 
         response.setData(examsResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage(String.format("Exibindo página %d de %d.", examsPage.getNumber() + 1, examsPage.getTotalPages()));
+        response.setTotalPages(examsPage.getTotalPages());
+        response.setTotalElements(examsPage.getTotalElements());
+
+        return response;
+    }
+
+    public PaginatedResponse<List<ExamResponse>> getCompletedExams(int page, int size) {
+        var response = new PaginatedResponse<List<ExamResponse>>();
+        User currentUser = tokenService.getCurrentUser();
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndCompleted(currentUser, true, pageable);
+
+        List<ExamResponse> examsResponses = examsPage.getContent().stream()
+                .map(exam -> new ExamResponse(
+                        exam.getId(),
+                        exam.getDate(),
+                        exam.getName(),
+                        exam.getLocal(),
+                        exam.getDescription(),
+                        exam.isCompleted()))
+                .collect(Collectors.toList());
+
+        response.setData(examsResponses);
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setMessage(String.format("Exibindo página %d de %d de exames concluídos.", examsPage.getNumber() + 1, examsPage.getTotalPages()));
         response.setTotalPages(examsPage.getTotalPages());
         response.setTotalElements(examsPage.getTotalElements());
 
@@ -80,7 +108,8 @@ public class ExamService {
                 exam.getDate(),
                 exam.getName(),
                 exam.getLocal(),
-                exam.getDescription());
+                exam.getDescription(),
+                exam.isCompleted());
 
         this.eLogService.saveEvent(EventLogAction.Atualizado, exam);
         response.setData(examResponse);
@@ -114,7 +143,8 @@ public class ExamService {
                 savedExam.getDate(),
                 savedExam.getName(),
                 savedExam.getLocal(),
-                savedExam.getDescription());
+                savedExam.getDescription(),
+                savedExam.isCompleted());
 
         response.setData(examResponse);
         response.setMessage("Exame registrado com sucesso!");
@@ -142,6 +172,29 @@ public class ExamService {
         response.setMessage("Exame deletado com sucesso!");
         response.setStatus(HttpStatus.ACCEPTED);
         this.eLogService.saveEvent(EventLogAction.Deletado, exam);
+
+        return response;
+    }
+
+    public ServiceResponse<String> toggleComplete(UUID id) {
+        var response = new ServiceResponse<String>();
+        User currentUser = tokenService.getCurrentUser();
+
+        var examOptional = repository.findByIdAndUserAndDeletedAtIsNull(id, currentUser);
+        
+        if (!examOptional.isPresent()) {
+            response.setMessage("Exame não encontrado ou sem permissão.");
+            response.setStatus(HttpStatus.FORBIDDEN);
+            return response;
+        }
+
+        Exam exam = examOptional.get();
+        exam.setCompleted(!exam.isCompleted());
+        this.repository.save(exam);
+
+        this.eLogService.saveEvent(EventLogAction.Atualizado, exam);
+        response.setMessage("Status do exame atualizado com sucesso!");
+        response.setStatus(HttpStatus.ACCEPTED);
 
         return response;
     }

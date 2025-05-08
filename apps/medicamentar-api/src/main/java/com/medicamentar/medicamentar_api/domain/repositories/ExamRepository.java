@@ -17,4 +17,6 @@ import jakarta.annotation.Nullable;
 public interface ExamRepository extends JpaRepository<Exam, UUID> {
     Page<Exam> findByUserAndDeletedAtIsNull(User user, @Nullable Pageable pageable);
     Optional<Exam> findByIdAndUserAndDeletedAtIsNull(UUID id, User user);
+    Page<Exam> findByUserAndDeletedAtIsNullAndCompleted(User user, boolean completed, @Nullable Pageable pageable);
+    Optional<Exam> findByIdAndUserAndDeletedAtIsNullAndCompleted(UUID id, User user, boolean completed);
 }

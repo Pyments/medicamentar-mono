@@ -8,6 +8,7 @@ public record UserResponse(
     String bloodType,
     String address,
     double height,
+    double weigth,
     String profileImage
     
 ) {}
