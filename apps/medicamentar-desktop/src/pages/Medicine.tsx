@@ -24,6 +24,7 @@ import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+import { PageTitle } from "@components/PageTitle";
 
 interface MedicationData {
   id: string;
@@ -154,20 +155,7 @@ const Medicine = () => {
       <SideBar />
       <SectionContainer>
         <Stack flexDirection="row" justifyContent="space-between" alignItems="center">
-          <Typography
-            component="h2"
-            sx={{
-              w: 1,
-              p: 0,
-              mt: 0,
-              fontSize: "2rem",
-              fontWeight: "bold",
-              color: darkMode ? "common.white" : "primary.main",
-              textAlign: { sm: "center", md: "left" },
-            }}
-          >
-            MEDICAMENTOS
-          </Typography>
+          <PageTitle>MEDICAMENTOS</PageTitle>
           <AddBtn handleModal={handleModal} text="medicamento" />
         </Stack>
 
@@ -192,7 +180,7 @@ const Medicine = () => {
                   qtpDose={medication.amount}
                   dose={medication.dose}
                   period={medication.period}
-                  dateTime={medication.startDate}
+                  startDate={medication.startDate ? dayjs(medication.startDate).format("YYYY-MM-DD HH:mm:ss") : undefined}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication)}
                   type="medication"
