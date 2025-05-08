@@ -52,8 +52,8 @@ public class ConsultationService {
         PaginatedResponse<List<ConsultationResponse>> response = new PaginatedResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNull(
-                currentUser, PageRequest.of(page, size));
+        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndCompleted(
+                currentUser, false, PageRequest.of(page, size));
 
         List<ConsultationResponse> consultationResponses = consultations.getContent().stream()
                 .map(consultation -> new ConsultationResponse(
@@ -61,12 +61,38 @@ public class ConsultationService {
                         consultation.getDate(),
                         consultation.getDoctorName(),
                         consultation.getLocal(),
-                        consultation.getDescription()))
+                        consultation.getDescription(),
+                        consultation.isCompleted()))
                 .collect(Collectors.toList());
 
         response.setData(consultationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setMessage("Exibindo consultas.");
+        response.setTotalPages(consultations.getTotalPages());
+        response.setTotalElements(consultations.getTotalElements());
+        return response;
+    }
+
+    public PaginatedResponse<List<ConsultationResponse>> getCompletedConsultations(int page, int size) {
+        PaginatedResponse<List<ConsultationResponse>> response = new PaginatedResponse<>();
+        User currentUser = tokenService.getCurrentUser();
+
+        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndCompleted(
+                currentUser, true, PageRequest.of(page, size));
+
+        List<ConsultationResponse> consultationResponses = consultations.getContent().stream()
+                .map(consultation -> new ConsultationResponse(
+                        consultation.getId(),
+                        consultation.getDate(),
+                        consultation.getDoctorName(),
+                        consultation.getLocal(),
+                        consultation.getDescription(),
+                        consultation.isCompleted()))
+                .collect(Collectors.toList());
+
+        response.setData(consultationResponses);
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setMessage("Exibindo consultas concluídas.");
         response.setTotalPages(consultations.getTotalPages());
         response.setTotalElements(consultations.getTotalElements());
         return response;
@@ -97,6 +123,38 @@ public class ConsultationService {
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
             response.setMessage("Consulta não encontrada!");
+            response.setStatus(HttpStatus.NOT_FOUND);
+        }
+
+        return response;
+    }
+
+    public ServiceResponse<String> toggleComplete(String id) {
+        var response = new ServiceResponse<String>();
+        User currentUser = tokenService.getCurrentUser();
+
+        UUID consultationId;
+        try {
+            consultationId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            response.setMessage("ID inválido.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
+
+        var consultationOpt = consultationRepo.findByIdAndUserAndDeletedAtIsNull(consultationId, currentUser);
+
+        if (consultationOpt.isPresent()) {
+            Consultation consultation = consultationOpt.get();
+            consultation.setCompleted(!consultation.isCompleted());
+            consultationRepo.save(consultation);
+            
+            eLogService.saveEvent(EventLogAction.Atualizado, consultation);
+            
+            response.setMessage("Status da consulta atualizado com sucesso!");
+            response.setStatus(HttpStatus.ACCEPTED);
+        } else {
+            response.setMessage("Consulta não encontrada.");
             response.setStatus(HttpStatus.NOT_FOUND);
         }
 
