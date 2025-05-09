@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Switch,
@@ -6,7 +7,6 @@ import {
   FormControl,
   FormControlLabel,
 } from "@mui/material";
-import { useState } from "react";
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
 import Arrow from "@assets/icons/Arrow.svg";
@@ -28,6 +28,7 @@ const Config = () => {
     });
   };
   const navigate = useNavigate();
+
   return (
     <ContainerUniversal>
       <Header />

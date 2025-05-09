@@ -226,20 +226,20 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           component="div"
           sx={{
             position: "absolute",
-            p: "60px",
+            p: largeFont ? "40px" : "60px",
             top: "50%",
-            gap: "10px",
+            gap: largeFont ? "5px" : "10px",
             left: "50%",
             boxShadow: 24,
             display: "flex",
             borderRadius: "5px",
             alignItems: "center",
             flexDirection: "column",
-            width: { xs: "1", md: "720px" },
+            width: { xs: "90%", md: "720px" },
             height: { xs: "1", md: "auto" },
             transform: "translate(-50%, -50%)",
             backgroundColor: darkMode ? "grey.900" : "common.white",
-            transition: "width 0.3s ease-in-out",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           <IconButton
