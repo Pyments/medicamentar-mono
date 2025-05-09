@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,6 +56,21 @@ public class ExamController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteExam(@PathVariable UUID id) {
         var response = this.examService.deleteExam(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @Operation(summary = "Marca o exame como completo", method = "PATCH")
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity toggleComplete(@PathVariable UUID id) {
+        var response = this.examService.toggleComplete(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @Operation(summary = "Lista de Exames concluídos com paginação", method = "GET")
+    @GetMapping("/completed")
+    public ResponseEntity getCompletedExams(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "9") int size) {
+        var response = this.examService.getCompletedExams(page, size);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

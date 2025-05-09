@@ -8,6 +8,7 @@ public record ConsultationResponse (
     ZonedDateTime date,
     String doctorName,
     String local,
-    String description
+    String description,
+    boolean completed
 )
 {}

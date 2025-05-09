@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationRequest;
 import com.medicamentar.medicamentar_api.application.services.ConsultationService;
@@ -45,6 +46,21 @@ public class ConsultationController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteConsultation(@PathVariable String id) {
         var response = this.consultationService.deleteConsultation(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @Operation(summary = "Marca a consulta como completa", method = "PATCH")
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity toggleComplete(@PathVariable String id) {
+        var response = this.consultationService.toggleComplete(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @Operation(summary = "Lista de consultas concluídas", method = "GET")
+    @GetMapping("/completed")
+    public ResponseEntity getCompletedConsultations(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "9") int size) {
+        var response = this.consultationService.getCompletedConsultations(page, size);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

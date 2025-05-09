@@ -15,6 +15,7 @@ public record  ExamResponse (
     String name,
     @NotBlank(message= "local can't be blank")
     String local,
-    String description
+    String description,
+    boolean completed
 )
 {}

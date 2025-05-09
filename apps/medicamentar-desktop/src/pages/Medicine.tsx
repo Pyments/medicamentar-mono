@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-  Pagination,
-  Typography,
+  Box,
   Grid,
   Stack,
   AlertColor,
-  Box,
+  Pagination,
+  Typography,
 } from "@mui/material";
 import Header from "@components/Header.tsx";
 import SideBar from "@components/SideBar.tsx";
@@ -31,11 +31,12 @@ interface MedicationData {
   name: string;
   type: string;
   dose: number;
-  amount: number;
   unity: string;
-  continuo: boolean;
+  amount: number;
   period: number;
+  continuousUse: boolean;
   startDate: dayjs.Dayjs;
+  endDate: dayjs.Dayjs;
 }
 interface User {
   token: {
@@ -43,40 +44,125 @@ interface User {
   };
 }
 
+interface User {
+  token: {
+    data: string;
+  };
+}
+interface FeedbackState {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+}
+interface ModalState {
+  new: boolean;
+  type: boolean;
+  edit: boolean;
+  delete: boolean;
+}
+
 const Medicine = () => {
   const { darkMode } = useTheme();
-  const [openType, setOpenType] = useState(false);
-  const [openNew, setOpenNew] = useState(false);
   const [type, setType] = useState(0);
-  const [selectedMedicationId, setSelectedMedicationId] = useState<string | null>(null);
-  const [selectedMedication, setSelectedMedication] = useState<MedicationData | null>(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
 
   const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
-  const [page, setPage] = useState(0);
 
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [pagination, setPagination] = useState({
+    page: 0,
+    pageCount: 0,
+  });
+  const [feedback, setFeedback] = useState<FeedbackState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const [modals, setModals] = useState<ModalState>({
+    type: false,
+    new: false,
+    edit: false,
+    delete: false,
+  });
+  const [selected, setSelected] = useState<{
+    id: string | null;
+    item: MedicationData | null;
+  }>({ id: null, item: null });
 
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (token) {
+      fetchMedications();
+    }
+  }, [token, pagination.page]);
+
   const showFeedback = (message: string, severity: AlertColor) => {
-    setFeedbackMessage(message);
-    setFeedbackSeverity(severity);
-    setFeedbackOpen(true);
+    setFeedback({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  const handlePagination = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPagination((prev) => ({ ...prev, page: value - 1 }));
+  };
+
+  const closeNewModal = () => {
+    setModals((prev) => ({ ...prev, new: false }));
+  };
+
+  const openNewModal = () => {
+    setModals((prev) => ({ ...prev, new: true }));
+  };
+
+  const openTypeModal = () => {
+    setModals((prev) => ({ ...prev, type: true }));
+  };
+
+  const openDeleteModal = (id: string) => {
+    setSelected({ id, item: null });
+    setModals((prev) => ({ ...prev, delete: true }));
+  };
+
+  const openEditModal = (exam: MedicationData) => {
+    setSelected({ id: exam.id, item: exam });
+    setModals((prev) => ({ ...prev, edit: true }));
+  };
+
+  const closeDeleteModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, delete: false }));
+  };
+
+  const closeEditModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, edit: false }));
+  };
+
+  const closeTypeModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, type: false }));
   };
 
   const fetchMedications = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/medication?page=${page}&size=9`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosInstance.get(
+        `/medication?page=${pagination.page}&size=9`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setMedications(response.data.data);
+      setPagination((prev) => ({
+        ...prev,
+        pageCount: response.data.totalPages,
+      }));
     } catch (error) {
       console.error("Erro na requisição:", error);
     } finally {
@@ -84,33 +170,15 @@ const Medicine = () => {
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchMedications();
-    }
-  }, [token, page]);
-
-  const handleModal = () => setOpenType(!openType);
-
-  const openDeleteModal = (id: string) => {
-    setSelectedMedicationId(id);
-    setDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setSelectedMedicationId(null);
-    setDeleteModalOpen(false);
-  };
-
   const handleDeleteMedication = async () => {
-    if (selectedMedicationId) {
+    if (selected.id) {
       closeDeleteModal();
       setLoading(true);
       try {
-        await axiosInstance.delete(`/medication/${selectedMedicationId}`, {
+        await axiosInstance.delete(`/medication/${selected.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMedications(medications.filter((med) => med.id !== selectedMedicationId));
+        setMedications(medications.filter((med) => med.id !== selected.id));
         showFeedback("Medicamento deletado com sucesso!", "success");
       } catch (error) {
         showFeedback("Erro ao deletar Medicamento!", "error");
@@ -120,43 +188,37 @@ const Medicine = () => {
     }
   };
 
-  const openEditModal = (medication: MedicationData) => {
-    setSelectedMedication(medication);
-    setSelectedMedicationId(medication.id);
-    setOpenEdit(true);
-  };
-
-  const handlePagination = (_event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value - 1);
-  };
-
-  const sortedMedications = useActiveAndSorted(medications, {
-    type: "medication",
-    continuousField: "continuo",
-    startDateField: "startDate",
-  });
-
-  const pageSize = 9;
-  const totalPages = Math.ceil(sortedMedications.length / pageSize);
-  const paginatedMedications = sortedMedications.slice(
-    page * pageSize,
-    page * pageSize + pageSize
-  );
-
   return (
     <ContainerUniversal>
       <Feedback
-        open={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        severity={feedbackSeverity}
-        message={feedbackMessage}
+        open={feedback.open}
+        message={feedback.message}
+        severity={feedback.severity}
+        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
       />
       <Header />
       <SideBar />
       <SectionContainer>
-        <Stack flexDirection="row" justifyContent="space-between" alignItems="center">
-          <PageTitle>MEDICAMENTOS</PageTitle>
-          <AddBtn handleModal={handleModal} text="medicamento" />
+        <Stack
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography
+            component="h2"
+            sx={{
+              w: 1,
+              p: 0,
+              mt: 0,
+              fontSize: "2rem",
+              fontWeight: "bold",
+              color: darkMode ? "common.white" : "primary.main",
+              textAlign: { sm: "center", md: "left" },
+            }}
+          >
+            MEDICAMENTOS
+          </Typography>
+          <AddBtn handleModal={openTypeModal} text="medicamento" />
         </Stack>
 
         <Grid container spacing={3} pb="75px">
@@ -168,21 +230,24 @@ const Medicine = () => {
                 alignItems="center"
                 sx={{ minHeight: "50vh", width: "100%" }}
               >
-                <Loader sx={{ color: darkMode ? "common.white" : "primary.main" }} />
+                <Loader
+                  sx={{ color: darkMode ? "common.white" : "primary.main" }}
+                />
               </Stack>
             </Grid>
-          ) : paginatedMedications.length > 0 ? (
-            paginatedMedications.map((medication) => (
+          ) : medications.length > 0 ? (
+            medications.map((medication) => (
               <Grid item key={medication.id}>
                 <CardUniversal
                   title={medication.name}
-                  continuousUse={medication.continuo}
+                  continuousUse={medication.continuousUse}
                   qtpDose={medication.amount}
                   dose={medication.dose}
                   period={medication.period}
-                  startDate={medication.startDate ? dayjs(medication.startDate).format("YYYY-MM-DD HH:mm:ss") : undefined}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication)}
+                  startDate={medication.startDate}
+                  endDate={medication.endDate}
                   type="medication"
                 />
               </Grid>
@@ -201,62 +266,76 @@ const Medicine = () => {
               </Typography>
             </Grid>
           )}
-
-          {!loading && totalPages > 1 && (
-            <Box gridColumn="1 / -1" display="flex" justifyContent="center" mt={2}>
-              <Pagination
-                page={page + 1}
-                color="primary"
-                count={totalPages}
-                onChange={handlePagination}
-                sx={{
-                  "& .MuiPaginationItem-ellipsis": {
-                    color: darkMode ? "common.white" : "primary.main",
-                  },
-                  "& .MuiPaginationItem-page.Mui-selected": {
-                    backgroundColor: darkMode ? "primary.darker" : "primary.main",
-                    color: "white",
-                  },
-                }}
-              />
-            </Box>
-          )}
-
-          {openType && (
-            <ModalMedicineType
-              open={openType}
-              setOpen={setOpenType}
-              setOpenNew={setOpenNew}
-              setType={setType}
-            />
-          )}
-          {openNew && (
-            <ModalNewMedication
-              type={type}
-              open={openNew}
-              setOpen={setOpenNew}
-              fetchMedications={fetchMedications}
-              showFeedback={showFeedback}
-            />
-          )}
-          {isDeleteModalOpen && (
-            <ModalDelete
-              isOpen={isDeleteModalOpen}
-              onClose={closeDeleteModal}
-              onDelete={handleDeleteMedication}
-            />
-          )}
-          {openEdit && (
-            <ModalEditMedicine
-              open={openEdit}
-              setOpen={setOpenEdit}
-              id={selectedMedicationId}
-              currentMedication={selectedMedication}
-              fetchMedications={fetchMedications}
-              showFeedback={showFeedback}
-            />
-          )}
         </Grid>
+        {modals.type && (
+          <ModalMedicineType
+            setType={setType}
+            isOpen={modals.type}
+            setOpen={openNewModal}
+            onClose={closeTypeModal}
+          />
+        )}
+        {modals.new && (
+          <ModalNewMedication
+            type={type}
+            isOpen={modals.new}
+            onClose={closeNewModal}
+            showFeedback={showFeedback}
+            fetchMedications={fetchMedications}
+          />
+        )}
+        {modals.delete && (
+          <ModalDelete
+            isOpen={modals.delete}
+            onClose={closeDeleteModal}
+            onDelete={handleDeleteMedication}
+          />
+        )}
+        {modals.edit && selected.item && (
+          <ModalEditMedicine
+            id={selected.id}
+            isOpen={modals.edit}
+            onClose={closeEditModal}
+            showFeedback={showFeedback}
+            fetchMedications={fetchMedications}
+            currentMedication={{
+              id: selected.item.id,
+              name: selected.item.name,
+              type: selected.item.type,
+              dose: selected.item.dose,
+              unity: selected.item.unity,
+              period: selected.item.period,
+              amount: selected.item.amount,
+              endDate: selected.item.endDate,
+              startDate: selected.item.startDate,
+              continuousUse: selected.item.continuousUse,
+            }}
+          />
+        )}
+        {!loading && pagination.pageCount > 1 && (
+          <Box
+            gridColumn="1 / -1"
+            display="flex"
+            justifyContent="center"
+            mt={2}
+          >
+            <Pagination
+              page={pagination.page + 1}
+              color="primary"
+              count={pagination.pageCount}
+              onChange={handlePagination}
+              sx={{
+                "& .MuiPaginationItem-ellipsis": {
+                  color: darkMode ? "common.white" : "primary.main",
+                },
+                "& .MuiPaginationItem-page.Mui-selected": {
+                  backgroundColor: darkMode ? "primary.darker" : "primary.main",
+                  color: "white",
+                },
+              }}
+            />
+          </Box>
+        )}
       </SectionContainer>
     </ContainerUniversal>
   );
