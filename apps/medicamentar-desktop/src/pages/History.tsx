@@ -10,6 +10,7 @@ import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 import { longDate, shortDate } from "../types/sanitizeDate";
+
 const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
@@ -91,7 +92,7 @@ const History = () => {
       <Header />
       <Sidebar />
       <SectionContainer>
-        {loading ? (
+        {loading && (
           <Box
             sx={{
               position: "absolute",
@@ -104,12 +105,14 @@ const History = () => {
               flexGrow: 100,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: darkMode ? "primary.darker" : "background.default",
+              backgroundColor: darkMode
+                ? "primary.darker"
+                : "background.default",
             }}
           >
             <Loader />
           </Box>
-        ): (
+        )}
         <Stack sx={{ alignItems: "center" }} spacing="67px">
           <Box
             sx={{
@@ -153,7 +156,7 @@ const History = () => {
               </Grid>
             )}
           </Grid>
-        </Stack>)}
+        </Stack>
       </SectionContainer>
     </ContainerUniversal>
   );
