@@ -1,7 +1,24 @@
 import axiosInstance from "@utils/axiosInstance";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
-import { Box, Grid, Modal, Button, Select, Checkbox, MenuItem, FormGroup, TextField, InputLabel, Typography, IconButton, FormControl, Autocomplete, FormControlLabel, AlertColor } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Modal,
+  Button,
+  Select,
+  Checkbox,
+  MenuItem,
+  FormGroup,
+  TextField,
+  InputLabel,
+  Typography,
+  IconButton,
+  AlertColor,
+  FormControl,
+  Autocomplete,
+  FormControlLabel,
+} from "@mui/material";
 import { useTheme } from "@theme/useTheme";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
@@ -10,37 +27,37 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
 
-
 interface ModalEditMedicineProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  fetchMedications: () => Promise<void>;
-  showFeedback: (message: string, severity: "success" | "error") => void;
-
-  currentMedication: {
-    id: string;
-    name: string;
-    type: string;
-    dose: number;
-    amount: number;
-    unity: string;
-    continuo: boolean;
-    period: number;
-    startDate: dayjs.Dayjs;
-  } | null;
+  isOpen: boolean;
   id: string | null;
+  onClose: () => void;
+  fetchMedications: () => Promise<void>;
+  currentMedication: MedicationProps | null;
+  showFeedback: (message: string, severity: "success" | "error") => void;
+}
+interface MedicationProps {
+  id: string;
+  name: string;
+  type: string;
+  dose: number;
+  unity: string;
+  amount: number;
+  period: number;
+  endDate: dayjs.Dayjs;
+  startDate: dayjs.Dayjs;
+  continuousUse: boolean;
 }
 
 interface FormErrors {
   name?: string;
   type?: string;
   dose?: string;
-  amount?: string;
   unity?: string;
-  continuo?: string;
+  amount?: string;
   period?: string;
-  startDate?: string;
   endDate?: string;
+  continuo?: string;
+  startDate?: string;
 }
 
 const frequencyOptions = [
@@ -84,20 +101,31 @@ enum Unity {
   subcutanea = 4,
 }
 
-
-const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication, showFeedback }: ModalEditMedicineProps) => {
+const ModalEditMedicine = ({
+  id,
+  isOpen,
+  onClose,
+  fetchMedications,
+  currentMedication,
+  showFeedback,
+}: ModalEditMedicineProps) => {
   const { darkMode } = useTheme();
-  const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
   );
   const [name, setName] = useState<string>("");
-  const [tipoMedicamento, setTipoMedicamento] = useState<number>(Type[currentMedication?.type as keyof typeof Type]);
+  const [tipoMedicamento, setTipoMedicamento] = useState<number>(
+    Type[currentMedication?.type as keyof typeof Type]
+  );
   const [dose, setDose] = useState<number>(1);
   const [amount, setAmount] = useState<number>(1);
-  const [unity, setUnity] = useState<number>(Unity[currentMedication?.unity as keyof typeof Unity]);
-  const [continuo, setContinuo] = useState<boolean>(currentMedication?.continuo || false);
+  const [unity, setUnity] = useState<number>(
+    Unity[currentMedication?.unity as keyof typeof Unity]
+  );
+  const [continuo, setContinuo] = useState<boolean>(
+    currentMedication?.continuousUse || false
+  );
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
 
@@ -107,7 +135,6 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
 
   const [loading, setLoading] = useState(false);
 
-
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!name.trim()) newErrors.name = "O nome do medicamento é obrigatório.";
@@ -116,20 +143,20 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   };
   if (!isOpen) return null;
 
-
   useEffect(() => {
-    if (open && currentMedication) {
+    if (isOpen && currentMedication) {
       setName(currentMedication.name || "");
       setTipoMedicamento(tipoMedicamento);
       setDose(currentMedication.dose || 1);
       setAmount(currentMedication.amount || 1);
       setUnity(unity);
-      setContinuo(currentMedication.continuo);
+      setContinuo(currentMedication.continuousUse);
       setPeriod(currentMedication.dose || 1);
-      setStartDate(currentMedication.startDate ? dayjs(currentMedication.startDate) : null);
+      setStartDate(
+        currentMedication.startDate ? dayjs(currentMedication.startDate) : null
+      );
     }
   }, [open, currentMedication]);
-
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -152,7 +179,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           unity: Number(unity),
           period: period,
           isContinuousUse: continuo,
-          start_date: startDate
+          start_date: startDate,
           /*ophthalmicDetails: {
             leftEyeFrequency: null, 
             leftEyeQuantity: null, 
@@ -163,14 +190,13 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
             }, */
         },
       });
-      setOpen(false);
+      onClose();
       showFeedback("Medicamento editado com sucesso!", "success");
       fetchMedications();
     } catch (error) {
       console.error("Erro na requisição:", error);
       showFeedback("Medicamento editado com sucesso!", "success");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -219,8 +245,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
-      <Modal open={open} onClose={() => setOpen(false)}>
+        message={feedbackMessage}
+      />
+      <Modal open={isOpen} onClose={onClose}>
         <Box
           component="div"
           sx={{
@@ -242,7 +269,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           }}
         >
           <IconButton
-            onClick={() => setOpen(false)}
+            onClick={onClose}
             sx={{
               top: 30,
               right: 30,
@@ -281,7 +308,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       value={tipoMedicamento}
                       label="TIPO DE MEDICAMENTO"
                       labelId="type-label"
-                      onChange={(event) => setTipoMedicamento(Number(event.target.value))}
+                      onChange={(event) =>
+                        setTipoMedicamento(Number(event.target.value))
+                      }
                     >
                       <MenuItem value={Type.ORAL}>ORAL</MenuItem>
                       <MenuItem value={Type.TOPICO}>TÓPICO</MenuItem>
@@ -289,7 +318,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
                       <MenuItem value={Type.INJETAVEL}>INJETÁVEL</MenuItem>
                       <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
-                      <MenuItem value={Type.TRANSDERMICO}>TRANSDÉRMICO</MenuItem>
+                      <MenuItem value={Type.TRANSDERMICO}>
+                        TRANSDÉRMICO
+                      </MenuItem>
                       <MenuItem value={Type.RETAL}>RETAL</MenuItem>
                       <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
                     </Select>
@@ -307,7 +338,8 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                     fullWidth
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) _setErrors((prev) => ({ ...prev, name: undefined }));
+                      if (errors.name)
+                        _setErrors((prev) => ({ ...prev, name: undefined }));
                     }}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
@@ -382,11 +414,19 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       labelId="unity-label"
                       onChange={(event) => setUnity(Number(event.target.value))}
                     >
-                      <MenuItem value={Unity.mililitros}>Mililitros (ML)</MenuItem>
-                      <MenuItem value={Unity.miligramas}>Miligramas (MG)</MenuItem>
+                      <MenuItem value={Unity.mililitros}>
+                        Mililitros (ML)
+                      </MenuItem>
+                      <MenuItem value={Unity.miligramas}>
+                        Miligramas (MG)
+                      </MenuItem>
                       <MenuItem value={Unity.gotas}>Gotas (GTS)</MenuItem>
-                      <MenuItem value={Unity.comprimidos}>Comprimidos (CPS)</MenuItem>
-                      <MenuItem value={Unity.subcutanea}>Subcutânea (SC)</MenuItem>
+                      <MenuItem value={Unity.comprimidos}>
+                        Comprimidos (CPS)
+                      </MenuItem>
+                      <MenuItem value={Unity.subcutanea}>
+                        Subcutânea (SC)
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -416,7 +456,11 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                     }}
                     onChange={(newValue) => {
                       setStartDate(newValue);
-                      if (errors.startDate) _setErrors((prev) => ({ ...prev, startDate: undefined }));
+                      if (errors.startDate)
+                        _setErrors((prev) => ({
+                          ...prev,
+                          startDate: undefined,
+                        }));
                     }}
                     renderInput={(params) => (
                       <TextField
@@ -500,11 +544,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                   fontSize: "1.2rem",
                 }}
               >
-                {loading ? (
-                  <Loader sx={{ color: "white" }} />
-                ) : (
-                  "SALVAR"
-                )}
+                {loading ? <Loader sx={{ color: "white" }} /> : "SALVAR"}
               </Button>
             </FormGroup>
           </form>

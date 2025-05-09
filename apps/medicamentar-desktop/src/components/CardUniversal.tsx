@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  Grid,
-  Tooltip,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, Card, Tooltip, Typography, IconButton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
@@ -17,32 +10,32 @@ import { useTheme } from "@constants/theme/useTheme";
 
 interface CardUniversalProps {
   type: "medication" | "events";
-  title: string;
-  continuousUse?: boolean;
   dose?: number;
-  qtpDose?: number;
+  title: string;
   period?: number;
-  dateTime?: dayjs.Dayjs | string;
-  startDate?: string;
-  endDate?: string;
+  qtpDose?: number;
+  onEdit?: () => void;
   description?: string;
   onDelete?: () => void;
-  onEdit?: () => void;
+  endDate?: dayjs.Dayjs;
+  dateTime?: dayjs.Dayjs;
+  continuousUse?: boolean;
+  startDate?: dayjs.Dayjs;
 }
 
 const CardUniversal: React.FC<CardUniversalProps> = ({
   type,
-  title,
-  continuousUse,
   dose,
-  qtpDose,
+  title,
   period,
+  qtpDose,
+  endDate,
   dateTime,
   startDate,
-  endDate,
   description,
-  onDelete,
+  continuousUse,
   onEdit,
+  onDelete,
 }) => {
   const { darkMode } = useTheme();
   const isMedication = type === "medication";
@@ -89,7 +82,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             borderRadius: "5px",
             flexDirection: "column",
             justifyContent: "space-between",
-            // width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
           }}
         >
@@ -146,12 +138,16 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   alignSelf: "center",
                 }}
               >
-                <Typography sx={infoCard}>
-                  USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}
-                </Typography>
+                {continuousUse ? (
+                  <Typography sx={infoCard}>USO CONTÍNUO</Typography>
+                ) : (
+                  <></>
+                )}
                 <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
-                <Typography sx={infoCard}>DOSE: {dose}</Typography>
-                <Typography sx={infoCard}>PERÍODO: {period}</Typography>
+                <Typography sx={infoCard}>
+                  {dose} em {dose} horas
+                </Typography>
+                <Typography sx={infoCard}>PERÍODO: {period} dias</Typography>
               </Box>
               <Box
                 sx={{
@@ -180,7 +176,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                   {isMedication ? (
                     <>
                       Início: {longDate(startDate)}
-                      {!continuousUse && endDate && (
+                      {!continuousUse && (
                         <>
                           <br />
                           Fim: {longDate(endDate)}
@@ -224,7 +220,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             boxShadow: "none",
             borderRadius: "5px",
             flexDirection: "column",
-            // width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
           }}
         >
@@ -299,7 +294,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
         </Card>
       )}
     </>
-    // </Grid>
   );
 };
 export default CardUniversal;

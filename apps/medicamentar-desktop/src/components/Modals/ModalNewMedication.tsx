@@ -43,8 +43,8 @@ interface FormErrors {
 
 interface NewMedicationProps {
   type: number;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  isOpen: boolean;
+  onClose: () => void;
   fetchMedications: () => void;
   showFeedback: (message: string, severity: "success" | "error") => void;
 }
@@ -71,14 +71,13 @@ const periodOptions = [
 ];
 
 const NewMedication = ({
-  open,
-  setOpen,
   type,
+  isOpen,
+  onClose,
   fetchMedications,
   showFeedback,
 }: NewMedicationProps) => {
   const { darkMode } = useTheme();
-  const [isOpen] = useState<boolean>(true);
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
@@ -189,7 +188,7 @@ const NewMedication = ({
             }, */
         },
       });
-      setOpen(false);
+      onClose()
       showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
     } catch (error) {
@@ -243,7 +242,7 @@ const NewMedication = ({
         severity={feedbackSeverity}
         message={feedbackMessage}
       />
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <Modal open={isOpen} onClose={()=>onClose()}>
         <Box
           component="div"
           sx={{
@@ -265,7 +264,7 @@ const NewMedication = ({
           }}
         >
           <IconButton
-            onClick={() => setOpen(false)}
+            onClick={() => onClose()}
             sx={{
               top: 30,
               right: 30,

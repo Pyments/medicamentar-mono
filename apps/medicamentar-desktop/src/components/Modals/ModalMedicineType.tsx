@@ -15,22 +15,20 @@ import { Select, SelectChangeEvent } from "@mui/material";
 import ModalXCloseButton from "@assets/icons/ModalXCloseButton.svg";
 
 interface ModalMedicineTypeProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  setOpenNew: (open: boolean) => void;
+  isOpen: boolean;
+  setOpen: () => void;
   setType: (type: number) => void;
+  onClose: () => void;
 }
 
 export default function ModalMedicineType({
-  open,
+  isOpen,
+  onClose,
   setOpen,
-  setOpenNew,
   setType,
 }: ModalMedicineTypeProps) {
   const [tipoMedicamento, setTipoMedicamento] = useState<number>(-1);
   const { darkMode } = useTheme();
-
-  if (!open) return null;
 
   enum Type {
     ORAL = 0,
@@ -45,7 +43,7 @@ export default function ModalMedicineType({
   }
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)}>
+    <Modal open={isOpen} onClose={() => onClose()}>
       <Box
         sx={{
           position: "absolute",
@@ -72,7 +70,7 @@ export default function ModalMedicineType({
             alignItems: "center",
           }}
         >
-          <IconButton sx={{ alignSelf: "end" }} onClick={() => setOpen(false)}>
+          <IconButton sx={{ alignSelf: "end" }} onClick={() => onClose()}>
             <img src={ModalXCloseButton} />
           </IconButton>
           <Typography
@@ -112,8 +110,8 @@ export default function ModalMedicineType({
               disabled={tipoMedicamento < 0}
               onClick={() => {
                 setType(Number(tipoMedicamento));
-                setOpen(false);
-                setOpenNew(true);
+                onClose();
+                setOpen();
               }}
               sx={{
                 my: 2,
