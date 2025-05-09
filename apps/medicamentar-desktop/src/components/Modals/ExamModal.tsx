@@ -57,7 +57,7 @@ const ExamModal: React.FC<ExamModalProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
 
   const tabValues = ["exame", "consulta"];
 
@@ -208,7 +208,7 @@ const ExamModal: React.FC<ExamModalProps> = ({
             {tabValues.map((tab) => (
               <Tab
                 sx={{
-                  fontSize: "20px",
+                  fontSize: largeFont ? "1.4rem" : "20px",
                   textTransform: "uppercase",
                   color: darkMode ? "common.white" : "text.secondary",
                 }}
@@ -252,8 +252,9 @@ const ExamModal: React.FC<ExamModalProps> = ({
                     sx: {
                       "& .MuiInputAdornment-root .MuiSvgIcon-root": {
                         color: darkMode ? "#CDCED7" : "-moz-initial",
+                        fontSize: largeFont ? "1.4rem" : "1.2rem",
                       },
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
                       color: darkMode ? "common.white" : "text.primary",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: darkMode
@@ -270,7 +271,7 @@ const ExamModal: React.FC<ExamModalProps> = ({
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
                       color: darkMode ? "common.white" : "text.primary",
                       "&.Mui-focused": {
                         color: darkMode ? "common.white" : "primary.main",
@@ -300,12 +301,14 @@ const ExamModal: React.FC<ExamModalProps> = ({
                   helperText={errors.examName}
                   InputProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
+                      padding: largeFont ? "16px 14px" : "10px 14px",
                     },
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
+                      transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                     },
                   }}
                 />
@@ -331,12 +334,14 @@ const ExamModal: React.FC<ExamModalProps> = ({
                   helperText={errors.doctorName}
                   InputProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
+                      padding: largeFont ? "16px 14px" : "10px 14px",
                     },
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
+                      transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                     },
                   }}
                 />
@@ -360,12 +365,14 @@ const ExamModal: React.FC<ExamModalProps> = ({
               helperText={errors.location}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -389,12 +396,14 @@ const ExamModal: React.FC<ExamModalProps> = ({
               helperText={errors.description}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -403,7 +412,12 @@ const ExamModal: React.FC<ExamModalProps> = ({
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+              sx={{ 
+                mt: "20px", 
+                backgroundColor: "#0078B6",
+                fontSize: largeFont ? "1.2rem" : "1rem",
+                padding: largeFont ? "16px" : "12px",
+              }}
             >
               {loading ? <Loader sx={{ color: "white" }} /> : "adicionar"}
             </Button>

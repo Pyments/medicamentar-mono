@@ -16,6 +16,7 @@ import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+import { PageTitle } from "@components/PageTitle";
 
 interface ExamData {
   id: string;
@@ -198,18 +199,7 @@ const Exam = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Typography
-            sx={{
-              p: 0,
-              mt: 0,
-              fontSize: "2rem",
-              fontWeight: "bold",
-              textAlign: { xs: "center", md: "left" },
-              color: darkMode ? "common.white" : "primary.main",
-            }}
-          >
-            CONSULTAS E EXAMES
-          </Typography>
+          <PageTitle>CONSULTAS E EXAMES</PageTitle>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
         <Grid container spacing={3} pb="75px">

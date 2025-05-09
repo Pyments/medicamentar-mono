@@ -37,7 +37,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const isMedication = type === "medication";
   const isEvents = type === "events";
   const location = useLocation().pathname;
@@ -45,8 +45,8 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   const titleCard = {
     width: 1,
     minWidth: "30%",
-    fontSize: "12px",
-    maxHeigth: "50px",
+    fontSize: largeFont ? "1.2rem" : "12px",
+    maxHeight: "50px",
     marginInline: "5%",
     fontWeight: "bold",
     textAlign: "center",
@@ -54,8 +54,9 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     py: location === "/home" ? "5px" : 0,
     color: darkMode ? "text.primary" : "background.default",
   };
+
   const cardButton = {
-    height: "30px",
+    height: largeFont ? "40px" : "30px",
     display: "flex",
     cursor: "pointer",
     boxShadow: "none",
@@ -64,25 +65,49 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   const infoCard = {
-    fontSize: "12px",
+    fontSize: largeFont ? "1rem" : "12px",
     wordWrap: "break-word",
     color: darkMode ? "common.black" : "common.black",
   };
+
+  const buttonText = {
+    fontSize: largeFont ? "0.9rem" : "8px",
+    fontWeight: "700",
+    textAlign: "center",
+    color: darkMode ? "background.paper" : "background.default",
+  };
+
+  const dateText = {
+    fontSize: largeFont ? "1rem" : "12px",
+    fontWeight: "700",
+    paddingLeft: "5px",
+    textAlign: "center",
+    color: "common.black",
+  };
+
+  const iconSize = largeFont ? "1.5rem" : "1.5rem";
 
   return (
     <>
       {isMedication && (
         <Card
           sx={{
-            minHeight: 260,
+            minHeight: largeFont ? 300 : 260,
             display: "flex",
-            width: "300px",
+            maxWidth: "300px",
             minWidth: "120px",
             boxShadow: "none",
             borderRadius: "5px",
             flexDirection: "column",
             justifyContent: "space-between",
+            width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
+            "& .MuiIconButton-root": {
+              "& svg": {
+                width: largeFont ? "16px" : "10px",
+                height: largeFont ? "16px" : "10px",
+              },
+            },
           }}
         >
           <Box
@@ -166,7 +191,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                 <AccessAlarmOutlinedIcon />
                 <Typography
                   sx={{
-                    fontSize: "12px",
+                    fontSize: largeFont ? "1rem" : "12px",
                     fontWeight: "700",
                     color: "common.black",
                     textAlign: "left",
@@ -196,14 +221,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               backgroundColor: darkMode ? "text.primary" : "text.secondary",
             }}
           >
-            <Typography
-              sx={{
-                fontSize: "8px",
-                fontWeight: "700",
-                textAlign: "center",
-                color: darkMode ? "background.paper" : "background.default",
-              }}
-            >
+            <Typography sx={buttonText}>
               CLIQUE APÓS TOMAR O MEDICAMENTO
             </Typography>
           </Box>
@@ -271,7 +289,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           >
             <Typography
               sx={{
-                fontSize: 12,
+                fontSize: largeFont ? "1rem" : "12px",
                 color: "#62636C",
                 textAlign: "center",
               }}
@@ -280,7 +298,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             </Typography>
             <Typography
               sx={{
-                fontSize: 15,
+                fontSize: largeFont ? "1.2rem" : "15px",
                 fontWeight: "bold",
                 textAlign: "center",
                 color: "common.black",

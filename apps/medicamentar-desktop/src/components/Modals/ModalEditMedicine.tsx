@@ -101,15 +101,9 @@ enum Unity {
   subcutanea = 4,
 }
 
-const ModalEditMedicine = ({
-  id,
-  isOpen,
-  onClose,
-  fetchMedications,
-  currentMedication,
-  showFeedback,
-}: ModalEditMedicineProps) => {
-  const { darkMode } = useTheme();
+
+const ModalEditMedicine = ({id, isOpen, onClose, fetchMedications, currentMedication, showFeedback }: ModalEditMedicineProps) => {
+  const { darkMode, largeFont } = useTheme();
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
@@ -209,8 +203,9 @@ const ModalEditMedicine = ({
         sx: {
           "& .MuiInputAdornment-root .MuiSvgIcon-root": {
             color: darkMode ? "#CDCED7" : "-moz-initial",
+            fontSize: largeFont ? "1.4rem" : "1.2rem",
           },
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.4rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -225,7 +220,7 @@ const ModalEditMedicine = ({
       },
       InputLabelProps: {
         sx: {
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.2rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "&.Mui-focused": {
             color: darkMode ? "#103952" : "primary.main",
@@ -252,20 +247,20 @@ const ModalEditMedicine = ({
           component="div"
           sx={{
             position: "absolute",
-            p: "60px",
+            p: largeFont ? "40px" : "60px",
             top: "50%",
-            gap: "10px",
+            gap: largeFont ? "5px" : "10px",
             left: "50%",
             boxShadow: 24,
             display: "flex",
             borderRadius: "5px",
             alignItems: "center",
             flexDirection: "column",
-            width: { xs: "1", md: "720px" },
+            width: { xs: "90%", md: "720px" },
             height: { xs: "1", md: "auto" },
             transform: "translate(-50%, -50%)",
             backgroundColor: darkMode ? "grey.900" : "common.white",
-            transition: "width 0.3s ease-in-out",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           <IconButton
@@ -474,6 +469,23 @@ const ModalEditMedicine = ({
                           inputProps: {
                             ...params.inputProps,
                             readOnly: true,
+                            style: {
+                              fontSize: largeFont ? "1.4rem" : "0.9rem",
+                              padding: largeFont ? "16px 14px" : "10px 14px",
+                            },
+                          },
+                        }}
+                        InputLabelProps={{
+                          ...params.InputLabelProps,
+                          ...themedProps.textField.InputLabelProps,
+                          style: {
+                            fontSize: largeFont ? "1.2rem" : "0.9rem",
+                            transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                          },
+                        }}
+                        sx={{
+                          "& .MuiFormHelperText-root": {
+                            fontSize: largeFont ? "1rem" : "0.75rem",
                           },
                         }}
                       />

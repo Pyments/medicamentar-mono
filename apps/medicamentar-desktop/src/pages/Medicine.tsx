@@ -23,6 +23,8 @@ import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
+import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+import { PageTitle } from "@components/PageTitle";
 
 interface MedicationData {
   id: string;
@@ -242,7 +244,6 @@ const Medicine = () => {
                   qtpDose={medication.amount}
                   dose={medication.dose}
                   period={medication.period}
-                  dateTime={medication.startDate}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication)}
                   startDate={medication.startDate}
