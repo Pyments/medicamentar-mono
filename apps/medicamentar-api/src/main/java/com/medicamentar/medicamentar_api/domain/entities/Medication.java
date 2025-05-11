@@ -50,8 +50,10 @@ public class Medication {
 
     @PrePersist
     protected void onCreate() {
-        if (this.start_date != null) {
+        if (this.start_date != null && isContinuousUse == false) {
             this.end_date = this.start_date.plusDays(this.period);
+        } else {
+            this.end_date = null;
         }
     }
 
