@@ -6,6 +6,7 @@ import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
 import { SectionContainer } from "@components/SectionContainer";
 import { Box, Grid, Pagination, Stack, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import { PageTitle } from "@components/PageTitle";
 
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
@@ -103,18 +104,7 @@ const Home: React.FC = () => {
       <Header />
       <SideBar />
       <SectionContainer>
-        <Typography
-          sx={{
-            p: 0,
-            mt: 0,
-            fontSize: "2rem",
-            fontWeight: "bold",
-            textAlign: { xs: "center", md: "left" },
-            color: darkMode ? "common.white" : "primary.main",
-          }}
-        >
-          EVENTOS PRÓXIMOS
-        </Typography>
+        <PageTitle>EVENTOS PRÓXIMOS</PageTitle>
 
         <Grid
           container

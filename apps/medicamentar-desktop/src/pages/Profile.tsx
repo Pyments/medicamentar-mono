@@ -19,6 +19,7 @@ import { useEffect, useState, useRef } from "react";
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
+import { PageTitle } from "@components/PageTitle";
 
 interface UserData {
   name: string;
@@ -38,7 +39,7 @@ interface User {
 }
 
 const Profile = () => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const [userData, setUserData] = useState<UserData>({
     name: "",
     email: "",
@@ -132,6 +133,18 @@ const Profile = () => {
       "&:hover fieldset": {
         borderColor: darkMode ? "text.primary" : "#B9BBC6",
       },
+      fontSize: largeFont ? "1.4rem" : "14px",
+    },
+    "& .MuiInputBase-input": {
+      fontSize: largeFont ? "1.4rem" : "14px",
+      padding: largeFont ? "16px 14px" : "10px 14px",
+    },
+    "& .MuiInputLabel-root": {
+      fontSize: largeFont ? "1.2rem" : "0.9rem",
+      color: darkMode ? "text.primary" : "#B9BBC6",
+      "&.Mui-focused": {
+        color: darkMode ? "text.primary" : "#B9BBC6",
+      },
     },
   };
 
@@ -140,18 +153,7 @@ const Profile = () => {
       <Header />
       <SideBar />
       <SectionContainer>
-        <Typography
-          sx={{
-            fontSize: "2rem",
-            fontWeight: "bold",
-            marginBottom: "20px",
-            marginRight: { sm: "15px" },
-            textAlign: { xs: "center", md: "left" },
-            color: darkMode ? "common.white" : "primary.main",
-          }}
-        >
-          PERFIL
-        </Typography>
+        <PageTitle>PERFIL</PageTitle>
         <Box
           sx={{
             width: "150px",
@@ -234,13 +236,13 @@ const Profile = () => {
               InputLabelProps={{
                 shrink: true,
                 style: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
               InputProps={{
                 sx: {
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   borderColor: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
@@ -271,13 +273,13 @@ const Profile = () => {
               InputLabelProps={{
                 shrink: true,
                 style: {
-                  fontSize: "0.8rem",
+                  fontSize: largeFont ? "1.2rem" : "0.8rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
               InputProps={{
                 sx: {
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   borderColor: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
@@ -305,16 +307,16 @@ const Profile = () => {
               InputLabelProps={{
                 shrink: true,
                 style: {
-                  fontSize: "0.8rem",
+                  fontSize: largeFont ? "1.2rem" : "0.8rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
               InputProps={{
                 sx: {
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   borderColor: darkMode ? "text.primary" : "#B9BBC6",
                 },
-                endAdornment: <Typography sx={{ fontSize: "14px", color: "text.secondary", ml: 1 }}>KG</Typography>,
+                endAdornment: <Typography sx={{ fontSize: largeFont ? "1.4rem" : "14px", color: "text.secondary", ml: 1 }}>KG</Typography>,
               }}
               sx={{
                 ...textFieldStyles,
@@ -332,13 +334,13 @@ const Profile = () => {
               InputLabelProps={{
                 shrink: true,
                 style: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
               InputProps={{
                 sx: {
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   borderColor: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
@@ -353,7 +355,7 @@ const Profile = () => {
               <InputLabel
                 id="sangue-label"
                 sx={{
-                  fontSize: "0.8rem",
+                  fontSize: largeFont ? "1.2rem" : "0.8rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                   "&.Mui-focused": {
                     color: darkMode ? "text.primary" : "#B9BBC6",
@@ -371,7 +373,7 @@ const Profile = () => {
                 onChange={(e) => handleChange("bloodType", e.target.value)}
                 fullWidth
                 sx={{
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   "& .MuiOutlinedInput-notchedOutline": {
                     borderTop: "none",
                     borderColor: darkMode ? "text.primary" : "#B9BBC6",
@@ -382,16 +384,19 @@ const Profile = () => {
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: darkMode ? "text.primary" : "#B9BBC6",
                   },
+                  "& .MuiSelect-select": {
+                    padding: largeFont ? "16px 14px" : "10px 14px",
+                  },
                 }}
               >
-                <MenuItem value="A+">A+</MenuItem>
-                <MenuItem value="A-">A-</MenuItem>
-                <MenuItem value="B+">B+</MenuItem>
-                <MenuItem value="B-">B-</MenuItem>
-                <MenuItem value="AB+">AB+</MenuItem>
-                <MenuItem value="AB-">AB-</MenuItem>
-                <MenuItem value="O+">O+</MenuItem>
-                <MenuItem value="O-">O-</MenuItem>
+                <MenuItem value="A+" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>A+</MenuItem>
+                <MenuItem value="A-" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>A-</MenuItem>
+                <MenuItem value="B+" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>B+</MenuItem>
+                <MenuItem value="B-" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>B-</MenuItem>
+                <MenuItem value="AB+" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>AB+</MenuItem>
+                <MenuItem value="AB-" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>AB-</MenuItem>
+                <MenuItem value="O+" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>O+</MenuItem>
+                <MenuItem value="O-" sx={{ fontSize: largeFont ? "1.4rem" : "14px" }}>O-</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -415,16 +420,16 @@ const Profile = () => {
               InputLabelProps={{
                 shrink: true,
                 style: {
-                  fontSize: "0.8rem",
+                  fontSize: largeFont ? "1.2rem" : "0.8rem",
                   color: darkMode ? "text.primary" : "#B9BBC6",
                 },
               }}
               InputProps={{
                 sx: {
-                  fontSize: "14px",
+                  fontSize: largeFont ? "1.4rem" : "14px",
                   borderColor: darkMode ? "text.primary" : "#B9BBC6",
                 },
-                endAdornment: <Typography sx={{ fontSize: "14px", color: "text.secondary", ml: 1 }}>CM</Typography>,
+                endAdornment: <Typography sx={{ fontSize: largeFont ? "1.4rem" : "14px", color: "text.secondary", ml: 1 }}>CM</Typography>,
               }}
               sx={{
                 w: 1,
@@ -437,10 +442,10 @@ const Profile = () => {
               onClick={handleSubmit}
               variant="contained"
               sx={{
-                width: "120px",
-                height: "50px",
+                width: largeFont ? "150px" : "120px",
+                height: largeFont ? "60px" : "50px",
                 margin: "0 auto",
-                padding: "22px",
+                padding: largeFont ? "28px" : "22px",
                 display: "flex",
                 boxShadow: "none",
                 overflow: "hidden",
@@ -451,7 +456,7 @@ const Profile = () => {
             >
               <Typography
                 sx={{
-                  fontSize: "1rem",
+                  fontSize: largeFont ? "1.2rem" : "1rem",
                   overflow: "hidden",
                   fontWeight: "bold",
                   wordBreak: "break-word",
