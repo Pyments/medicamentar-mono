@@ -22,9 +22,8 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import axiosInstance from "@utils/axiosInstance";
 import CloseIcon from "@mui/icons-material/Close";
-import { DateTimePicker } from "@mui/x-date-pickers";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CustomDateTimePicker from "@components/CustomDateTimePicker";
 
 import { useTheme } from "@theme/useTheme";
 import { Feedback } from "@components/Feedback";
@@ -81,9 +80,17 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
-  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [errors, _setErrors] = useState<FormErrors>({});
+  const [ophthalmologist, setOphthalmologist] = useState({
+    leftEyeFrequency: 0,
+    leftEyeQuantity: 1,
+    leftEyeQuantityType: "",
+    rightEyeFrequency: 0,
+    rightEyeQuantity: 1,
+    rightEyeQuantityType: "",
+  });
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -165,19 +172,19 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
           name: name, // string
           type: Number(type), // presets
           dose: dose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
-          amount: amount, // num
-          unity: Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
+          amount: type === 2 ? ophthalmologist.leftEyeQuantity : amount, // num
+          unity: type === 2 ? ophthalmologist.leftEyeQuantityType : Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
           period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
           isContinuousUse: continuo, // bool
           start_date: startDate,
-          /*ophthalmicDetails: {
-            leftEyeFrequency: null, 
-            leftEyeQuantity: null, 
-            leftEyeDrops: null, 
-            rightEyeFrequency: null, 
-            rightEyeQuantity: null, 
-            rightEyeDrops: null, 
-          }, */
+          ophthalmicDetails: {
+            leftEyeFrequency: ophthalmologist.leftEyeFrequency, 
+            leftEyeQuantity: ophthalmologist.leftEyeQuantity, 
+            leftEyeDrops: ophthalmologist.leftEyeQuantityType, 
+            rightEyeFrequency: ophthalmologist.rightEyeFrequency, 
+            rightEyeQuantity: ophthalmologist.rightEyeQuantity, 
+            rightEyeDrops: ophthalmologist.rightEyeQuantityType, 
+          },
         },
       });
       setFeedbackMessage("Medicamento adicionado com sucesso!");
@@ -193,49 +200,50 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
     }
   };
 
-  const themedProps = {
-    textField: {
-      InputProps: {
-        sx: {
-          "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-            color: darkMode ? "#CDCED7" : "-moz-initial",
-          },
-          fontSize: "0.9rem",
-          color: darkMode ? "common.white" : "text.primary",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
-          },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "common.white" : "primary.main",
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: darkMode ? "#103952" : "primary.main",
-          },
-        },
-      },
-      InputLabelProps: {
-        sx: {
-          fontSize: "0.9rem",
-          color: darkMode ? "common.white" : "text.primary",
-          "&.Mui-focused": {
-            color: darkMode ? "#103952" : "primary.main",
-          },
-        },
-      },
-    },
-  };
+  // const themedProps = {
+  //   textField: {
+  //     InputProps: {
+  //       sx: {
+  //         "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+  //           color: darkMode ? "#CDCED7" : "-moz-initial",
+  //         },
+  //         fontSize: "0.9rem",
+  //         color: darkMode ? "common.white" : "text.primary",
+  //         "& .MuiOutlinedInput-notchedOutline": {
+  //           borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
+  //         },
+  //         "&:hover .MuiOutlinedInput-notchedOutline": {
+  //           borderColor: darkMode ? "common.white" : "primary.main",
+  //         },
+  //         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+  //           borderColor: darkMode ? "#103952" : "primary.main",
+  //         },
+  //       },
+  //     },
+  //     InputLabelProps: {
+  //       sx: {
+  //         fontSize: "0.9rem",
+  //         color: darkMode ? "common.white" : "text.primary",
+  //         "&.Mui-focused": {
+  //           color: darkMode ? "#103952" : "primary.main",
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
 
   const gridTransition = {
     transition: "all 0.3s ease-in-out",
   };
-
+  console.log(unity);
   return (
     <>
       <Feedback
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
+        message={feedbackMessage}
+      />
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           component="div"
@@ -283,7 +291,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
           <form onSubmit={handleSubmit}>
             <FormGroup>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6} sx={gridTransition}>
+                <Grid item xs={12} sx={gridTransition}>
                   <TextField
                     sx={{
                       fontSize: "0.9rem",
@@ -294,46 +302,219 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                     fullWidth
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) _setErrors((prev) => ({ ...prev, name: undefined }));
+                      if (errors.name)
+                        _setErrors((prev) => ({ ...prev, name: undefined }));
                     }}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
-                  <FormControl fullWidth>
-                    <Autocomplete
-                      value={dose?.toString()}
-                      onChange={(_event, newValue) => {
-                        if (newValue) {
-                          const numValue = Number(
-                            newValue.replace(/[^0-9]/g, "")
-                          );
-                          setDose(Number(Math.max(1, numValue)));
+                {type === 2 && (
+                  <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+                    <FormControl fullWidth>
+                      <InputLabel>OLHO ESQUERDO</InputLabel>
+                      <Select
+                        id="left-eye"
+                        value={ophthalmologist.leftEyeFrequency}
+                        label="OLHO ESQUERDO"
+                        onChange={(event) => {
+                          const numValue = Number(event.target.value);
+                          setOphthalmologist({
+                            ...ophthalmologist,
+                            leftEyeFrequency: numValue,
+                          });
+                        }}
+                        sx={{
+                          fontSize: "0.9rem",
+                          transition: "all 0.3s ease-in-out",
+                        }}
+                        MenuProps={{
+                          PaperProps: {
+                            sx: {
+                              backgroundColor: darkMode
+                                ? "grey.900"
+                                : "common.white",
+                              color: darkMode ? "common.white" : "text.primary",
+                            },
+                          },
+                        }}
+                      >
+                        {frequencyOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
+                {type === 2 && (
+                  <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+                    <FormControl fullWidth>
+                      <InputLabel>OLHO DIREITO</InputLabel>
+                      <Select
+                        id="right-eye"
+                        value={ophthalmologist.rightEyeFrequency}
+                        labelId="right-eye"
+                        label="OLHO DIREITO"
+                        placeholder="FREQUÊNCIA"
+                        onChange={(event) => {
+                          const numValue = Number(event.target.value);
+                          setOphthalmologist({
+                            ...ophthalmologist,
+                            rightEyeFrequency: numValue,
+                          });
+                        }}
+                        sx={{
+                          fontSize: "0.9rem",
+                          transition: "all 0.3s ease-in-out",
+                        }}
+                        MenuProps={{
+                          PaperProps: {
+                            sx: {
+                              backgroundColor: darkMode
+                                ? "grey.900"
+                                : "common.white",
+                              color: darkMode ? "common.white" : "text.primary",
+                            },
+                          },
+                        }}
+                      >
+                        {frequencyOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
+                {type !== 2 && (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={type === 2 ? 6 : 4}
+                    md={type === 2 ? 3 : 6}
+                    sx={gridTransition}
+                  >
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        value={dose?.toString()}
+                        onChange={(_event, newValue) => {
+                          if (newValue) {
+                            const numValue = Number(
+                              newValue.replace(/[^0-9]/g, "")
+                            );
+                            setDose(Number(Math.max(1, numValue)));
+                          }
+                        }}
+                        freeSolo
+                        options={frequencyOptions.map((option) => option.label)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="FREQUÊNCIA"
+                            type="number"
+                            value={dose?.toString()}
+                            onChange={(event) => {
+                              const numValue = Number(event.target.value);
+                              setDose(Number(Math.max(1, numValue)));
+                            }}
+                            inputProps={{
+                              ...params.inputProps,
+                              min: 1,
+                            }}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                )}
+                {type === 2 && (
+                  <Grid item xs={12} sm={6} md={3} sx={gridTransition}>
+                    <TextField
+                      sx={{
+                        fontSize: "0.9rem",
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                      fullWidth
+                      type="number"
+                      value={ophthalmologist.leftEyeQuantity}
+                      variant="outlined"
+                      id="left-eye-quantity"
+                      label="QUANTIDADE"
+                      onChange={(event) => {
+                        if (Number(event.target.value) < 1) {
+                          // setAmount(1);
+                          setOphthalmologist({
+                            ...ophthalmologist,
+                            leftEyeQuantity: 1,
+                          });
+                        } else {
+                          // setAmount(Number(event.target.value));
+                          setOphthalmologist({
+                            ...ophthalmologist,
+                            leftEyeQuantity: Number(event.target.value),
+                          });
                         }
                       }}
-                      freeSolo
-                      options={frequencyOptions.map((option) => option.label)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="FREQUÊNCIA"
-                          type="number"
-                          value={dose?.toString()}
-                          onChange={(event) => {
-                            const numValue = Number(event.target.value);
-                            setDose(Number(Math.max(1, numValue)));
-                          }}
-                          inputProps={{
-                            ...params.inputProps,
-                            min: 1,
-                          }}
-                        />
-                      )}
                     />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+                  </Grid>
+                )}
+                {type === 2 && (
+                  <Grid item xs={12} sm={6} md={3} sx={gridTransition}>
+                    <FormControl
+                      fullWidth
+                      error={Boolean(errors.unity)}
+                      sx={{
+                        fontSize: "0.9rem",
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                    >
+                      <InputLabel id="unity-label">UNIDADE</InputLabel>
+                      <Select
+                        id="unidade"
+                        value={
+                          type === 2
+                            ? ophthalmologist.leftEyeQuantityType
+                            : unity
+                        }
+                        label="UNIDADE"
+                        labelId="unity-label"
+                        onChange={(event) => {
+                          // setUnity(String(event.target.value));
+                          if (type === 2) {
+                            setOphthalmologist({
+                              ...ophthalmologist,
+                              leftEyeQuantityType: String(event.target.value),
+                            });
+                          } else setUnity(String(event.target.value));
+                          if (errors.unity)
+                            _setErrors((prev) => ({
+                              ...prev,
+                              unity: undefined,
+                            }));
+                        }}
+                      >
+                        <MenuItem value={Unity.ML}>Mililitros (ML)</MenuItem>
+                        <MenuItem value={Unity.MG}>Miligramas (MG)</MenuItem>
+                        <MenuItem value={Unity.GTS}>Gotas (GTS)</MenuItem>
+                        <MenuItem value={Unity.CPS}>Comprimidos (CPS)</MenuItem>
+                        <MenuItem value={Unity.SC}>Subcutânea (SC)</MenuItem>
+                      </Select>
+                      {errors.unity && (
+                        <FormHelperText>{errors.unity}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                )}
+                <Grid
+                  item
+                  xs={12}
+                  sm={type === 2 ? 6 : 4}
+                  md={type === 2 ? 3 : 6}
+                  sx={gridTransition}
+                >
                   <TextField
                     sx={{
                       fontSize: "0.9rem",
@@ -341,19 +522,34 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                     }}
                     fullWidth
                     type="number"
-                    value={amount}
+                    value={ophthalmologist.rightEyeQuantity}
                     variant="outlined"
+                    id="right-eye-quantity"
                     label="QUANTIDADE"
                     onChange={(event) => {
                       if (Number(event.target.value) < 1) {
-                        setAmount(1);
+                        // setAmount(1);
+                        setOphthalmologist({
+                          ...ophthalmologist,
+                          rightEyeQuantity: 1,
+                        });
                       } else {
-                        setAmount(Number(event.target.value));
+                        // setAmount(Number(event.target.value));
+                        setOphthalmologist({
+                          ...ophthalmologist,
+                          rightEyeQuantity: Number(event.target.value),
+                        });
                       }
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={type === 2 ? 6 : 4}
+                  md={type === 2 ? 3 : 6}
+                  sx={gridTransition}
+                >
                   <FormControl
                     fullWidth
                     error={Boolean(errors.unity)}
@@ -364,13 +560,26 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                   >
                     <InputLabel id="unity-label">UNIDADE</InputLabel>
                     <Select
-                      id="unidade"
-                      value={unity}
+                      value={
+                        type === 2
+                          ? ophthalmologist.rightEyeQuantityType
+                          : unity
+                      }
                       label="UNIDADE"
                       labelId="unity-label"
+                      id="main-unity"
                       onChange={(event) => {
-                        setUnity(String(event.target.value));
-                        if (errors.unity) _setErrors((prev) => ({ ...prev, unity: undefined }));
+                        // setUnity(String(event.target.value));
+                        if (type === 2) {
+                          setOphthalmologist({
+                            ...ophthalmologist,
+                            rightEyeQuantityType: String(event.target.value),
+                          });
+                        } else {
+                          setUnity(String(event.target.value));
+                        }
+                        if (errors.unity)
+                          _setErrors((prev) => ({ ...prev, unity: undefined }));
                       }}
                     >
                       <MenuItem value={Unity.ML}>Mililitros (ML)</MenuItem>
@@ -401,34 +610,12 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                   />
                 </Grid>
                 <Grid item xs={12} sx={gridTransition}>
-                  <DateTimePicker
-                    views={["day", "hours", "minutes"]}
-                    value={startDate}
-                    label="DATA DE INÍCIO"
-                    components={{
-                      OpenPickerIcon: CalendarTodayIcon,
-                    }}
-                    onChange={(newValue) => {
-                      setStartDate(newValue);
-                      if (errors.startDate) _setErrors((prev) => ({ ...prev, startDate: undefined }));
-                    }}
-
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        helperText={errors.startDate}
-                        error={Boolean(errors.startDate)}
-                        InputProps={{
-                          ...params.InputProps,
-                          ...themedProps.textField.InputProps,
-                          inputProps: {
-                            ...params.inputProps,
-                            readOnly: true,
-                          },
-                        }}
-                      />
-                    )}
+                  <CustomDateTimePicker
+                    selectedDate={startDate}
+                    setSelectedDate={setStartDate}
+                    errors={{ selectedDate: errors.startDate }}
+                    setErrors={_setErrors}
+                    darkMode={darkMode}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} sx={gridTransition}>
