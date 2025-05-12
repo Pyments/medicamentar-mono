@@ -6,17 +6,16 @@ import {
   Button,
   TextField,
   IconButton,
-  AlertColor,
+  AlertColor
 } from "@mui/material";
 import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import axiosInstance from "@utils/axiosInstance";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Feedback } from "@components/Feedback";
+import CustomDateTimePicker from "@components/CustomDateTimePicker";
 
 interface ExamModalProps {
   open: boolean;
@@ -45,7 +44,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
   const [location, setLocation] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [doctorName, setDoctorName] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [user] = useLocalStorage<User | null>("user", null);
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -215,64 +214,13 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             onSubmit={handleSubmit}
             style={{ display: "flex", flexDirection: "column", gap: "20px" }}
           >
-            <DateTimePicker
-              views={["day", "hours", "minutes"]}
-              label="DATA E HORA"
-              minDateTime={dayjs().startOf('minute')}
-              value={selectedDate}
-              components={{
-                OpenPickerIcon: CalendarTodayIcon,
-              }}
-              onChange={(newValue) => {
-                setSelectedDate(newValue as Dayjs);
-                if (newValue) {
-                  setErrors((prev) => ({ ...prev, selectedDate: undefined }));
-                }
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  error={Boolean(errors.selectedDate)}
-                  helperText={errors.selectedDate}
-                  InputProps={{
-                    ...params.InputProps,
-                    inputProps: {
-                      ...params.inputProps,
-                      readOnly: true,
-                    },
-                    sx: {
-                      "& .MuiInputAdornment-root .MuiSvgIcon-root": {
-                        color: darkMode ? "#CDCED7" : "-moz-initial",
-                      },
-                      fontSize: "0.9rem",
-                      color: darkMode ? "common.white" : "text.primary",
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: darkMode
-                          ? "rgba(128, 128, 128, 0.6)"
-                          : "-moz-initial",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: darkMode ? "common.white" : "primary.main",
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: darkMode ? "#103952" : "primary.main",
-                      },
-                    },
-                  }}
-                  InputLabelProps={{
-                    sx: {
-                      fontSize: "0.9rem",
-                      color: darkMode ? "common.white" : "text.primary",
-                      "&.Mui-focused": {
-                        color: darkMode ? "common.white" : "primary.main",
-                      },
-                    },
-                  }}
-                />
-              )}
+            <CustomDateTimePicker 
+            selectedDate={selectedDate && selectedDate}
+            setSelectedDate={setSelectedDate}
+            errors={errors}
+            setErrors={setErrors}
+            darkMode={darkMode} 
             />
-
             {tabValue === "exame" && (
               <>
                 <TextField
