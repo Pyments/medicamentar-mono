@@ -1,5 +1,15 @@
+import {
+  Box,
+  List,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from "@mui/material";
+
+import { useState } from "react";
 import { useAuth } from "@hooks/useAuth";
 
+import LogoutModal from "./Modals/LogoutModal";
 import Pill_Icon from "@assets/icons/Pill_Icon";
 import Timer_Icon from "@assets/icons/Timer_Icon";
 import Config_Icon from "@assets/icons/Config_Icon";
@@ -15,20 +25,24 @@ import Dark_Profile_Icon from "@assets/icons/Dark_Profile_Icon.svg";
 import Dark_Stethoscope_Icon from "@assets/icons/Dark_Stethoscope_Icon.svg";
 
 import { useNavigate } from "react-router-dom";
-
 import { useTheme } from "@constants/theme/useTheme";
-import {
-  Box,
-  List,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
-} from "@mui/material";
 
 const Sidebar: React.FC = () => {
   const { logout } = useAuth();
   const { darkMode } = useTheme();
   const navigate = useNavigate();
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const onClose = () => {
+    setIsOpen(false);
+  };
+
+  const onExit = async () => {
+    await window.electron.store.delete("email");
+    await window.electron.store.delete("password");
+    await logout();
+  };
 
   const items = [
     {
@@ -60,11 +74,6 @@ const Sidebar: React.FC = () => {
       icon: darkMode ? <img src={Dark_Config_Icon} /> : <Config_Icon />,
       action: "config",
     },
-    {
-      text: "SAIR",
-      icon: darkMode ? <img src={Dark_Logout_Icon} /> : <Logout_Icon />,
-      action: "logout",
-    },
   ];
   const drawerStyles = {
     left: 0,
@@ -95,11 +104,7 @@ const Sidebar: React.FC = () => {
   };
 
   const handleItemClick = async (action: string | undefined) => {
-    if (action === "logout") {
-      await window.electron.store.delete("email");
-      await window.electron.store.delete("password");
-      await logout();
-    } else if (action === "events") {
+    if (action === "events") {
       navigate("/home");
     } else if (action === "medicine") {
       navigate("/medicine");
@@ -145,7 +150,30 @@ const Sidebar: React.FC = () => {
             />
           </ListItemButton>
         ))}
+        {/*Logout Button & Modal*/}
+        <ListItemButton sx={listItemStyles} onClick={() => setIsOpen(true)}>
+          <ListItemIcon sx={listItemIconStyles}>
+            {darkMode ? <img src={Dark_Logout_Icon} /> : <Logout_Icon />}
+          </ListItemIcon>
+          <ListItemText
+            primary={"SAIR"}
+            primaryTypographyProps={{
+              sx: {
+                fontSize: "14px",
+                fontWeight: "500",
+              },
+            }}
+            sx={{
+              flex: 1,
+              marginLeft: "12px",
+              textWrap: "nowrap",
+              display: { xs: "none", md: "block" },
+              color: darkMode ? "common.white" : "common.black",
+            }}
+          />
+        </ListItemButton>
       </List>
+      <LogoutModal isOpen={isOpen} onClose={onClose} onExit={onExit} />
     </Box>
   );
 };
