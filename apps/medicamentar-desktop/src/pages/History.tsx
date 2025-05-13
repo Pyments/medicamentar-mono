@@ -1,6 +1,7 @@
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
 import GridItem from "@components/GridItem";
+import { Loader } from "@components/Loader";
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
@@ -9,6 +10,7 @@ import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 import { longDate, shortDate } from "../types/sanitizeDate";
+
 const Typography = lazy(() => import("@mui/material/Typography"));
 
 const History = () => {
@@ -19,24 +21,29 @@ const History = () => {
   );
   const token = user?.token?.data;
   const [data, setData] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
 
-  useEffect(() => {
+  const getHistory = async () => {
+    setLoading(true);
     try {
-      const getHistory = async () => {
-        const response = await axiosInstance.get("/eventsLog", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setData(response.data.data);
-        setPageCount(response.data.totalPages);
-      };
-      getHistory();
+      const response = await axiosInstance.get(`/eventsLog?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setData(response.data.data);
+      setPageCount(response.data.totalPages);
     } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    getHistory();
   }, [token, page]);
 
   const handlePagination = (
@@ -85,6 +92,27 @@ const History = () => {
       <Header />
       <Sidebar />
       <SectionContainer>
+        {loading && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1000,
+              display: "flex",
+              flexGrow: 100,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: darkMode
+                ? "primary.darker"
+                : "background.default",
+            }}
+          >
+            <Loader />
+          </Box>
+        )}
         <Stack sx={{ alignItems: "center" }} spacing="67px">
           <Box
             sx={{

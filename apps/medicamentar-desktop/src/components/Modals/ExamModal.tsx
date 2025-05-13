@@ -15,12 +15,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 import CustomDateTimePicker from "@components/CustomDateTimePicker";
 
 interface ExamModalProps {
   open: boolean;
   onClose: () => void;
   fetchExams: () => Promise<void>;
+  showFeedback: (message: string, severity: "success" | "error") => void;
 }
 
 interface FormErrors {
@@ -37,7 +39,12 @@ interface User {
   };
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
+const ExamModal: React.FC<ExamModalProps> = ({
+  open,
+  onClose,
+  fetchExams,
+  showFeedback,
+}) => {
   const [tabValue, setTabValue] = useState("exame");
   const [isOpen] = useState<boolean>(true);
   const [examName, setExamName] = useState<string>("");
@@ -49,13 +56,15 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
 
   const tabValues = ["exame", "consulta"];
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -95,7 +104,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
     }
 
     const formattedDate = selectedDate?.toISOString();
-
+    setLoading(true);
     try {
       if (tabValue === "exame") {
         await axiosInstance.post(
@@ -110,9 +119,8 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
-        setFeedbackMessage("Exame adicionado com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
+        onClose();
+        showFeedback("Exame adicionado com sucesso!", "success");
       } else {
         await axiosInstance.post(
           "/consultation",
@@ -126,15 +134,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             headers: { Authorization: `Bearer ${user?.token.data}` },
           }
         );
-        setFeedbackMessage("Consulta adicionada com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
+        onClose();
+        showFeedback("Consulta adicionada com sucesso!", "success");
       }
       await fetchExams();
     } catch (error) {
-      setFeedbackMessage("Erro ao adicionar consulta ou exame!");
-      setFeedbackSeverity("error");
-      setFeedbackOpen(true);
+      onClose();
+      showFeedback("Erro ao adicionar consulta ou exame!", "error");
+
       console.error("Erro na requisição:", error);
     }
 
@@ -144,7 +151,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
     setDoctorName("");
     setSelectedDate(null);
     setErrors({});
-    onClose();
   };
 
   return (
@@ -153,7 +159,8 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
+        message={feedbackMessage}
+      />
       <Modal open={open} onClose={onClose}>
         <Box
           sx={{
@@ -191,7 +198,8 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
                 color: darkMode ? "primary.light" : "primary.main",
               },
               "& .MuiTabs-indicator": {
-                backgroundColor: darkMode ? "#1A8BCA" : "primary.main",
+                backgroundColor: darkMode ? "primary.light" : "primary.main",
+                color: darkMode ? "primary.light" : "primary.main",
               },
               mb: "20px",
             }}
@@ -199,9 +207,9 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
             {tabValues.map((tab) => (
               <Tab
                 sx={{
-                  fontSize: "20px",
+                  fontSize: largeFont ? "1.4rem" : "20px",
                   textTransform: "uppercase",
-                  color: darkMode ? "common.white" : "-moz-initial",
+                  color: darkMode ? "common.white" : "text.secondary",
                 }}
                 label={tab}
                 value={tab}
@@ -240,12 +248,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
                   helperText={errors.examName}
                   InputProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
+                      padding: largeFont ? "16px 14px" : "10px 14px",
                     },
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
+                      transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                     },
                   }}
                 />
@@ -271,12 +281,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
                   helperText={errors.doctorName}
                   InputProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.4rem" : "0.9rem",
+                      padding: largeFont ? "16px 14px" : "10px 14px",
                     },
                   }}
                   InputLabelProps={{
                     sx: {
-                      fontSize: "0.9rem",
+                      fontSize: largeFont ? "1.2rem" : "0.9rem",
+                      transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                     },
                   }}
                 />
@@ -300,12 +312,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
               helperText={errors.location}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -329,12 +343,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
               helperText={errors.description}
               InputProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.4rem" : "0.9rem",
+                  padding: largeFont ? "16px 14px" : "10px 14px",
                 },
               }}
               InputLabelProps={{
                 sx: {
-                  fontSize: "0.9rem",
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
                 },
               }}
             />
@@ -343,9 +359,14 @@ const ExamModal: React.FC<ExamModalProps> = ({ open, onClose, fetchExams }) => {
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: "20px", backgroundColor: "#0078B6" }}
+              sx={{ 
+                mt: "20px", 
+                backgroundColor: "#0078B6",
+                fontSize: largeFont ? "1.2rem" : "1rem",
+                padding: largeFont ? "16px" : "12px",
+              }}
             >
-              adicionar
+              {loading ? <Loader sx={{ color: "white" }} /> : "adicionar"}
             </Button>
           </form>
         </Box>

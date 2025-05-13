@@ -41,6 +41,7 @@ public class UserService {
             user.getBloodType(),
             user.getAddress(),
             user.getHeight(),
+            user.getWeigth(),
             user.getProfileImage()
         );
 
@@ -86,6 +87,7 @@ public class UserService {
                 user.getBloodType(),
                 user.getAddress(),
                 user.getHeight(),
+                user.getWeigth(),
                 user.getProfileImage()
             );
 

@@ -120,6 +120,7 @@ public class MedicationService {
             medication.setUnity(updateMedication.unity());
             medication.setAmount(updateMedication.amount());
             medication.setPeriod(updateMedication.period());
+            medication.setContinuousUse(updateMedication.isContinuousUse());
 
             if (updateMedication.type() == MedicationType.OFTALMICO) {
                 medication.setOphthalmicDetails(updateMedication.ophthalmicDetails());

@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ public class Medication {
     private UUID id;
     private String name;
     private MedicationType type;
-    private String dose;
+    private Integer dose;
     private Double amount;
     private MedicationUnity unity;
     private int period;
@@ -49,8 +50,10 @@ public class Medication {
 
     @PrePersist
     protected void onCreate() {
-        if (this.start_date != null) {
+        if (this.start_date != null && isContinuousUse == false) {
             this.end_date = this.start_date.plusDays(this.period);
+        } else {
+            this.end_date = null;
         }
     }
 

@@ -91,7 +91,7 @@ public class EventLogService {
     var response = new PaginatedResponse<List<EventLogResponse>>();
     User currentUser = tokenService.getCurrentUser();
 
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by("eventDate").descending());
 
     var history = eventLogRepository.findByUser(currentUser, pageable);
 
@@ -123,7 +123,8 @@ public class EventLogService {
                         exam.getDate(),
                         exam.getName(),
                         exam.getLocal(),
-                        exam.getDescription())).orElse(null);
+                        exam.getDescription(),
+                        exam.isCompleted())).orElse(null);
 
                     return new EventLogResponse(h.getId(), examResponse, h.getEventAction(), h.getEventDate());
 
@@ -135,7 +136,8 @@ public class EventLogService {
                             consultation.getDate(),
                             consultation.getDoctorName(),
                             consultation.getLocal(),
-                            consultation.getDescription()))
+                            consultation.getDescription(),
+                            consultation.isCompleted()))
                         .orElse(null);
 
                     return new EventLogResponse(h.getId(), consultationResponse, h.getEventAction(), h.getEventDate());

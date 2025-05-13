@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Switch,
@@ -6,18 +7,17 @@ import {
   FormControl,
   FormControlLabel,
 } from "@mui/material";
-import { useState } from "react";
 import Header from "@components/Header";
 import Sidebar from "@components/SideBar";
 import Arrow from "@assets/icons/Arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-
 import { useTheme } from "@constants/theme/useTheme";
+import { PageTitle } from "@components/PageTitle";
 
 const Config = () => {
-  const { darkMode, toggleTheme } = useTheme();
+  const { darkMode, toggleTheme, largeFont, toggleFontSize } = useTheme();
   const [switchStates, setSwitchStates] = useState({
     letrasGigantes: false,
   });
@@ -28,20 +28,13 @@ const Config = () => {
     });
   };
   const navigate = useNavigate();
+
   return (
     <ContainerUniversal>
       <Header />
       <Sidebar />
       <SectionContainer>
-        <Box
-          sx={{
-            fontSize: "2rem",
-            fontWeight: "bold",
-            color: darkMode ? "text.primary" : "primary.darker",
-          }}
-        >
-          CONFIGURAÇÕES
-        </Box>
+        <PageTitle>CONFIGURAÇÕES</PageTitle>
         <FormControl component="fieldset" variant="standard">
           <FormGroup sx={{ gap: "20px", width: "300px" }}>
             <FormControlLabel
@@ -62,15 +55,17 @@ const Config = () => {
                 borderRadius: "5px",
                 padding: "11px 30px",
                 justifyContent: "space-between",
+                "& .MuiFormControlLabel-label": {
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                },
               }}
             />
             <FormControlLabel
               control={
                 <Switch
-                  checked={switchStates.letrasGigantes}
-                  onChange={handleChange}
+                  checked={largeFont}
+                  onChange={toggleFontSize}
                   name="letrasGigantes"
-                  aria-label="Letras Gigantes"
                 />
               }
               label="LETRAS GIGANTES"
@@ -82,6 +77,9 @@ const Config = () => {
                 borderRadius: "5px",
                 padding: "11px 30px",
                 justifyContent: "space-between",
+                "& .MuiFormControlLabel-label": {
+                  fontSize: largeFont ? "1.2rem" : "0.9rem",
+                },
               }}
             />
             <FormControlLabel

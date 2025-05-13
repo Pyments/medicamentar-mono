@@ -1,43 +1,63 @@
 import axiosInstance from "@utils/axiosInstance";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
-import { Box, Grid, Modal, Button, Select, Checkbox, MenuItem, FormGroup, TextField, InputLabel, Typography, IconButton, FormControl, Autocomplete, FormControlLabel, AlertColor } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Modal,
+  Button,
+  Select,
+  Checkbox,
+  MenuItem,
+  FormGroup,
+  TextField,
+  InputLabel,
+  Typography,
+  IconButton,
+  AlertColor,
+  FormControl,
+  Autocomplete,
+  FormControlLabel,
+} from "@mui/material";
 import { useTheme } from "@theme/useTheme";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { Feedback } from "@components/Feedback";
-
+import { Loader } from "@components/Loader";
 
 interface ModalEditMedicineProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  fetchMedications: () => Promise<void>;
-  currentMedication: {
-    id: string;
-    name: string;
-    type: string;
-    dose: number;
-    amount: number;
-    unity: string;
-    continuo: boolean;
-    period: number;
-    startDate: dayjs.Dayjs;
-  } | null;
+  isOpen: boolean;
   id: string | null;
+  onClose: () => void;
+  fetchMedications: () => Promise<void>;
+  currentMedication: MedicationProps | null;
+  showFeedback: (message: string, severity: "success" | "error") => void;
+}
+interface MedicationProps {
+  id: string;
+  name: string;
+  type: string;
+  dose: number;
+  unity: string;
+  amount: number;
+  period: number;
+  endDate: dayjs.Dayjs;
+  startDate: dayjs.Dayjs;
+  continuousUse: boolean;
 }
 
 interface FormErrors {
   name?: string;
   type?: string;
   dose?: string;
-  amount?: string;
   unity?: string;
-  continuo?: string;
+  amount?: string;
   period?: string;
-  startDate?: string;
   endDate?: string;
+  continuo?: string;
+  startDate?: string;
 }
 
 const frequencyOptions = [
@@ -82,25 +102,32 @@ enum Unity {
 }
 
 
-const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedication }: ModalEditMedicineProps) => {
-  const { darkMode } = useTheme();
-  const [isOpen] = useState<boolean>(true);
+const ModalEditMedicine = ({id, isOpen, onClose, fetchMedications, currentMedication, showFeedback }: ModalEditMedicineProps) => {
+  const { darkMode, largeFont } = useTheme();
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
   );
   const [name, setName] = useState<string>("");
-  const [tipoMedicamento, setTipoMedicamento] = useState<number>(Type[currentMedication?.type as keyof typeof Type]);
+  const [tipoMedicamento, setTipoMedicamento] = useState<number>(
+    Type[currentMedication?.type as keyof typeof Type]
+  );
   const [dose, setDose] = useState<number>(1);
   const [amount, setAmount] = useState<number>(1);
-  const [unity, setUnity] = useState<number>(Unity[currentMedication?.unity as keyof typeof Unity]);
-  const [continuo, setContinuo] = useState<boolean>(currentMedication?.continuo || false);
+  const [unity, setUnity] = useState<number>(
+    Unity[currentMedication?.unity as keyof typeof Unity]
+  );
+  const [continuo, setContinuo] = useState<boolean>(
+    currentMedication?.continuousUse || false
+  );
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
@@ -110,20 +137,20 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
   };
   if (!isOpen) return null;
 
-
   useEffect(() => {
-    if (open && currentMedication) {
+    if (isOpen && currentMedication) {
       setName(currentMedication.name || "");
       setTipoMedicamento(tipoMedicamento);
       setDose(currentMedication.dose || 1);
       setAmount(currentMedication.amount || 1);
       setUnity(unity);
-      setContinuo(currentMedication.continuo);
+      setContinuo(currentMedication.continuousUse);
       setPeriod(currentMedication.dose || 1);
-      setStartDate(currentMedication.startDate ? dayjs(currentMedication.startDate) : null);
+      setStartDate(
+        currentMedication.startDate ? dayjs(currentMedication.startDate) : null
+      );
     }
   }, [open, currentMedication]);
-
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -132,7 +159,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
       _setErrors(validationErrors);
       return;
     }
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -146,7 +173,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
           unity: Number(unity),
           period: period,
           isContinuousUse: continuo,
-          start_date: startDate
+          start_date: startDate,
           /*ophthalmicDetails: {
             leftEyeFrequency: null, 
             leftEyeQuantity: null, 
@@ -154,21 +181,17 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
             rightEyeFrequency: null, 
             rightEyeQuantity: null, 
             rightEyeDrops: null, 
-          }, */
+            }, */
         },
       });
-      setFeedbackMessage("Medicamento editado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
-      setTimeout(() => {
-        setOpen(false);
-      }, 1500);
+      onClose();
+      showFeedback("Medicamento editado com sucesso!", "success");
       fetchMedications();
     } catch (error) {
       console.error("Erro na requisição:", error);
-      setFeedbackMessage("Erro ao editar medicamento!");
-      setFeedbackSeverity("error");
-      setFeedbackOpen(true);
+      showFeedback("Medicamento editado com sucesso!", "success");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -180,8 +203,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
         sx: {
           "& .MuiInputAdornment-root .MuiSvgIcon-root": {
             color: darkMode ? "#CDCED7" : "-moz-initial",
+            fontSize: largeFont ? "1.4rem" : "1.2rem",
           },
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.4rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -196,7 +220,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
       },
       InputLabelProps: {
         sx: {
-          fontSize: "0.9rem",
+          fontSize: largeFont ? "1.2rem" : "0.9rem",
           color: darkMode ? "common.white" : "text.primary",
           "&.Mui-focused": {
             color: darkMode ? "#103952" : "primary.main",
@@ -216,30 +240,31 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
         severity={feedbackSeverity}
-        message={feedbackMessage} />
-      <Modal open={open} onClose={() => setOpen(false)}>
+        message={feedbackMessage}
+      />
+      <Modal open={isOpen} onClose={onClose}>
         <Box
           component="div"
           sx={{
             position: "absolute",
-            p: "60px",
+            p: largeFont ? "40px" : "60px",
             top: "50%",
-            gap: "10px",
+            gap: largeFont ? "5px" : "10px",
             left: "50%",
             boxShadow: 24,
             display: "flex",
             borderRadius: "5px",
             alignItems: "center",
             flexDirection: "column",
-            width: { xs: "1", md: "720px" },
+            width: { xs: "90%", md: "720px" },
             height: { xs: "1", md: "auto" },
             transform: "translate(-50%, -50%)",
             backgroundColor: darkMode ? "grey.900" : "common.white",
-            transition: "width 0.3s ease-in-out",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           <IconButton
-            onClick={() => setOpen(false)}
+            onClick={onClose}
             sx={{
               top: 30,
               right: 30,
@@ -256,7 +281,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
               fontSize: "1.8rem",
               fontWeight: 600,
               textAlign: "center",
-              color: darkMode ? "common.white" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             }}
           >
             EDITAR MEDICAMENTO
@@ -278,7 +303,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       value={tipoMedicamento}
                       label="TIPO DE MEDICAMENTO"
                       labelId="type-label"
-                      onChange={(event) => setTipoMedicamento(Number(event.target.value))}
+                      onChange={(event) =>
+                        setTipoMedicamento(Number(event.target.value))
+                      }
                     >
                       <MenuItem value={Type.ORAL}>ORAL</MenuItem>
                       <MenuItem value={Type.TOPICO}>TÓPICO</MenuItem>
@@ -286,7 +313,9 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       <MenuItem value={Type.INTRANASAL}>INTRANASAL</MenuItem>
                       <MenuItem value={Type.INJETAVEL}>INJETÁVEL</MenuItem>
                       <MenuItem value={Type.SUBLINGUAL}>SUBLINGUAL</MenuItem>
-                      <MenuItem value={Type.TRANSDERMICO}>TRANSDÉRMICO</MenuItem>
+                      <MenuItem value={Type.TRANSDERMICO}>
+                        TRANSDÉRMICO
+                      </MenuItem>
                       <MenuItem value={Type.RETAL}>RETAL</MenuItem>
                       <MenuItem value={Type.VAGINAL}>VAGINAL</MenuItem>
                     </Select>
@@ -304,7 +333,8 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                     fullWidth
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) _setErrors((prev) => ({ ...prev, name: undefined }));
+                      if (errors.name)
+                        _setErrors((prev) => ({ ...prev, name: undefined }));
                     }}
                     error={Boolean(errors.name)}
                     helperText={errors.name}
@@ -379,11 +409,19 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                       labelId="unity-label"
                       onChange={(event) => setUnity(Number(event.target.value))}
                     >
-                      <MenuItem value={Unity.mililitros}>Mililitros (ML)</MenuItem>
-                      <MenuItem value={Unity.miligramas}>Miligramas (MG)</MenuItem>
+                      <MenuItem value={Unity.mililitros}>
+                        Mililitros (ML)
+                      </MenuItem>
+                      <MenuItem value={Unity.miligramas}>
+                        Miligramas (MG)
+                      </MenuItem>
                       <MenuItem value={Unity.gotas}>Gotas (GTS)</MenuItem>
-                      <MenuItem value={Unity.comprimidos}>Comprimidos (CPS)</MenuItem>
-                      <MenuItem value={Unity.subcutanea}>Subcutânea (SC)</MenuItem>
+                      <MenuItem value={Unity.comprimidos}>
+                        Comprimidos (CPS)
+                      </MenuItem>
+                      <MenuItem value={Unity.subcutanea}>
+                        Subcutânea (SC)
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -413,7 +451,11 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                     }}
                     onChange={(newValue) => {
                       setStartDate(newValue);
-                      if (errors.startDate) _setErrors((prev) => ({ ...prev, startDate: undefined }));
+                      if (errors.startDate)
+                        _setErrors((prev) => ({
+                          ...prev,
+                          startDate: undefined,
+                        }));
                     }}
                     renderInput={(params) => (
                       <TextField
@@ -427,6 +469,23 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                           inputProps: {
                             ...params.inputProps,
                             readOnly: true,
+                            style: {
+                              fontSize: largeFont ? "1.4rem" : "0.9rem",
+                              padding: largeFont ? "16px 14px" : "10px 14px",
+                            },
+                          },
+                        }}
+                        InputLabelProps={{
+                          ...params.InputLabelProps,
+                          ...themedProps.textField.InputLabelProps,
+                          style: {
+                            fontSize: largeFont ? "1.2rem" : "0.9rem",
+                            transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                          },
+                        }}
+                        sx={{
+                          "& .MuiFormHelperText-root": {
+                            fontSize: largeFont ? "1rem" : "0.75rem",
                           },
                         }}
                       />
@@ -497,7 +556,7 @@ const ModalEditMedicine = ({ open, setOpen, id, fetchMedications, currentMedicat
                   fontSize: "1.2rem",
                 }}
               >
-                SALVAR
+                {loading ? <Loader sx={{ color: "white" }} /> : "SALVAR"}
               </Button>
             </FormGroup>
           </form>

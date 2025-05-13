@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  Grid,
-  Tooltip,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, Card, Tooltip, Typography, IconButton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
@@ -17,30 +10,34 @@ import { useTheme } from "@constants/theme/useTheme";
 
 interface CardUniversalProps {
   type: "medication" | "events";
-  title: string;
-  continuousUse?: boolean;
   dose?: number;
-  qtpDose?: number;
+  title: string;
   period?: number;
-  dateTime: dayjs.Dayjs | string;
+  qtpDose?: number;
+  onEdit?: () => void;
   description?: string;
   onDelete?: () => void;
-  onEdit?: () => void;
+  endDate?: dayjs.Dayjs;
+  dateTime?: dayjs.Dayjs;
+  continuousUse?: boolean;
+  startDate?: dayjs.Dayjs;
 }
 
 const CardUniversal: React.FC<CardUniversalProps> = ({
   type,
-  title,
-  continuousUse,
   dose,
-  qtpDose,
+  title,
   period,
+  qtpDose,
+  endDate,
   dateTime,
+  startDate,
   description,
-  onDelete,
+  continuousUse,
   onEdit,
+  onDelete,
 }) => {
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const isMedication = type === "medication";
   const isEvents = type === "events";
   const location = useLocation().pathname;
@@ -48,8 +45,8 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   const titleCard = {
     width: 1,
     minWidth: "30%",
-    fontSize: "12px",
-    maxHeigth: "50px",
+    fontSize: largeFont ? "1.2rem" : "12px",
+    maxHeight: "50px",
     marginInline: "5%",
     fontWeight: "bold",
     textAlign: "center",
@@ -57,8 +54,9 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     py: location === "/home" ? "5px" : 0,
     color: darkMode ? "text.primary" : "background.default",
   };
+
   const cardButton = {
-    height: "30px",
+    height: largeFont ? "40px" : "30px",
     display: "flex",
     cursor: "pointer",
     boxShadow: "none",
@@ -67,17 +65,34 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   const infoCard = {
-    fontSize: "12px",
+    fontSize: largeFont ? "1rem" : "12px",
     wordWrap: "break-word",
     color: darkMode ? "common.black" : "common.black",
   };
 
+  const buttonText = {
+    fontSize: largeFont ? "0.9rem" : "8px",
+    fontWeight: "700",
+    textAlign: "center",
+    color: darkMode ? "background.paper" : "background.default",
+  };
+
+  const dateText = {
+    fontSize: largeFont ? "1rem" : "12px",
+    fontWeight: "700",
+    paddingLeft: "5px",
+    textAlign: "center",
+    color: "common.black",
+  };
+
+  const iconSize = largeFont ? "1.5rem" : "1.5rem";
+
   return (
-    <Grid item xs={12} sm={6} md={4}>
+    <>
       {isMedication && (
         <Card
           sx={{
-            minHeight: 260,
+            minHeight: largeFont ? 300 : 260,
             display: "flex",
             maxWidth: "300px",
             minWidth: "120px",
@@ -87,6 +102,12 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             justifyContent: "space-between",
             width: { xs: "95%", sm: "95%", md: "90%", lg: "99%" },
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
+            "& .MuiIconButton-root": {
+              "& svg": {
+                width: largeFont ? "16px" : "10px",
+                height: largeFont ? "16px" : "10px",
+              },
+            },
           }}
         >
           <Box
@@ -125,37 +146,73 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           >
             <Box
               sx={{
-                width: "219px",
-                maxWidth: "100%",
-              }}
-            >
-              <Typography sx={infoCard}>
-                USO CONTÍNUO: {continuousUse ? "SIM" : "NÃO"}
-              </Typography>
-              <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
-              <Typography sx={infoCard}>DOSE: {dose}</Typography>
-              <Typography sx={infoCard}>PERÍODO: {period}</Typography>
-            </Box>
-            <Box
-              sx={{
-                margin: "6%",
+                height: "100%",
+                width: "100%",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "column",
               }}
             >
-              <AccessAlarmOutlinedIcon></AccessAlarmOutlinedIcon>
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  paddingLeft: "5px",
-                  textAlign: "center",
-                  color: "common.black",
+                  width: "219px",
+                  maxWidth: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  padding: "16px",
+                  alignSelf: "center",
                 }}
               >
-                {longDate(dateTime)}
-              </Typography>
+                {continuousUse ? (
+                  <Typography sx={infoCard}>USO CONTÍNUO</Typography>
+                ) : (
+                  <></>
+                )}
+                <Typography sx={infoCard}>QUANTIDADE: {qtpDose}</Typography>
+                <Typography sx={infoCard}>
+                  {dose} em {dose} horas
+                </Typography>
+                <Typography sx={infoCard}>PERÍODO: {period} dias</Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  width: "219px",
+                  gap: "8px",
+                  padding: "16px",
+                  alignSelf: "center",
+                  flex: 1,
+                  marginTop: "auto",
+                  marginBottom: "auto",
+                }}
+              >
+                <AccessAlarmOutlinedIcon />
+                <Typography
+                  sx={{
+                    fontSize: largeFont ? "1rem" : "12px",
+                    fontWeight: "700",
+                    color: "common.black",
+                    textAlign: "left",
+                    flex: 1,
+                  }}
+                >
+                  {isMedication ? (
+                    <>
+                      Início: {longDate(startDate)}
+                      {!continuousUse && (
+                        <>
+                          <br />
+                          Fim: {longDate(endDate)}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    longDate(dateTime)
+                  )}
+                </Typography>
+              </Box>
             </Box>
           </Box>
           <Box
@@ -164,14 +221,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               backgroundColor: darkMode ? "text.primary" : "text.secondary",
             }}
           >
-            <Typography
-              sx={{
-                fontSize: "8px",
-                fontWeight: "700",
-                textAlign: "center",
-                color: darkMode ? "background.paper" : "background.default",
-              }}
-            >
+            <Typography sx={buttonText}>
               CLIQUE APÓS TOMAR O MEDICAMENTO
             </Typography>
           </Box>
@@ -181,12 +231,14 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
       {isEvents && (
         <Card
           sx={{
-            height: 180,
-            margin: "auto",
+            minHeight: 260,
             display: "flex",
+            width: "300px",
+            minWidth: "120px",
+            boxShadow: "none",
+            borderRadius: "5px",
             flexDirection: "column",
             backgroundColor: darkMode ? "text.secondary" : "background.paper",
-            width: { xs: "100%", sm: "95%", md: "90%", lg: "90%" },
           }}
         >
           <Box
@@ -194,6 +246,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               px: "8px",
               py: "4px",
               backgroundColor: darkMode ? "primary.dark" : "primary.light",
+              height: "auto",
             }}
           >
             <Box
@@ -223,48 +276,42 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           </Box>
           <Box
             sx={{
-              width: "100%",
               height: "100%",
+              width: "100%",
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              padding: "16px",
+              gap: "12px",
+              flex: 1,
             }}
           >
-            <Box
+            <Typography
               sx={{
-                height: "70%",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
+                fontSize: largeFont ? "1rem" : "12px",
+                color: "#62636C",
+                textAlign: "center",
               }}
             >
-              <Typography
-                sx={{
-                  fontSize: 12,
-                  width: "auto",
-                  color: "#62636C",
-                  maxWidth: "150px",
-                  textAlign: "center",
-                }}
-              >
-                {description}
-              </Typography>
-              <Typography
-                sx={{
-                  m: 1,
-                  fontSize: 15,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "common.black",
-                }}
-              >
-                {typeof dateTime === 'string' ? longDate(dateTime) : dateTime.toString()}
-              </Typography>
-            </Box>
+              {description}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.2rem" : "15px",
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "common.black",
+              }}
+            >
+              {dateTime
+                ? longDate(dateTime as string | dayjs.Dayjs)
+                : "Data não disponível"}
+            </Typography>
           </Box>
         </Card>
       )}
-    </Grid>
+    </>
   );
 };
 export default CardUniversal;

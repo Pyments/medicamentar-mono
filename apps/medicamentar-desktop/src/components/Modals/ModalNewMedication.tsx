@@ -11,11 +11,11 @@ import {
   InputLabel,
   Typography,
   IconButton,
+  AlertColor,
   FormControl,
   Autocomplete,
-  FormControlLabel,
-  AlertColor,
   FormHelperText,
+  FormControlLabel,
 } from "@mui/material";
 
 import dayjs from "dayjs";
@@ -27,6 +27,7 @@ import CustomDateTimePicker from "@components/CustomDateTimePicker";
 
 import { useTheme } from "@theme/useTheme";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
 
 interface FormErrors {
   name?: string;
@@ -41,9 +42,10 @@ interface FormErrors {
 
 interface NewMedicationProps {
   type: number;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  isOpen: boolean;
+  onClose: () => void;
   fetchMedications: () => void;
+  showFeedback: (message: string, severity: "success" | "error") => void;
 }
 
 const frequencyOptions = [
@@ -67,15 +69,20 @@ const periodOptions = [
   { value: 30, label: "30 Dias" },
 ];
 
-const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationProps) => {
-  const { darkMode } = useTheme();
-  const [isOpen] = useState<boolean>(true);
+const NewMedication = ({
+  type,
+  isOpen,
+  onClose,
+  fetchMedications,
+  showFeedback,
+}: NewMedicationProps) => {
+  const { darkMode, largeFont } = useTheme();
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
   );
   const [name, setName] = useState<string>("");
-  const [dose, setDose] = useState<number>(1);
+  const [dose, setDose] = useState<number | null>(null);
   const [amount, setAmount] = useState<number>(1);
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
@@ -93,8 +100,10 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   });
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const [feedbackMessage] = useState("");
+  const [feedbackSeverity] = useState<AlertColor>("success");
+
+  const [loading, setLoading] = useState(false);
 
   enum Unity {
     ML = 0,
@@ -139,7 +148,8 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
     });
     return newErrors;
   }; */
-
+  console.log("unity", unity);
+  console.log("ophthalmologist", ophthalmologist);
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -155,14 +165,13 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   // Request
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      _setErrors(validationErrors); // Atualiza os erros
-      return; // Se tiver erro, não faz a requisição
+      _setErrors(validationErrors);
+      return;
     }
-
+    setLoading(true);
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -187,16 +196,14 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
           },
         },
       });
-      setFeedbackMessage("Medicamento adicionado com sucesso!");
-      setFeedbackSeverity("success");
-      setFeedbackOpen(true);
-
+      onClose()
+      showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
-      setTimeout(() => {
-        setOpen(false);
-      }, 1500);
     } catch (error) {
       console.error("Erro na requisição:", error);
+      showFeedback("Erro ao adicionar medicamento", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -206,8 +213,9 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   //       sx: {
   //         "& .MuiInputAdornment-root .MuiSvgIcon-root": {
   //           color: darkMode ? "#CDCED7" : "-moz-initial",
+            // fontSize: largeFont ? "1.4rem" : "1.2rem",
   //         },
-  //         fontSize: "0.9rem",
+  //         fontSize: largeFont ? "1.4rem" : "0.9rem",
   //         color: darkMode ? "common.white" : "text.primary",
   //         "& .MuiOutlinedInput-notchedOutline": {
   //           borderColor: darkMode ? "rgba(128, 128, 128, 0.6)" : "-moz-initial",
@@ -222,7 +230,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   //     },
   //     InputLabelProps: {
   //       sx: {
-  //         fontSize: "0.9rem",
+  //         fontSize: largeFont ? "1.2rem" : "0.9rem",
   //         color: darkMode ? "common.white" : "text.primary",
   //         "&.Mui-focused": {
   //           color: darkMode ? "#103952" : "primary.main",
@@ -235,7 +243,6 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
   const gridTransition = {
     transition: "all 0.3s ease-in-out",
   };
-  console.log(unity);
   return (
     <>
       <Feedback
@@ -244,7 +251,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
         severity={feedbackSeverity}
         message={feedbackMessage}
       />
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <Modal open={isOpen} onClose={() => onClose()}>
         <Box
           component="div"
           sx={{
@@ -266,7 +273,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
           }}
         >
           <IconButton
-            onClick={() => setOpen(false)}
+            onClick={() => onClose()}
             sx={{
               top: 30,
               right: 30,
@@ -283,7 +290,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
               fontSize: "1.8rem",
               fontWeight: 600,
               textAlign: "center",
-              color: darkMode ? "common.white" : "primary.main",
+              color: darkMode ? "primary.light" : "primary.main",
             }}
           >
             NOVO MEDICAMENTO
@@ -488,6 +495,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                               ...ophthalmologist,
                               leftEyeQuantityType: String(event.target.value),
                             });
+                            setUnity(String(event.target.value));
                           } else setUnity(String(event.target.value));
                           if (errors.unity)
                             _setErrors((prev) => ({
@@ -575,6 +583,7 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                             ...ophthalmologist,
                             rightEyeQuantityType: String(event.target.value),
                           });
+                          setUnity(String(event.target.value));
                         } else {
                           setUnity(String(event.target.value));
                         }
@@ -679,10 +688,11 @@ const NewMedication = ({ open, setOpen, type, fetchMedications }: NewMedicationP
                   my: "30px",
                   py: "18px",
                   fontWeight: 800,
+                  backgroundColor: darkMode ? "primary.light" : "primary.main",
                   fontSize: "1.2rem",
                 }}
               >
-                SALVAR
+                {loading ? <Loader sx={{ color: "white" }} /> : "SALVAR"}
               </Button>
             </FormGroup>
           </form>

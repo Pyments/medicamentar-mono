@@ -7,17 +7,21 @@ import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import { Box, Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
+import { Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
+import { Loader } from "@components/Loader";
+import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+import { PageTitle } from "@components/PageTitle";
 
 interface ExamData {
   id: string;
-  name: string;
+  name?: string;
+  doctorName?: string;
   date: dayjs.Dayjs;
   local: string;
   description: string;
@@ -27,166 +31,237 @@ interface User {
     data: string;
   };
 }
+interface FeedbackState {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+}
+interface ModalState {
+  add: boolean;
+  delete: boolean;
+  edit: boolean;
+}
+
 const Exam = () => {
   const { darkMode } = useTheme();
-  const [open, setOpen] = useState<boolean>(false);
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
-  const [exams, setExams] = useState<ExamData[]>([]);
-  const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
 
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
-  const [selectedExam, setSelectedExam] = useState<ExamData | null>(null);
+  const [events, setEvents] = useState<{
+    exams: ExamData[];
+    consultations: ExamData[];
+  }>({ exams: [], consultations: [] });
+  const [pagination, setPagination] = useState({
+    page: 0,
+    pageCount: 0,
+  });
+  const [modals, setModals] = useState<ModalState>({
+    add: false,
+    delete: false,
+    edit: false,
+  });
+  const [selected, setSelected] = useState<{
+    id: string | null;
+    item: ExamData | null;
+  }>({ id: null, item: null });
+  const [feedback, setFeedback] = useState<FeedbackState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<AlertColor>("success");
+  const showFeedback = (message: string, severity: AlertColor) => {
+    setFeedback({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  const sortedExams = useActiveAndSorted(events.exams, {
+    type: "exam",
+    dateField: "date",
+  });
+
+  const sortedConsultations = useActiveAndSorted(events.consultations, {
+    type: "exam",
+    dateField: "date",
+  });
 
   const fetchExams = async () => {
+    setLoading(true);
     try {
-      const response = await axiosInstance.get(`/exam?page=${page}&size=9`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await axiosInstance.get(
+        `/consultations?page=${pagination.page}&size=9`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setEvents({
+        consultations: response.data.data.consultations || [],
+        exams: response.data.data.exams || [],
       });
-      setExams(response.data.data);
-      setPageCount(response.data.totalPages);
+
+      setPagination((prev) => ({
+        ...prev,
+        pageCount: response.data.data.totalPages || 0,
+      }));
     } catch (error) {
       console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const allEvents = [...sortedExams, ...sortedConsultations];
 
   useEffect(() => {
     if (token) {
       fetchExams();
     }
-  }, [token, page]);
-
-  const handleModal = () => {
-    setOpen(!open);
-  };
-
-  const openDeleteModal = (id: string) => {
-    setSelectedExamId(id);
-    setDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setSelectedExamId(null);
-    setDeleteModalOpen(false);
-  };
-
-  const handleDeleteExams = async () => {
-    if (selectedExamId) {
-      try {
-        await axiosInstance.delete(`/exam/${selectedExamId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setExams(exams.filter((med) => med.id !== selectedExamId));
-        setFeedbackMessage("Exame ou consulta deletado com sucesso!");
-        setFeedbackSeverity("success");
-        setFeedbackOpen(true);
-        closeDeleteModal();
-      } catch (error) {
-        setFeedbackMessage("Erro ao deletar exame ou consulta!");
-        setFeedbackSeverity("error");
-        setFeedbackOpen(true);
-        closeDeleteModal();
-      }
-    }
-  };
-
-  const openEditModal = (exam: ExamData) => {
-    setSelectedExam(exam);
-    setEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setSelectedExamId(null);
-    setEditModalOpen(false);
-  };
+  }, [token, pagination.page]);
 
   const handlePagination = (
     _event: React.ChangeEvent<unknown>,
     value: number
   ) => {
-    setPage(value - 1);
+    setPagination((prev) => ({ ...prev, page: value - 1 }));
+  };
+
+  const handleModal = () => {
+    setModals((prev) => ({ ...prev, add: !prev.add }));
+  };
+
+  const openDeleteModal = (id: string) => {
+    setSelected({ id, item: null });
+    setModals((prev) => ({ ...prev, delete: true }));
+  };
+
+  const closeDeleteModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, delete: false }));
+  };
+
+  const openEditModal = (exam: ExamData) => {
+    setSelected({ id: exam.id, item: exam });
+    setModals((prev) => ({ ...prev, edit: true }));
+  };
+
+  const closeEditModal = () => {
+    setSelected({ id: null, item: null });
+    setModals((prev) => ({ ...prev, edit: false }));
+  };
+
+  const handleDeleteExams = async () => {
+    if (selected.id) {
+      closeDeleteModal();
+      setLoading(true);
+      try {
+        await axiosInstance.delete(`/consultation/${selected.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setEvents((prev) => ({
+          exams: prev.exams.filter((item) => item.id !== selected.id),
+          consultations: prev.consultations.filter(
+            (item) => item.id !== selected.id
+          ),
+        }));
+
+        showFeedback("Exame ou consulta deletado com sucesso!", "success");
+      } catch (error) {
+        showFeedback("Erro ao deletar exame!", "error");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
     <ContainerUniversal>
       <Feedback
-        open={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        severity={feedbackSeverity}
-        message={feedbackMessage} />
+        open={feedback.open}
+        message={feedback.message}
+        severity={feedback.severity}
+        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
+      />
       <Header />
       <SideBar />
       <SectionContainer>
         <Stack
           flexDirection="row"
-          justifyContent="space-between"
           alignItems="center"
+          justifyContent="space-between"
         >
-          <Typography
-            sx={{
-              color: "primary.dark",
-            }}
-          >
-            <Box
-              sx={{
-                p: 0,
-                mt: 0,
-                fontSize: "2rem",
-                fontWeight: "bold",
-                textAlign: { xs: "center", md: "left" },
-                color: darkMode ? "common.white" : "primary.main",
-              }}
-            >
-              CONSULTAS E EXAMES
-            </Box>
-          </Typography>
+          <PageTitle>CONSULTAS E EXAMES</PageTitle>
           <AddBtn handleModal={handleModal} text="consulta ou exame" />
         </Stack>
         <Grid container spacing={3} pb="75px">
-          {exams.length > 0 ? (
-            exams.map((exam) => (
-              <CardUniversal
-                key={exam.id}
-                title={exam.name}
-                dateTime={exam.date}
-                description={exam.local}
-                type="events"
-                onDelete={() => openDeleteModal(exam.id)}
-                onEdit={() => openEditModal(exam)}
-              />
-            ))
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%",
+                }}
+              >
+                <Loader
+                  sx={{ color: darkMode ? "common.white" : "primary.main" }}
+                />
+              </Stack>
+            </Grid>
+          ) : allEvents.length > 0 ? (
+            allEvents.map((event: ExamData) => {
+              const isConsultation = !!event.doctorName;
+              return (
+                <Grid item key={event.id}>
+                  <CardUniversal
+                    title={
+                      isConsultation
+                        ? `${event.doctorName || ""}`
+                        : event.name || ""
+                    }
+                    dateTime={event.date}
+                    description={event.local || event.description}
+                    type="events"
+                    onDelete={() => openDeleteModal(event.id)}
+                    onEdit={() => openEditModal(event)}
+                  />
+                </Grid>
+              );
+            })
           ) : (
-            <Typography
-              sx={{
-                margin: "auto",
-                mt: "50px",
-                color: darkMode ? "common.white" : "commonm.dark",
-              }}
-            >
-              Nenhuma consulta ou exame encontrado.
-            </Typography>
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "commonm.dark",
+                }}
+              >
+                Nenhuma consulta ou exame encontrado.
+              </Typography>
+            </Grid>
           )}
-          {pageCount > 1 && (
+          {allEvents.length > 0 && pagination.pageCount > 1 && (
             <Grid
               item
               xs={12}
               sx={{ display: "flex", justifyContent: "center", mt: 2 }}
             >
               <Pagination
-                page={page + 1}
+                page={pagination.page + 1}
                 color="primary"
-                count={pageCount}
+                count={pagination.pageCount}
                 onChange={handlePagination}
                 sx={{
                   "& .MuiPaginationItem-ellipsis": {
@@ -204,22 +279,34 @@ const Exam = () => {
           )}
         </Grid>
       </SectionContainer>
-      {open && (
-        <ExamModal open={open} onClose={handleModal} fetchExams={fetchExams} />
+      {modals.add && (
+        <ExamModal
+          open={modals.add}
+          onClose={handleModal}
+          fetchExams={fetchExams}
+          showFeedback={showFeedback}
+        />
       )}
-      {isDeleteModalOpen && (
+      {modals.delete && (
         <ModalDelete
-          isOpen={isDeleteModalOpen}
+          isOpen={modals.delete}
           onClose={closeDeleteModal}
           onDelete={handleDeleteExams}
         />
       )}
-      {isEditModalOpen && (
+      {modals.edit && selected.item && (
         <ExamEditModal
-          currentExam={selectedExam}
-          isOpen={isEditModalOpen}
-          onClose={() => closeEditModal()}
+          currentExam={{
+            id: selected.item.id,
+            date: selected.item.date,
+            local: selected.item.local,
+            name: selected.item.name || "",
+            description: selected.item.description,
+          }}
+          isOpen={modals.edit}
           fetchExams={fetchExams}
+          onClose={closeEditModal}
+          showFeedback={showFeedback}
         />
       )}
     </ContainerUniversal>

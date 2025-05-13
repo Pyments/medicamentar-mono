@@ -4,22 +4,30 @@ import { useState, useEffect } from "react";
 import CardUniversal from "@components/CardUniversal";
 import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
 import { SectionContainer } from "@components/SectionContainer";
-import { Box, Grid, Pagination, Typography } from "@mui/material";
+import { Box, Grid, Pagination, Stack, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
+import { PageTitle } from "@components/PageTitle";
 
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
+import { Loader } from "@components/Loader";
+import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 
 interface EventData {
   id: string;
   type: string;
-  name: string;
-  date: string;
-  local: string;
-  unity: string;
-  amount: string;
-  doctorName: string;
-  description: string;
+  name?: string;
+  date?: string;
+  local?: string;
+  unity?: string;
+  amount?: number;
+  doctorName?: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  continuousUse?: boolean;
+  dose?: string;
+  period?: number;
 }
 interface User {
   token: {
@@ -34,9 +42,13 @@ const Home: React.FC = () => {
   const token = user?.token.data;
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoading(true);
+
       try {
         const response = await axiosInstance.get(
           `/events?page=${page}&size=9`,
@@ -48,16 +60,16 @@ const Home: React.FC = () => {
           response.data.data.consultationResponse || [];
         const examEvents = response.data.data.examResponse || [];
         const medicationEvents = response.data.data.medicationResponse || [];
-        const combinedEvents = [
+        setPageCount(response.data.totalPages);
+        setEvents([
           ...consultationEvents,
           ...examEvents,
           ...medicationEvents,
-        ];
-        handlePagination;
-        setPageCount(response.data.totalPages);
-        setEvents(combinedEvents);
+        ]);
       } catch (error) {
         console.error("Erro na requisição:", error);
+      } finally {
+        setLoading(false);
       }
     };
     if (token) {
@@ -72,62 +84,103 @@ const Home: React.FC = () => {
     setPage(value - 1);
   };
 
+  const sortedEvents = useActiveAndSorted(events, {
+    type: "event",
+    continuousField: "continuousUse",
+    startDateField: "startDate",
+    endDateField: "endDate",
+    dateField: "date",
+  });
+
+  const pageSize = 9;
+  const totalPages = Math.ceil(sortedEvents.length / pageSize);
+  const paginatedEvents = sortedEvents.slice(
+    page * pageSize,
+    page * pageSize + pageSize
+  );
+
   return (
     <ContainerUniversal>
       <Header />
       <SideBar />
       <SectionContainer>
-        <Typography
+        <PageTitle>EVENTOS PRÓXIMOS</PageTitle>
+
+        <Grid
+          container
+          spacing={3}
+          pb="75px"
           sx={{
-            color: "primary.dark",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 2,
           }}
         >
-          <Box
-            sx={{
-              p: 0,
-              mt: 0,
-              fontSize: "2rem",
-              fontWeight: "bold",
-              textAlign: { xs: "center", md: "left" },
-              color: darkMode ? "common.white" : "primary.main",
-            }}
-          >
-            EVENTOS PRÓXIMOS
-          </Box>
-        </Typography>
+          {loading ? (
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: "50vh",
+                  width: "100%",
+                }}
+              >
+                <Loader
+                  sx={{
+                    color: darkMode ? "common.white" : "primary.main",
+                  }}
+                />
+              </Stack>
+            </Grid>
+          ) : paginatedEvents.length > 0 ? (
+            paginatedEvents.map((event) => {
+              const isMedication = "startDate" in event;
+              const title = event.name || event.doctorName || "Sem título";
 
-        <Grid container spacing={3} pb="75px">
-          {events.length > 0 ? (
-            events.map((event) => (
-              <CardUniversal
-                key={event.id}
-                type="events"
-                title={event.name || event.doctorName}
-                description={event.description || event.type}
-                dateTime={event.date}
-              />
-            ))
+              return (
+                <Grid item key={event.id}>
+                  <CardUniversal
+                    type={isMedication ? "medication" : "events"}
+                    title={title}
+                    description={event.description || event.type}
+                    dateTime={!isMedication ? event.date : undefined}
+                    startDate={isMedication ? event.startDate : undefined}
+                    endDate={isMedication ? event.endDate : undefined}
+                    continuousUse={isMedication ? event.continuousUse : undefined}
+                    dose={isMedication ? Number(event.dose) : undefined}
+                    qtpDose={isMedication ? event.amount : undefined}
+                    period={isMedication ? event.period : undefined}
+                  />
+                </Grid>
+              );
+            })
           ) : (
-            <Typography
-              sx={{
-                margin: "auto",
-                mt: "50px",
-                color: darkMode ? "common.white" : "commonm.dark",
-              }}
-            >
-              Nenhum evento encontrado.
-            </Typography>
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  margin: "auto",
+                  mt: "50px",
+                  color: darkMode ? "common.white" : "common.dark",
+                }}
+              >
+                Nenhum evento encontrado.
+              </Typography>
+            </Grid>
           )}
-          {pageCount > 1 && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+
+          {paginatedEvents.length > 0 && totalPages > 1 && (
+            <Box
+              gridColumn="1 / -1"
+              display="flex"
+              justifyContent="center"
+              mt={2}
             >
               <Pagination
                 page={page + 1}
                 color="primary"
-                count={pageCount}
+                count={totalPages}
                 onChange={handlePagination}
                 sx={{
                   "& .MuiPaginationItem-ellipsis": {
@@ -141,9 +194,10 @@ const Home: React.FC = () => {
                   },
                 }}
               />
-            </Grid>
+            </Box>
           )}
         </Grid>
+
       </SectionContainer>
     </ContainerUniversal>
   );
