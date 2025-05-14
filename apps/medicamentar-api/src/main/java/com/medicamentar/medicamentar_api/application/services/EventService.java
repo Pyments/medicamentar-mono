@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.eventDto.EventResponse;
+import com.medicamentar.medicamentar_api.application.dtos.eventDto.UnifiedEventResponse;
 import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
@@ -92,37 +93,74 @@ public class EventService {
                             C.isCompleted()))
                     .collect(Collectors.toList());
 
-            List<Object> allEvents = new ArrayList<>();
-            allEvents.addAll(medicationsResponses);
-            allEvents.addAll(examsResponses);
-            allEvents.addAll(consultationsResponses);
+            List<UnifiedEventResponse> allEvents = new ArrayList<>();
+            ZonedDateTime now = ZonedDateTime.now();
+            
+            // Converter medicamentos
+            medicationsResponses.forEach(med -> {
+                if (!med.isCompleted()) {
+                    ZonedDateTime eventDate = med.nextDose();
+                    // Se nextDose for nulo, usa startDate
+                    if (eventDate == null) {
+                        eventDate = med.startDate();
+                    }
+                    // Só adiciona se tiver uma data válida
+                    if (eventDate != null) {
+                        allEvents.add(new UnifiedEventResponse(
+                            med.id(),
+                            med.name(),
+                            "MEDICATION",
+                            eventDate,
+                            "Dose: " + med.dose() + " " + med.unity(),
+                            med.isCompleted(),
+                            med
+                        ));
+                    }
+                }
+            });
+
+            examsResponses.forEach(exam -> {
+                ZonedDateTime examDate = exam.date();
+                if (!exam.isCompleted() && examDate != null && examDate.isAfter(now)) {
+                    allEvents.add(new UnifiedEventResponse(
+                        exam.id(),
+                        exam.name(),
+                        "EXAM",
+                        examDate,
+                        exam.description(),
+                        exam.isCompleted(),
+                        exam
+                    ));
+                }
+            });
+
+            consultationsResponses.forEach(cons -> {
+                ZonedDateTime consultationDate = cons.date();
+                if (!cons.isCompleted() && consultationDate != null && consultationDate.isAfter(now)) {
+                    allEvents.add(new UnifiedEventResponse(
+                        cons.id(),
+                        cons.doctorName(),
+                        "CONSULTATION",
+                        consultationDate,
+                        cons.description(),
+                        cons.isCompleted(),
+                        cons
+                    ));
+                }
+            });
 
             allEvents.sort((a, b) -> {
-                ZonedDateTime dateA = getEventDate(a);
-                ZonedDateTime dateB = getEventDate(b);
-                return dateB.compareTo(dateA); 
+                if (a.date() == null && b.date() == null) return 0;
+                if (a.date() == null) return 1;
+                if (b.date() == null) return -1;
+                return a.date().compareTo(b.date());
             });
 
             int start = (int) pageable.getOffset();
             int end = Math.min((start + pageable.getPageSize()), allEvents.size());
-            List<Object> pagedEvents = allEvents.subList(start, end);
+            List<UnifiedEventResponse> pagedEvents = allEvents.subList(start, end);
 
-            List<MedicationResponse> pagedMedications = pagedEvents.stream()
-                    .filter(e -> e instanceof MedicationResponse)
-                    .map(e -> (MedicationResponse) e)
-                    .collect(Collectors.toList());
-
-            List<ExamResponse> pagedExams = pagedEvents.stream()
-                    .filter(e -> e instanceof ExamResponse)
-                    .map(e -> (ExamResponse) e)
-                    .collect(Collectors.toList());
-
-            List<ConsultationResponse> pagedConsultations = pagedEvents.stream()
-                    .filter(e -> e instanceof ConsultationResponse)
-                    .map(e -> (ConsultationResponse) e)
-                    .collect(Collectors.toList());
-
-            EventResponse eventResponse = new EventResponse(pagedMedications, pagedConsultations, pagedExams);
+            EventResponse eventResponse = new EventResponse(pagedEvents);
 
             response.setData(eventResponse);
             response.setMessage("Exibindo eventos.");
@@ -136,16 +174,5 @@ public class EventService {
         }
 
         return response;
-    }
-
-    private ZonedDateTime getEventDate(Object event) {
-        if (event instanceof MedicationResponse) {
-            return ((MedicationResponse) event).startDate();
-        } else if (event instanceof ExamResponse) {
-            return ((ExamResponse) event).date();
-        } else if (event instanceof ConsultationResponse) {
-            return ((ConsultationResponse) event).date();
-        }
-        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault()); // Fallback to Unix epoch
     }
 }
