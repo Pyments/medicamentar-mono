@@ -148,8 +148,6 @@ const NewMedication = ({
     });
     return newErrors;
   }; */
-  console.log("unity", unity);
-  console.log("ophthalmologist", ophthalmologist);
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 

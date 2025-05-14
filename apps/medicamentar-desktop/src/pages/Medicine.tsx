@@ -28,15 +28,18 @@ import { Loader } from "@components/Loader";
 
 interface MedicationData {
   id: string;
-  name: string;
-  type: string;
-  dose: number;
-  unity: string;
   amount: number;
-  period: number;
   continuousUse: boolean;
-  startDate: dayjs.Dayjs;
+  dose: number;
   endDate: dayjs.Dayjs;
+  name: string;
+  nextDose: dayjs.Dayjs;
+  ophthalmicDetails: Object | null;
+  period: number;
+  startDate: dayjs.Dayjs;
+  type: string;
+  unity: string;
+  isCompleted: boolean;
 }
 interface User {
   token: {
@@ -220,10 +223,8 @@ const Medicine = () => {
           </Typography>
           <AddBtn handleModal={openTypeModal} text="medicamento" />
         </Stack>
-
         <Grid container spacing={3} pb="75px">
           {loading ? (
-            <Grid item xs={12}>
               <Stack
                 direction="row"
                 justifyContent="center"
@@ -234,21 +235,24 @@ const Medicine = () => {
                   sx={{ color: darkMode ? "common.white" : "primary.main" }}
                 />
               </Stack>
-            </Grid>
           ) : medications.length > 0 ? (
             medications.map((medication) => (
               <Grid item key={medication.id}>
                 <CardUniversal
-                  type={medication.type}
-                  title={medication.name}
+                  amount={medication.amount}
                   continuousUse={medication.continuousUse}
-                  qtpDose={medication.amount}
                   dose={medication.dose}
+                  endDate={medication.endDate}
+                  name={medication.name}
+                  nextDose={medication.nextDose}
+                  ophthalmicDetails={medication.ophthalmicDetails}
                   period={medication.period}
+                  startDate={medication.startDate}
+                  type={medication.type}
+                  unity={medication.unity}
+                  isCompleted={medication.isCompleted}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication)}
-                  startDate={medication.startDate}
-                  endDate={medication.endDate}
                 />
               </Grid>
             ))
@@ -318,6 +322,7 @@ const Medicine = () => {
             display="flex"
             justifyContent="center"
             mt={2}
+            width="100%"
           >
             <Pagination
               page={pagination.page + 1}

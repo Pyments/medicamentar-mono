@@ -21,7 +21,7 @@ const LogoutModal: React.FC<ModalDeleteProps> = ({
   const { darkMode } = useTheme();
   const styleContentBox = {
     width: "100%",
-    height: "30px",
+    height: "50px",
     display: "flex",
     cursor: "pointer",
     alignItems: "center",
@@ -29,12 +29,15 @@ const LogoutModal: React.FC<ModalDeleteProps> = ({
   };
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle sx={{ backgroundColor: darkMode ? "#1E1F24" : "" }}>
+      <DialogTitle
+        sx={{
+          backgroundColor: darkMode ? "#1E1F24" : "",
+        }}
+      >
         <Typography
           sx={{
-            fontWeight: "500",
-            paddingLeft: "30px",
-            paddingRight: "30px",
+            paddingX: "30px",
+            fontWeight: "800",
             color: darkMode ? " secondary.text" : " primary.text",
           }}
         >
@@ -42,19 +45,36 @@ const LogoutModal: React.FC<ModalDeleteProps> = ({
         </Typography>
       </DialogTitle>
       <DialogContent
-        sx={{ display: "flex", justifyContent: "space-between", padding: 0 }}
+        sx={{
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
-        <Box
-          sx={{ ...styleContentBox, backgroundColor: "primary.light" }}
-          onClick={onClose}
+        <Typography
+          sx={{
+            mx: "auto",
+            mb: "20px",
+            fontSize: "1rem",
+            fontWeight: "500",
+            color: darkMode ? " secondary.text" : " primary.text",
+          }}
         >
-          <Typography sx={{ color: "#FFF" }}>CANCELAR</Typography>
-        </Box>
-        <Box
-          onClick={onExit}
-          sx={{ ...styleContentBox, backgroundColor: "grey.200" }}
-        >
-          <Typography sx={{ color: "red" }}>DELETAR</Typography>
+          Você terá que logar novamente no sistema
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Box
+            sx={{ ...styleContentBox, backgroundColor: "primary.light" }}
+            onClick={onClose}
+          >
+            <Typography sx={{ color: "#FFF" }}>CANCELAR</Typography>
+          </Box>
+          <Box
+            onClick={onExit}
+            sx={{ ...styleContentBox, backgroundColor: "grey.200" }}
+          >
+            <Typography sx={{ color: "red" }}>SAIR</Typography>
+          </Box>
         </Box>
       </DialogContent>
     </Dialog>

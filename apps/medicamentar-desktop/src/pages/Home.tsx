@@ -19,7 +19,7 @@ interface EventData {
   type: string;
   name?: string;
   local?: string;
-  unity?: number;
+  unity?: string;
   amount?: number;
   date?: Dayjs;
   endDate?: Dayjs;
@@ -27,9 +27,11 @@ interface EventData {
   doctorName?: string;
   description?: string;
   continuousUse?: boolean;
+  isCompleted: boolean;
   dose?: string;
   period?: number;
 }
+
 interface User {
   token: {
     data: string;
@@ -56,12 +58,8 @@ const Home: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        const consultationEvents =
-          response.data.data.consultationResponse || [];
-        const examEvents = response.data.data.examResponse || [];
-        const medicationEvents = response.data.data.medicationResponse || [];
         setPageCount(response.data.totalPages);
-        setEvents([...consultationEvents, ...examEvents, ...medicationEvents]);
+        setEvents(response.data.data.events);
       } catch (error) {
         console.error("Erro na requisição:", error);
       } finally {
@@ -101,17 +99,7 @@ const Home: React.FC = () => {
       <SideBar />
       <SectionContainer>
         <PageTitle>EVENTOS PRÓXIMOS</PageTitle>
-
-        <Grid
-          container
-          spacing={3}
-          pb="75px"
-          sx={{
-            gap: 2,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          }}
-        >
+        <Grid container spacing={3} pb="75px">
           {loading ? (
             <Grid item xs={12}>
               <Stack
@@ -139,15 +127,16 @@ const Home: React.FC = () => {
                 <Grid item key={event.id}>
                   <CardUniversal
                     type={event.type}
+                    isCompleted={event.isCompleted}
                     title={title}
                     unity={event.unity}
                     description={event.description || undefined}
-                    dateTime={!isMedication ? event.date : undefined}
+                    date={event.date || undefined}
+                    local={event.local || undefined}
                     startDate={isMedication ? event.startDate : undefined}
                     endDate={isMedication ? event.endDate : undefined}
-                    continuousUse={
-                      isMedication ? event.continuousUse : undefined
-                    }
+                    continuousUse={event.continuousUse || undefined}
+                    amount={event.amount || undefined}
                     dose={isMedication ? Number(event.dose) : undefined}
                     qtpDose={isMedication ? event.amount : undefined}
                     period={isMedication ? event.period : undefined}
@@ -175,6 +164,7 @@ const Home: React.FC = () => {
               display="flex"
               justifyContent="center"
               mt={2}
+              width="100%"
             >
               <Pagination
                 page={page + 1}

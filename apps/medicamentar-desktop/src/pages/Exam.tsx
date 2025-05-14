@@ -7,7 +7,14 @@ import ExamModal from "@components/Modals/ExamModal";
 import CardUniversal from "@components/CardUniversal";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
-import { Grid, Typography, Stack, Pagination, AlertColor } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Stack,
+  Pagination,
+  AlertColor,
+  Box,
+} from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
@@ -24,6 +31,8 @@ interface ExamData {
   doctorName?: string;
   date: dayjs.Dayjs;
   local: string;
+  type: string;
+  isCompleted: boolean;
   description: string;
 }
 interface User {
@@ -48,10 +57,7 @@ const Exam = () => {
   const token = user?.token.data;
   const [loading, setLoading] = useState(false);
 
-  const [events, setEvents] = useState<{
-    exams: ExamData[];
-    consultations: ExamData[];
-  }>({ exams: [], consultations: [] });
+  const [events, setEvents] = useState<ExamData[]>([]);
   const [pagination, setPagination] = useState({
     page: 0,
     pageCount: 0,
@@ -101,11 +107,7 @@ const Exam = () => {
         }
       );
 
-      setEvents({
-        consultations: response.data.data.consultations || [],
-        exams: response.data.data.exams || [],
-      });
-
+      setEvents(response.data.data.events);
       setPagination((prev) => ({
         ...prev,
         pageCount: response.data.data.totalPages || 0,
@@ -116,8 +118,6 @@ const Exam = () => {
       setLoading(false);
     }
   };
-
-  const allEvents = [...events.exams, ...events.consultations];
 
   useEffect(() => {
     if (token) {
@@ -136,8 +136,8 @@ const Exam = () => {
     setModals((prev) => ({ ...prev, add: !prev.add }));
   };
 
-  const openDeleteModal = (id: string) => {
-    setSelected({ id, item: null });
+  const openDeleteModal = (event: ExamData) => {
+    setSelected({ id: event.id, item: event });
     setModals((prev) => ({ ...prev, delete: true }));
   };
 
@@ -157,25 +157,39 @@ const Exam = () => {
   };
 
   const handleDeleteExams = async () => {
-    if (selected.id) {
+    if (selected.id && selected.item) {
       closeDeleteModal();
       setLoading(true);
+
+      // Get the type directly from the event and convert to lowercase for the URL
+      const type = selected.item.type.toLowerCase();
+
+      console.log(
+        `Deleting ${type} with ID: ${selected.id}, Type: ${selected.item.type}`
+      );
+
       try {
-        const response = await axiosInstance.delete(
-          `/consultation/${selected.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        await axiosInstance.delete(`/${type}/${selected.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Fetch updated list after deletion
+        fetchExams();
+
+        const isConsultation = selected.item.type === "CONSULTATION";
+        showFeedback(
+          `${isConsultation ? "Consulta" : "Exame"} deletado com sucesso!`,
+          "success"
         );
-        setEvents({
-          exams: response.data.data.consultations,
-          consultations: response.data.data.exams,
-        }),
-          showFeedback("Exame ou consulta deletado com sucesso!", "success");
       } catch (error) {
-        showFeedback("Erro ao deletar exame!", "error");
+        const isConsultation = selected.item.type === "CONSULTATION";
+        showFeedback(
+          `Erro ao deletar ${isConsultation ? "consulta" : "exame"}!`,
+          "error"
+        );
+        console.error(`Error deleting ${type}:`, error);
       } finally {
         setLoading(false);
       }
@@ -203,36 +217,32 @@ const Exam = () => {
         </Stack>
         <Grid container spacing={3} pb="75px">
           {loading ? (
-            <Grid item xs={12}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  minHeight: "50vh",
-                  width: "100%",
-                }}
-              >
-                <Loader
-                  sx={{ color: darkMode ? "common.white" : "primary.main" }}
-                />
-              </Stack>
-            </Grid>
-          ) : allEvents.length > 0 ? (
-            allEvents.map((event: ExamData) => {
-              const isConsultation = !!event.doctorName;
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              sx={{
+                minHeight: "50vh",
+                width: "100%",
+              }}
+            >
+              <Loader
+                sx={{ color: darkMode ? "common.white" : "primary.main" }}
+              />
+            </Stack>
+          ) : events.length > 0 ? (
+            events.map((event: ExamData) => {
+              console.log(event.type);
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
-                    type="events"
-                    title={
-                      isConsultation
-                        ? `${event.doctorName || ""}`
-                        : event.name || ""
-                    }
-                    dateTime={event.date}
-                    description={event.local || event.description}
-                    onDelete={() => openDeleteModal(event.id)}
+                    name={event.name}
+                    date={event.date}
+                    isCompleted={event.isCompleted}
+                    description={event.description}
+                    local={event.local}
+                    doctorName={event.doctorName}
+                    onDelete={() => openDeleteModal(event)}
                     onEdit={() => openEditModal(event)}
                   />
                 </Grid>
@@ -251,11 +261,13 @@ const Exam = () => {
               </Typography>
             </Grid>
           )}
-          {allEvents.length > 0 && pagination.pageCount > 1 && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+          {events.length > 0 && pagination.pageCount > 1 && (
+            <Box
+              gridColumn="1 / -1"
+              display="flex"
+              justifyContent="center"
+              mt={2}
+              width="100%"
             >
               <Pagination
                 page={pagination.page + 1}
@@ -274,7 +286,7 @@ const Exam = () => {
                   },
                 }}
               />
-            </Grid>
+            </Box>
           )}
         </Grid>
       </SectionContainer>

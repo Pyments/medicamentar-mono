@@ -1,5 +1,5 @@
 import { Box, Card, Tooltip, Typography, IconButton } from "@mui/material";
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
 import DeleteOutlineOutlinedIcon from "@assets/icons/DeleteOutlineOutlinedIcon";
@@ -9,57 +9,67 @@ import { longDate } from "../types/sanitizeDate";
 import { useTheme } from "@constants/theme/useTheme";
 
 interface CardUniversalProps {
-  type: string;
+  title?: string;
+  isCompleted: boolean;
+
+  type?: string;
   dose?: number;
-  title: string;
-  unity?: number;
+  unity?: string;
+  amount?: number;
   period?: number;
   qtpDose?: number;
   onEdit?: () => void;
-  description?: string;
   onDelete?: () => void;
   endDate?: dayjs.Dayjs;
-  dateTime?: dayjs.Dayjs;
   continuousUse?: boolean;
   startDate?: dayjs.Dayjs;
+  nextDose?: dayjs.Dayjs;
+  ophthalmicDetails?: Object | null;
+
+  name?: string;
+  doctorName?: string;
+  local?: string;
+  date?: dayjs.Dayjs;
+  description?: string;
 }
 
 const CardUniversal: React.FC<CardUniversalProps> = ({
-  type,
-  dose,
   title,
-  unity,
-  period,
-  qtpDose,
-  endDate,
-  dateTime,
-  startDate,
-  // description,
+  isCompleted,
+
+  amount,
   continuousUse,
+  dose,
+  endDate,
+  name,
+  nextDose,
+  //ophthalmicDetails,
+  period,
+  startDate,
+  // type,
+  unity,
+
+  date,
+  local,
+  doctorName,
+  description,
+
   onEdit,
   onDelete,
 }) => {
   const { darkMode, largeFont } = useTheme();
-  // const location = useLocation().pathname;
-  console.log(type);
-  const Unity: Array<string> = [
-    "MiliLitros(ml)",
-    "Miligramas(mg)",
-    "Gotas",
-    "Comprimido/s",
-    "Subcutânea",
-  ];
+  const location = useLocation().pathname;
 
   const cardRoot = {
-    flex: 1,
-    height: 1,
+    width: "300px",
+    height: "100%",
     display: "flex",
-    minWidth: "120px",
     boxShadow: "none",
     minHeight: "280px",
     borderRadius: "5px",
     flexDirection: "column",
     justifyContent: "space-between",
+    filter: isCompleted ? "brightness(0.65) grayscale(1)" : null,
     backgroundColor: darkMode ? "text.secondary" : "background.paper",
     "& .MuiIconButton-root": {
       "& svg": {
@@ -70,15 +80,47 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   const titleCard = {
-    width: 1,
-    py: "6px",
+    p: "6px",
+    width: "100%",
+    maxHeight: "90px",
     fontWeight: "bold",
+    overflowY: "auto",
     textAlign: "center",
     wordWrap: "break-word",
-    fontSize: largeFont ? "1.2rem" : "1rem",
+    fontSize: largeFont ? "1.4rem" : "1rem",
     color: darkMode ? "text.primary" : "background.default",
+    "&::-webkit-scrollbar": {
+      width: "10px",
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      outline: "1px solid white",
+    },
+  };
+  const descriptionStyle = {
+    my: "auto",
+    overflowY: "scroll",
+    maxHeight: "100px",
+    fontSize: largeFont ? "1.3rem" : "1rem",
+    height: "100%",
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      outline: "1px solid slategrey",
+    },
   };
 
+  const infoBoxStyle = {
+    flex: 1,
+    gap: "6px",
+    padding: "6px",
+    display: "flex",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  };
   const cardButton = {
     display: "flex",
     paddingY: "8px",
@@ -91,7 +133,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   };
 
   const infoCard = {
-    fontSize: largeFont ? "1rem" : "12px",
+    fontSize: largeFont ? "1.3rem" : "1.1rem",
     wordWrap: "break-word",
     color: darkMode ? "common.black" : "common.black",
   };
@@ -99,16 +141,16 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   const buttonText = {
     fontWeight: "700",
     textAlign: "center",
-    fontSize: largeFont ? "0.9rem" : "8px",
+    fontSize: largeFont ? "1.3rem" : "1rem",
     color: darkMode ? "background.paper" : "background.default",
   };
 
   const dateText = {
-    fontSize: largeFont ? "1rem" : "12px",
-    color: "common.black",
-    paddingLeft: "5px",
-    fontWeight: "700",
     textAlign: "left",
+    fontWeight: "700",
+    paddingLeft: "5px",
+    color: "common.black",
+    fontSize: largeFont ? "1.2rem" : "1rem",
   };
 
   return (
@@ -123,59 +165,67 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           backgroundColor: darkMode ? "primary.dark" : "primary.main",
         }}
       >
-        <Tooltip title="Editar" placement="top">
-          <IconButton onClick={onEdit}>
-            <EditOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-
-        <Typography sx={titleCard}>{title}</Typography>
-
-        <Tooltip title="Deletar" placement="top">
-          <IconButton onClick={onDelete}>
-            <DeleteOutlineOutlinedIcon />
-          </IconButton>
-        </Tooltip>
+        {location !== "/home" && (
+          <Tooltip title="Editar" placement="top-end">
+            <IconButton onClick={onEdit}>
+              <EditOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        <Typography sx={titleCard}>{title || name || doctorName}</Typography>
+        {location !== "/home" && (
+          <Tooltip title="Deletar" placement="top-start">
+            <IconButton onClick={onDelete}>
+              <DeleteOutlineOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
       <Box
         sx={{
+          flex: 1,
           display: "flex",
+          padding: "10px",
           alignItems: "center",
           flexDirection: "column",
-          justifyContent: "center",
+          justifyContent: "start",
         }}
       >
         <Box
           sx={{
             gap: "8px",
+            width: "100%",
             display: "flex",
             paddingX: "6px",
             flexDirection: "column",
           }}
         >
           {continuousUse ? (
-            <Typography sx={infoCard}>USO CONTÍNUO</Typography>
+            <Typography sx={infoCard}>Uso contínuo</Typography>
           ) : null}
           {unity ? (
             <Typography sx={infoCard}>
-              {qtpDose} {Unity[unity]}
+              {amount} {unity}
             </Typography>
           ) : null}
-          <Typography sx={infoCard}>
-            {dose} em {dose} horas
-          </Typography>
-          <Typography sx={infoCard}>PERÍODO: {period} dias</Typography>
-          <Box
-            sx={{
-              flex: 1,
-              gap: "6px",
-              padding: "6px",
-              display: "flex",
-              alignSelf: "center",
-              alignItems: "center",
-              justifyContent: "flex-start",
-            }}
-          >
+          {dose ? (
+            <Typography sx={infoCard}>
+              {dose} em {dose} horas
+            </Typography>
+          ) : null}
+          {period ? (
+            <Typography sx={infoCard}>Período: {period} dias</Typography>
+          ) : null}
+          {local ? (
+            <Typography sx={{ ...descriptionStyle, textAlign: "center" }}>
+              {local}
+            </Typography>
+          ) : null}
+          {description ? (
+            <Typography sx={descriptionStyle}>{description}</Typography>
+          ) : null}
+
+          <Box sx={infoBoxStyle}>
             <AccessAlarmOutlinedIcon />
             <Typography
               sx={{
@@ -186,20 +236,30 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                 fontSize: largeFont ? "1rem" : "12px",
               }}
             >
-              {dateTime ? (
-                <Typography sx={dateText}>{longDate(dateTime)}</Typography>
+              {date ? (
+                <Typography sx={dateText}>{longDate(date)}</Typography>
               ) : (
                 <>
                   <Typography sx={dateText}>
                     Início: {longDate(startDate)}
                   </Typography>
-                  <Typography sx={dateText}>
-                    Fim: {longDate(endDate)}
-                  </Typography>
                 </>
               )}
+              {endDate ? (
+                <Typography sx={dateText}>Fim: {longDate(endDate)}</Typography>
+              ) : null}
             </Typography>
           </Box>
+          {true ? (
+            <Typography sx={{ width: "100%", textAlign: "center" }}>
+              Próxima dose: {longDate(nextDose)}
+            </Typography>
+          ) : null}
+          {true ? (
+            <Typography sx={{ width: "100%", textAlign: "center" }}>
+              {longDate(nextDose)}
+            </Typography>
+          ) : null}
         </Box>
       </Box>
       <Box sx={cardButton}>
