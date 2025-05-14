@@ -48,6 +48,7 @@ public class MedicationService {
         medication.setPeriod(medicationRegister.period());
         medication.setContinuousUse(medicationRegister.isContinuousUse());
         medication.setStart_date(medicationRegister.start_date());
+        medication.setNextDose(medicationRegister.start_date());
         medication.setUser(currentUser);
 
         if (medicationRegister.type() == MedicationType.OFTALMICO && medicationRegister.ophthalmicDetails() != null) {
