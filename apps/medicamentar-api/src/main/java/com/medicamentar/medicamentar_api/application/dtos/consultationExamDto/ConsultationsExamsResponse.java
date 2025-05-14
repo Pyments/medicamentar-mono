@@ -2,10 +2,6 @@ package com.medicamentar.medicamentar_api.application.dtos.consultationExamDto;
 
 import java.util.List;
 
-import com.medicamentar.medicamentar_api.application.dtos.consultationDto.ConsultationResponse;
-import com.medicamentar.medicamentar_api.application.dtos.examDto.ExamResponse;
-
 public record ConsultationsExamsResponse(
-    List<ConsultationResponse> consultations,
-    List<ExamResponse> exams
+    List<UnifiedConsultationExamResponse> events
 ){}
