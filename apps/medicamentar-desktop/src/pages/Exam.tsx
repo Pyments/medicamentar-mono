@@ -15,7 +15,7 @@ import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
-import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+// import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 import { PageTitle } from "@components/PageTitle";
 
 interface ExamData {
@@ -79,7 +79,7 @@ const Exam = () => {
     });
   };
 
-  const sortedExams = useActiveAndSorted(events.exams, {
+  /* const sortedExams = useActiveAndSorted(events.exams, {
     type: "exam",
     dateField: "date",
   });
@@ -87,7 +87,7 @@ const Exam = () => {
   const sortedConsultations = useActiveAndSorted(events.consultations, {
     type: "exam",
     dateField: "date",
-  });
+  }); */
 
   const fetchExams = async () => {
     setLoading(true);
@@ -117,7 +117,7 @@ const Exam = () => {
     }
   };
 
-  const allEvents = [...sortedExams, ...sortedConsultations];
+  const allEvents = [...events.exams, ...events.consultations];
 
   useEffect(() => {
     if (token) {
@@ -161,20 +161,19 @@ const Exam = () => {
       closeDeleteModal();
       setLoading(true);
       try {
-        await axiosInstance.delete(`/consultation/${selected.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setEvents((prev) => ({
-          exams: prev.exams.filter((item) => item.id !== selected.id),
-          consultations: prev.consultations.filter(
-            (item) => item.id !== selected.id
-          ),
-        }));
-
-        showFeedback("Exame ou consulta deletado com sucesso!", "success");
+        const response = await axiosInstance.delete(
+          `/consultation/${selected.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setEvents({
+          exams: response.data.data.consultations,
+          consultations: response.data.data.exams,
+        }),
+          showFeedback("Exame ou consulta deletado com sucesso!", "success");
       } catch (error) {
         showFeedback("Erro ao deletar exame!", "error");
       } finally {
@@ -225,6 +224,7 @@ const Exam = () => {
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
+                    type="events"
                     title={
                       isConsultation
                         ? `${event.doctorName || ""}`
@@ -232,7 +232,6 @@ const Exam = () => {
                     }
                     dateTime={event.date}
                     description={event.local || event.description}
-                    type="events"
                     onDelete={() => openDeleteModal(event.id)}
                     onEdit={() => openEditModal(event)}
                   />

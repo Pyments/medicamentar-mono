@@ -23,8 +23,8 @@ import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
-import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
-import { PageTitle } from "@components/PageTitle";
+// import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+// import { PageTitle } from "@components/PageTitle";
 
 interface MedicationData {
   id: string;
@@ -239,6 +239,7 @@ const Medicine = () => {
             medications.map((medication) => (
               <Grid item key={medication.id}>
                 <CardUniversal
+                  type={medication.type}
                   title={medication.name}
                   continuousUse={medication.continuousUse}
                   qtpDose={medication.amount}
@@ -248,7 +249,6 @@ const Medicine = () => {
                   onEdit={() => openEditModal(medication)}
                   startDate={medication.startDate}
                   endDate={medication.endDate}
-                  type="medication"
                 />
               </Grid>
             ))

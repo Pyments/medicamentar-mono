@@ -12,19 +12,20 @@ import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
+import { Dayjs } from "dayjs";
 
 interface EventData {
   id: string;
   type: string;
   name?: string;
-  date?: string;
   local?: string;
-  unity?: string;
+  unity?: number;
   amount?: number;
+  date?: Dayjs;
+  endDate?: Dayjs;
+  startDate?: Dayjs;
   doctorName?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
   continuousUse?: boolean;
   dose?: string;
   period?: number;
@@ -41,9 +42,8 @@ const Home: React.FC = () => {
   const [user] = useLocalStorage<User | null>("user", null);
   const token = user?.token.data;
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState<number>(0);
+  const [_pageCount, setPageCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -61,11 +61,7 @@ const Home: React.FC = () => {
         const examEvents = response.data.data.examResponse || [];
         const medicationEvents = response.data.data.medicationResponse || [];
         setPageCount(response.data.totalPages);
-        setEvents([
-          ...consultationEvents,
-          ...examEvents,
-          ...medicationEvents,
-        ]);
+        setEvents([...consultationEvents, ...examEvents, ...medicationEvents]);
       } catch (error) {
         console.error("Erro na requisição:", error);
       } finally {
@@ -111,9 +107,9 @@ const Home: React.FC = () => {
           spacing={3}
           pb="75px"
           sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: 2,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
           }}
         >
           {loading ? (
@@ -135,20 +131,23 @@ const Home: React.FC = () => {
               </Stack>
             </Grid>
           ) : paginatedEvents.length > 0 ? (
-            paginatedEvents.map((event) => {
+            events.map((event) => {
               const isMedication = "startDate" in event;
               const title = event.name || event.doctorName || "Sem título";
 
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
-                    type={isMedication ? "medication" : "events"}
+                    type={event.type}
                     title={title}
-                    description={event.description || event.type}
+                    unity={event.unity}
+                    description={event.description || undefined}
                     dateTime={!isMedication ? event.date : undefined}
                     startDate={isMedication ? event.startDate : undefined}
                     endDate={isMedication ? event.endDate : undefined}
-                    continuousUse={isMedication ? event.continuousUse : undefined}
+                    continuousUse={
+                      isMedication ? event.continuousUse : undefined
+                    }
                     dose={isMedication ? Number(event.dose) : undefined}
                     qtpDose={isMedication ? event.amount : undefined}
                     period={isMedication ? event.period : undefined}
@@ -197,7 +196,6 @@ const Home: React.FC = () => {
             </Box>
           )}
         </Grid>
-
       </SectionContainer>
     </ContainerUniversal>
   );
