@@ -52,7 +52,7 @@ public class ConsultationService {
         PaginatedResponse<List<ConsultationResponse>> response = new PaginatedResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndCompleted(
+        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndIsCompleted(
                 currentUser, false, PageRequest.of(page, size));
 
         List<ConsultationResponse> consultationResponses = consultations.getContent().stream()
@@ -77,7 +77,7 @@ public class ConsultationService {
         PaginatedResponse<List<ConsultationResponse>> response = new PaginatedResponse<>();
         User currentUser = tokenService.getCurrentUser();
 
-        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndCompleted(
+        Page<Consultation> consultations = this.consultationRepo.findByUserAndDeletedAtIsNullAndIsCompleted(
                 currentUser, true, PageRequest.of(page, size));
 
         List<ConsultationResponse> consultationResponses = consultations.getContent().stream()

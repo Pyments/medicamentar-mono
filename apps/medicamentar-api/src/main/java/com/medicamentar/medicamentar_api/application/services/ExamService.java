@@ -37,7 +37,7 @@ public class ExamService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndCompleted(currentUser, false, pageable);
+        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndIsCompleted(currentUser, false, pageable);
 
         List<ExamResponse> examsResponses = examsPage.getContent().stream()
                 .map(exam -> new ExamResponse(
@@ -64,7 +64,7 @@ public class ExamService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndCompleted(currentUser, true, pageable);
+        Page<Exam> examsPage = repository.findByUserAndDeletedAtIsNullAndIsCompleted(currentUser, true, pageable);
 
         List<ExamResponse> examsResponses = examsPage.getContent().stream()
                 .map(exam -> new ExamResponse(

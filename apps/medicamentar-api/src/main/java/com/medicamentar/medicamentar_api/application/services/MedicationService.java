@@ -1,6 +1,7 @@
 package com.medicamentar.medicamentar_api.application.services;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,10 +16,12 @@ import com.medicamentar.medicamentar_api.application.dtos.medicationDto.Medicati
 import com.medicamentar.medicamentar_api.application.dtos.medicationDto.MedicationResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.PaginatedResponse;
 import com.medicamentar.medicamentar_api.application.dtos.responsesDto.ServiceResponse;
+import com.medicamentar.medicamentar_api.domain.entities.DoseHistory;
 import com.medicamentar.medicamentar_api.domain.entities.Medication;
 import com.medicamentar.medicamentar_api.domain.entities.User;
 import com.medicamentar.medicamentar_api.domain.enums.EventLogAction;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
+import com.medicamentar.medicamentar_api.domain.repositories.DoseHistoryRepository;
 import com.medicamentar.medicamentar_api.domain.repositories.MedicationRepository;
 import com.medicamentar.medicamentar_api.infrastructure.security.TokenService;
 
@@ -27,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MedicationService {
-
+    private final DoseHistoryRepository doseHistoryRepo;
     private final MedicationRepository medicationRepo;
     private final EventLogService eLogService;
     private final TokenService tokenService;
@@ -79,12 +82,15 @@ public class MedicationService {
                         medication.isContinuousUse(),
                         medication.getStart_date(),
                         medication.getEnd_date(),
+                        medication.getNextDose(),
+                        medication.isCompleted(),
                         medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                 .collect(Collectors.toList());
 
         response.setData(medicationResponses);
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setMessage(String.format("Exibindo página %d de %d.", medicationsPage.getNumber() + 1, medicationsPage.getTotalPages()));
+        response.setMessage(String.format("Exibindo página %d de %d.", medicationsPage.getNumber() + 1,
+                medicationsPage.getTotalPages()));
         response.setTotalPages(medicationsPage.getTotalPages());
         response.setTotalElements(medicationsPage.getTotalElements());
         return response;
@@ -107,7 +113,7 @@ public class MedicationService {
 
         if (medicationEntity.isPresent()) {
             var medication = medicationEntity.get();
-            
+
             if (!medication.getUser().getId().equals(currentUser.getId())) {
                 response.setMessage("Você não tem permissão para editar este medicamento.");
                 response.setStatus(HttpStatus.FORBIDDEN);
@@ -169,6 +175,58 @@ public class MedicationService {
             eLogService.saveEvent(EventLogAction.Deletado, medication);
 
             response.setMessage("Medicamento deletado com sucesso!");
+            response.setStatus(HttpStatus.ACCEPTED);
+        } else {
+            response.setMessage("Medicamento não encontrado.");
+            response.setStatus(HttpStatus.NOT_FOUND);
+        }
+
+        return response;
+    }
+
+    public ServiceResponse<ZonedDateTime> toggleComplete(String id) {
+        var response = new ServiceResponse<ZonedDateTime>();
+        User currentUser = tokenService.getCurrentUser();
+
+        UUID medicationId;
+        try {
+            medicationId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            response.setMessage("ID inválido.");
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            return response;
+        }
+
+        var medicationOpt = medicationRepo.findByIdAndUserAndDeletedAtIsNull(medicationId, currentUser);
+
+        if (medicationOpt.isPresent()) {
+            Medication medication = medicationOpt.get();
+
+            if (!medication.canTakeDose()) {
+                response.setMessage("Não é possível registrar mais doses para este medicamento.");
+                response.setStatus(HttpStatus.BAD_REQUEST);
+                return response;
+            }
+
+            medication.setDosesTaken(medication.getDosesTaken() + 1);
+
+            if (!medication.isContinuousUse() && medication.getDosesTaken() >= medication.getTotalDoses()) {
+                medication.setCompleted(true);
+            }
+
+            medication.updateNextDose();
+            medicationRepo.save(medication);
+
+            DoseHistory doseHistory = new DoseHistory();
+            doseHistory.setMedication(medication);
+            doseHistory.setTakenTime(ZonedDateTime.now());
+            doseHistory.setScheduledTime(medication.getNextDose());
+            doseHistoryRepo.save(doseHistory);
+
+            eLogService.saveEvent(EventLogAction.Atualizado, medication);
+
+            response.setData(medication.getNextDose());
+            response.setMessage("Dose registrada com sucesso!");
             response.setStatus(HttpStatus.ACCEPTED);
         } else {
             response.setMessage("Medicamento não encontrado.");
