@@ -76,28 +76,21 @@ const NewMedication = ({
   fetchMedications,
   showFeedback,
 }: NewMedicationProps) => {
-  const { darkMode, largeFont } = useTheme();
+  const { darkMode } = useTheme();
   const [user] = useLocalStorage<{ token: { data: string } } | null>(
     "user",
     null
   );
   const [name, setName] = useState<string>("");
   const [dose, setDose] = useState<number | null>(null);
-  const [amount, setAmount] = useState<number>(1);
+  const [amount] = useState<number>(1);
   const [unity, setUnity] = useState<string>("");
   const [continuo, setContinuo] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(1);
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [errors, _setErrors] = useState<FormErrors>({});
-  const [ophthalmologist, setOphthalmologist] = useState({
-    leftEyeFrequency: 0,
-    leftEyeQuantity: 1,
-    leftEyeQuantityType: "",
-    rightEyeFrequency: 0,
-    rightEyeQuantity: 1,
-    rightEyeQuantityType: "",
-  });
+  const [ophthalmologist, setOphthalmologist] = useState<any>(null);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage] = useState("");
@@ -180,21 +173,22 @@ const NewMedication = ({
           type: Number(type), // presets
           dose: dose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
           amount: type === 2 ? ophthalmologist.leftEyeQuantity : amount, // num
-          unity: type === 2 ? ophthalmologist.leftEyeQuantityType : Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
+          unity:
+            type === 2 ? ophthalmologist.leftEyeQuantityType : Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
           period: period, // num = 5,7,10,12,15,20,25,30,60,90,120, personalizado
           isContinuousUse: continuo, // bool
           start_date: startDate,
           ophthalmicDetails: {
-            leftEyeFrequency: ophthalmologist.leftEyeFrequency, 
-            leftEyeQuantity: ophthalmologist.leftEyeQuantity, 
-            leftEyeDrops: ophthalmologist.leftEyeQuantityType, 
-            rightEyeFrequency: ophthalmologist.rightEyeFrequency, 
-            rightEyeQuantity: ophthalmologist.rightEyeQuantity, 
-            rightEyeDrops: ophthalmologist.rightEyeQuantityType, 
+            leftEyeFrequency: ophthalmologist.leftEyeFrequency,
+            leftEyeQuantity: ophthalmologist.leftEyeQuantity,
+            leftEyeDrops: ophthalmologist.leftEyeQuantityType,
+            rightEyeFrequency: ophthalmologist.rightEyeFrequency,
+            rightEyeQuantity: ophthalmologist.rightEyeQuantity,
+            rightEyeDrops: ophthalmologist.rightEyeQuantityType,
           },
         },
       });
-      onClose()
+      onClose();
       showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
     } catch (error) {
@@ -211,7 +205,7 @@ const NewMedication = ({
   //       sx: {
   //         "& .MuiInputAdornment-root .MuiSvgIcon-root": {
   //           color: darkMode ? "#CDCED7" : "-moz-initial",
-            // fontSize: largeFont ? "1.4rem" : "1.2rem",
+  // fontSize: largeFont ? "1.4rem" : "1.2rem",
   //         },
   //         fontSize: largeFont ? "1.4rem" : "0.9rem",
   //         color: darkMode ? "common.white" : "text.primary",

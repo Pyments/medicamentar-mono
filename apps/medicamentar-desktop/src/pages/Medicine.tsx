@@ -239,6 +239,7 @@ const Medicine = () => {
             medications.map((medication) => (
               <Grid item key={medication.id}>
                 <CardUniversal
+                  id={medication.id}
                   amount={medication.amount}
                   continuousUse={medication.continuousUse}
                   dose={medication.dose}
@@ -253,6 +254,8 @@ const Medicine = () => {
                   isCompleted={medication.isCompleted}
                   onDelete={() => openDeleteModal(medication.id)}
                   onEdit={() => openEditModal(medication)}
+                  onComplete={fetchMedications}
+                  showFeedback={showFeedback}
                 />
               </Grid>
             ))

@@ -16,20 +16,23 @@ import { Dayjs } from "dayjs";
 
 interface EventData {
   id: string;
-  type: string;
   name?: string;
+  details: {
+    type: string;
+    endDate?: Dayjs;
+    startDate?: Dayjs;
+    nextDose?: Dayjs;
+    dose?: string;
+    period?: number;
+    amount?: number;
+    unity?: string;
+    continuousUse?: boolean;
+  };
   local?: string;
-  unity?: string;
-  amount?: number;
   date?: Dayjs;
-  endDate?: Dayjs;
-  startDate?: Dayjs;
   doctorName?: string;
   description?: string;
-  continuousUse?: boolean;
   isCompleted: boolean;
-  dose?: string;
-  period?: number;
 }
 
 interface User {
@@ -47,25 +50,26 @@ const Home: React.FC = () => {
   const [_pageCount, setPageCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
+  const fetchEvents = async () => {
+    setLoading(true);
 
-      try {
-        const response = await axiosInstance.get(
-          `/events?page=${page}&size=9`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setPageCount(response.data.totalPages);
-        setEvents(response.data.data.events);
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const response = await axiosInstance.get(
+        `/events?page=${page}&size=9`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setPageCount(response.data.totalPages);
+      setEvents(response.data.data.events);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token) {
       fetchEvents();
     }
@@ -126,20 +130,24 @@ const Home: React.FC = () => {
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
-                    type={event.type}
+                    id={event.id}
+                    type={event.details.type}
                     isCompleted={event.isCompleted}
                     title={title}
-                    unity={event.unity}
+                    unity={event.details.unity}
                     description={event.description || undefined}
                     date={event.date || undefined}
                     local={event.local || undefined}
-                    startDate={isMedication ? event.startDate : undefined}
-                    endDate={isMedication ? event.endDate : undefined}
-                    continuousUse={event.continuousUse || undefined}
-                    amount={event.amount || undefined}
-                    dose={isMedication ? Number(event.dose) : undefined}
-                    qtpDose={isMedication ? event.amount : undefined}
-                    period={isMedication ? event.period : undefined}
+                    startDate={
+                      isMedication ? event.details.startDate : undefined
+                    }
+                    endDate={isMedication ? event.details.endDate : undefined}
+                    continuousUse={event.details.continuousUse || undefined}
+                    amount={event.details.amount || undefined}
+                    dose={isMedication ? Number(event.details.dose) : undefined}
+                    nextDose={event.details.nextDose || undefined}
+                    period={isMedication ? event.details.period : undefined}
+                    onComplete={() => fetchEvents()}
                   />
                 </Grid>
               );

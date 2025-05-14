@@ -160,22 +160,14 @@ const Exam = () => {
     if (selected.id && selected.item) {
       closeDeleteModal();
       setLoading(true);
-
-      // Get the type directly from the event and convert to lowercase for the URL
       const type = selected.item.type.toLowerCase();
-
       console.log(
         `Deleting ${type} with ID: ${selected.id}, Type: ${selected.item.type}`
       );
-
       try {
         await axiosInstance.delete(`/${type}/${selected.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: {Authorization: `Bearer ${token}`},
         });
-
-        // Fetch updated list after deletion
         fetchExams();
 
         const isConsultation = selected.item.type === "CONSULTATION";
@@ -236,6 +228,7 @@ const Exam = () => {
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
+                    id={event.id}
                     name={event.name}
                     date={event.date}
                     isCompleted={event.isCompleted}
@@ -244,6 +237,8 @@ const Exam = () => {
                     doctorName={event.doctorName}
                     onDelete={() => openDeleteModal(event)}
                     onEdit={() => openEditModal(event)}
+                    onComplete={fetchExams}
+                    showFeedback={showFeedback}
                   />
                 </Grid>
               );
