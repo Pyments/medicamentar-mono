@@ -67,6 +67,8 @@ public class EventService {
                             medication.isContinuousUse(),
                             medication.getStart_date(),
                             medication.getEnd_date(),
+                            medication.getNextDose(),
+                            medication.isCompleted(),
                             medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                     .collect(Collectors.toList());
 

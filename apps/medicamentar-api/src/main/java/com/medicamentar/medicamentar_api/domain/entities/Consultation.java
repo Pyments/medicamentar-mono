@@ -35,7 +35,7 @@ public class Consultation {
     private String doctorName;
     private String local;
     private String description;
-    private boolean completed = false;
+    private boolean isCompleted = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

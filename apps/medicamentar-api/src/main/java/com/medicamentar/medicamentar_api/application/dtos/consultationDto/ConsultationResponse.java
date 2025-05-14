@@ -9,6 +9,6 @@ public record ConsultationResponse (
     String doctorName,
     String local,
     String description,
-    boolean completed
+    boolean isCompleted
 )
 {}

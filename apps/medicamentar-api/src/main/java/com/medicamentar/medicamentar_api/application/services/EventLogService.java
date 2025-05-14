@@ -111,6 +111,8 @@ public class EventLogService {
                         medication.isContinuousUse(),
                         medication.getStart_date(),
                         medication.getEnd_date(),
+                        medication.getNextDose(),
+                        medication.isCompleted(),
                         medication.getType() == MedicationType.OFTALMICO ? medication.getOphthalmicDetails() : null))
                         .orElse(null);
 

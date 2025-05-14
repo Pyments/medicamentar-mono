@@ -6,8 +6,6 @@ import com.medicamentar.medicamentar_api.domain.entities.OphthalmicDetails;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationType;
 import com.medicamentar.medicamentar_api.domain.enums.MedicationUnity;
 
-import java.util.Date;
-
 public record MedicationResponse (
     UUID id,
     String name,
@@ -19,6 +17,8 @@ public record MedicationResponse (
     boolean continuousUse,
     ZonedDateTime startDate,
     ZonedDateTime endDate,
+    ZonedDateTime nextDose,
+    boolean isCompleted,
     OphthalmicDetails ophthalmicDetails
 )
 {}
