@@ -90,13 +90,31 @@ const NewMedication = ({
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [endDate, _setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [errors, _setErrors] = useState<FormErrors>({});
-  const [ophthalmologist, setOphthalmologist] = useState<any>(null);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage] = useState("");
   const [feedbackSeverity] = useState<AlertColor>("success");
 
   const [loading, setLoading] = useState(false);
+
+  type OphthalmologistData = {
+    leftEyeFrequency: number;
+    leftEyeQuantity: number;
+    leftEyeQuantityType: string;
+    rightEyeFrequency: number;
+    rightEyeQuantity: number;
+    rightEyeQuantityType: string;
+  };
+
+  const [ophthalmologist, setOphthalmologist] = useState<OphthalmologistData>({
+    leftEyeFrequency: 0,
+    leftEyeQuantity: 0,
+    leftEyeQuantityType: "",
+    rightEyeFrequency: 0,
+    rightEyeQuantity: 0,
+    rightEyeQuantityType: "",
+  });
+
 
   enum Unity {
     ML = 0,
@@ -163,6 +181,7 @@ const NewMedication = ({
       return;
     }
     setLoading(true);
+    const finalDose = type === 2 ? ophthalmologist.leftEyeFrequency : dose; 
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -171,7 +190,7 @@ const NewMedication = ({
         data: {
           name: name, // string
           type: Number(type), // presets
-          dose: dose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
+          dose: finalDose, // string = 2/2 4/4 6/6 8/8 12/12 24/24 semanal personalizavel
           amount: type === 2 ? ophthalmologist.leftEyeQuantity : amount, // num
           unity:
             type === 2 ? ophthalmologist.leftEyeQuantityType : Number(unity), // presets = ml(mililitros), mg(miligramas), gts(gotas), cps(comprimidos), sc(subcutânea)
@@ -191,9 +210,11 @@ const NewMedication = ({
       onClose();
       showFeedback("Medicamento adicionado com sucesso!", "success");
       fetchMedications();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro na requisição:", error);
+      console.log("Erro detalhado:", error.response?.data);
       showFeedback("Erro ao adicionar medicamento", "error");
+
     } finally {
       setLoading(false);
     }
@@ -308,21 +329,22 @@ const NewMedication = ({
                     helperText={errors.name}
                   />
                 </Grid>
-                {type === 2 && (
+                {type === 2 && ophthalmologist && (
                   <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
                     <FormControl fullWidth>
                       <InputLabel>OLHO ESQUERDO</InputLabel>
                       <Select
                         id="left-eye"
-                        value={ophthalmologist.leftEyeFrequency}
+                        value={ophthalmologist.leftEyeFrequency || ""}
                         label="OLHO ESQUERDO"
                         onChange={(event) => {
                           const numValue = Number(event.target.value);
-                          setOphthalmologist({
-                            ...ophthalmologist,
+                          setOphthalmologist((prev) => ({
+                            ...(prev ?? {}),
                             leftEyeFrequency: numValue,
-                          });
+                          }));
                         }}
+
                         sx={{
                           fontSize: "0.9rem",
                           transition: "all 0.3s ease-in-out",
@@ -347,13 +369,13 @@ const NewMedication = ({
                     </FormControl>
                   </Grid>
                 )}
-                {type === 2 && (
+                {type === 2 && ophthalmologist && (
                   <Grid item xs={12} sm={4} md={6} sx={gridTransition}>
                     <FormControl fullWidth>
                       <InputLabel>OLHO DIREITO</InputLabel>
                       <Select
                         id="right-eye"
-                        value={ophthalmologist.rightEyeFrequency}
+                        value={ophthalmologist.rightEyeFrequency || ""}
                         labelId="right-eye"
                         label="OLHO DIREITO"
                         placeholder="FREQUÊNCIA"
