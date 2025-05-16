@@ -12,6 +12,5 @@ public record ConsultationRequest (
         String doctorName,
         @NotBlank(message = "O campo 'Local' não pode estar vazio.")
         String local,
-        @NotBlank(message = "Registre alguma observação.")
         String description
 ){}
