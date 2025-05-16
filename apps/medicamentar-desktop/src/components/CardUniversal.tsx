@@ -3,12 +3,7 @@ import {
   Card,
   Tooltip,
   Typography,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
+  IconButton
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import EditOutlinedIcon from "@assets/icons/EditOutlined";
@@ -59,12 +54,12 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   amount,
   continuousUse,
   dose,
-  endDate,
+  // endDate,
   name,
   nextDose,
   //ophthalmicDetails,
   period,
-  startDate,
+  // startDate,
   // type,
   unity,
 
@@ -265,6 +260,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
       backgroundColor: "rgba(0,0,0,.1)",
       outline: "1px solid slategrey",
     },
+    color: darkMode ? "primary.dark" : "text.secondary",
   };
 
   const infoBoxStyle = {
@@ -285,6 +281,10 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     height: "fit-content",
     justifyContent: "center",
     backgroundColor: darkMode ? "text.primary" : "text.secondary",
+    "&:hover": {
+      backgroundColor: darkMode ? "primary.lighter" : "primary.dark",
+      color: darkMode ? "text.primary" : "text.secondary",
+    },
   };
 
   const infoCard = {
@@ -403,7 +403,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                           ? "warning.main"
                           : cardColor === "#c8e6c9"
                             ? "success.main"
-                            : "text.primary",
+                            : "common.black",
                   }}
                 >
                   {dateTimeRemaining}
