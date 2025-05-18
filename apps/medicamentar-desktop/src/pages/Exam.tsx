@@ -147,6 +147,7 @@ const Exam = () => {
   };
 
   const openEditModal = (exam: ExamData) => {
+    console.log(exam);
     setSelected({ id: exam.id, item: exam });
     setModals((prev) => ({ ...prev, edit: true }));
   };
@@ -224,7 +225,6 @@ const Exam = () => {
             </Stack>
           ) : events.length > 0 ? (
             events.map((event: ExamData) => {
-              console.log(event.type);
               return (
                 <Grid item key={event.id}>
                   <CardUniversal
@@ -239,6 +239,7 @@ const Exam = () => {
                     onEdit={() => openEditModal(event)}
                     onComplete={fetchExams}
                     showFeedback={showFeedback}
+                    type={event.type}
                   />
                 </Grid>
               );
@@ -308,6 +309,8 @@ const Exam = () => {
             local: selected.item.local,
             name: selected.item.name || "",
             description: selected.item.description,
+            type: selected.item.type,
+            doctorName: selected.item.name
           }}
           isOpen={modals.edit}
           fetchExams={fetchExams}

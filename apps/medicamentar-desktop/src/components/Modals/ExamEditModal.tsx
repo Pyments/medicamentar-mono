@@ -29,6 +29,8 @@ interface ExamEditModalProps {
     name: string;
     local: string;
     description: string;
+    type?: string;
+    doctorName?: string;
   } | null;
 }
 
@@ -76,6 +78,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
       setExamName(currentExam.name || "");
       setLocation(currentExam.local || "");
       setDescription(currentExam.description || "");
+      setDoctorName(currentExam.doctorName || "");
       setSelectedDate(currentExam.date ? dayjs(currentExam.date) : null);
     }
   }, [isOpen, currentExam]);
@@ -106,10 +109,12 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
     const formattedDate = selectedDate?.toISOString();
     setLoading(true);
     try {
+      const endpoint = currentExam?.type?.toLowerCase() === 'consultation' ? 'consultation' : 'exam';
+      console.log(currentExam);
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
         method: "put",
-        url: `/exam/${currentExam?.id}`,
+        url: `/${endpoint}/${currentExam?.id}`,
         data: {
           name: examName,
           local: location,
@@ -119,10 +124,10 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
         },
       });
       onClose();
-      showFeedback("Exame editado com sucesso!", "success");
+      showFeedback(`${currentExam?.type === 'CONSULTATION' ? 'Consulta editada' : 'Exame editado'} com sucesso!`, "success");
       fetchExams();
     } catch (error) {
-      showFeedback("Erro ao editar exame!", "error");
+      showFeedback(`Erro ao editar ${currentExam?.type === 'CONSULTATION' ? 'consulta' : 'exame'}!`, "error");
       setFeedbackOpen(true);
       console.error("Erro na requisição:", error);
     }finally {
@@ -181,40 +186,64 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               color: darkMode ? "primary.light" : "primary.main",
             }}
           >
-            EDITAR
+            EDITAR {currentExam?.type === 'CONSULTATION' ? 'CONSULTA' : 'EXAME'}
           </Typography>
           <form
             onSubmit={handleSubmit}
             style={{ display: "flex", flexDirection: "column", gap: "20px" }}
           >
-            <TextField
-              sx={{ margin: 0 }}
-              fullWidth
-              label="NOME"
-              variant="outlined"
-              value={examName}
-              onChange={(e) => {
-                setExamName(e.target.value);
-                if (e.target.value) {
-                  setErrors((prev) => ({ ...prev, location: undefined }));
-                }
-              }}
-              margin="normal"
-              error={Boolean(errors.location)}
-              helperText={errors.location}
-              InputProps={{
-                sx: {
-                  fontSize: largeFont ? "1.4rem" : "0.9rem",
-                  padding: largeFont ? "16px 14px" : "10px 14px",
-                },
-              }}
-              InputLabelProps={{
-                sx: {
-                  fontSize: largeFont ? "1.2rem" : "0.9rem",
-                  transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
-                },
-              }}
-            />
+            {currentExam?.type === 'CONSULTATION' ? (
+              <TextField
+                sx={{ margin: 0 }}
+                fullWidth
+                label="MÉDICO"
+                variant="outlined"
+                value={doctorName}
+                onChange={(e) => setDoctorName(e.target.value)}
+                margin="normal"
+                InputProps={{
+                  sx: {
+                    fontSize: largeFont ? "1.4rem" : "0.9rem",
+                    padding: largeFont ? "16px 14px" : "10px 14px",
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    fontSize: largeFont ? "1.2rem" : "0.9rem",
+                    transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                  },
+                }}
+              />
+            ) : (
+              <TextField
+                sx={{ margin: 0 }}
+                fullWidth
+                label="NOME DO EXAME"
+                variant="outlined"
+                value={examName}
+                onChange={(e) => {
+                  setExamName(e.target.value);
+                  if (e.target.value) {
+                    setErrors((prev) => ({ ...prev, location: undefined }));
+                  }
+                }}
+                margin="normal"
+                error={Boolean(errors.location)}
+                helperText={errors.location}
+                InputProps={{
+                  sx: {
+                    fontSize: largeFont ? "1.4rem" : "0.9rem",
+                    padding: largeFont ? "16px 14px" : "10px 14px",
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    fontSize: largeFont ? "1.2rem" : "0.9rem",
+                    transform: largeFont ? "translate(14px, -12px) scale(0.75)" : "translate(14px, -6px) scale(0.75)",
+                  },
+                }}
+              />
+            )}
             <DateTimePicker
               views={["day", "hours", "minutes"]}
               label="DATA E HORA"
