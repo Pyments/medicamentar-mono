@@ -1,5 +1,15 @@
 import { TextField } from "@mui/material";
+import { styled } from "@mui/material";
 import dayjs from "dayjs";
+
+const CustomTextField = styled(TextField)({
+  '& input[type="datetime-local"]::-webkit-calendar-picker-indicator': {
+    filter: "invert(30%) sepia(100%) saturate(1000%) hue-rotate(180deg)",
+    transform: "scale(1.5)",
+    transformOrigin: "center center",
+    cursor: "pointer",
+  },
+});
 
 export default function CustomDateTimePicker({
   selectedDate,
@@ -21,7 +31,7 @@ export default function CustomDateTimePicker({
   };
 
   return (
-    <TextField
+    <CustomTextField
       fullWidth
       label="DATA E HORA"
       type="datetime-local"
