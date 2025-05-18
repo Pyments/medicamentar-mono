@@ -341,7 +341,7 @@ const ExamModal: React.FC<ExamEditModalProps> = ({
               {loading ?(
                 <Loader sx={{ color: "white" }} />
               ):(
-                "editar"
+                "salvar"
               )}
             </Button>
           </form>
