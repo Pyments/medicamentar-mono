@@ -60,7 +60,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   //ophthalmicDetails,
   period,
   // startDate,
-  // type,
+  type,
   unity,
 
   date,
@@ -89,19 +89,22 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
 
   const handleComplete = async () => {
     if (!token || !onComplete) return;
+    console.log(token);
     setConfirmModalOpen(false);
     try {
       let endpoint = "";
       if (isMedication) {
         endpoint = `/medication/${id}/complete`;
-      } else if (doctorName) {
+      } else if (typeof type === 'string' && type.toLowerCase() === 'consultation') {
         endpoint = `/consultation/${id}/complete`;
       } else {
         endpoint = `/exam/${id}/complete`;
       }
 
-      await axiosInstance.patch(endpoint, {
+      await axiosInstance({
         headers: { Authorization: `Bearer ${token}` },
+        method: "patch",
+        url: endpoint,
       });
 
       if (onComplete) {

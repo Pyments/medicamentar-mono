@@ -124,7 +124,7 @@ export default function ResetPassword() {
   };
 
   const handleCancel = () => {
-    window.location.href = "/signin";
+    navigate("/signin")
   };
 
   return (

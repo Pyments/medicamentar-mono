@@ -89,7 +89,7 @@ export default function ForgotPassword() {
   };
 
   const handleCancel = () => {
-    window.location.href = "/signin";
+    navigate("/signin");
   };
 
   return (
