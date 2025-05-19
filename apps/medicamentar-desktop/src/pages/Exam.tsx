@@ -147,7 +147,6 @@ const Exam = () => {
   };
 
   const openEditModal = (exam: ExamData) => {
-    console.log(exam);
     setSelected({ id: exam.id, item: exam });
     setModals((prev) => ({ ...prev, edit: true }));
   };

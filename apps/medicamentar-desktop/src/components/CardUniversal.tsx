@@ -93,7 +93,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     setConfirmModalOpen(false);
     try {
       let endpoint = "";
-      console.log(type);
       if (isMedication) {
         endpoint = `/medication/${id}/complete`;
       } else if (typeof type === 'string' && type.toLowerCase() === 'consultation') {
