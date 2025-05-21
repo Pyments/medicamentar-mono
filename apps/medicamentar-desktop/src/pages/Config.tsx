@@ -36,7 +36,7 @@ const Config = () => {
       <SectionContainer>
         <PageTitle>CONFIGURAÇÕES</PageTitle>
         <FormControl component="fieldset" variant="standard">
-          <FormGroup sx={{ gap: "20px", width: "300px" }}>
+          <FormGroup sx={{ gap: "20px", width: "400px" }}>
             <FormControlLabel
               control={
                 <Switch

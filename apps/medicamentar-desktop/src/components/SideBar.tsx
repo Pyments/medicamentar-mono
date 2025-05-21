@@ -29,7 +29,7 @@ import { useTheme } from "@constants/theme/useTheme";
 
 const Sidebar: React.FC = () => {
   const { logout } = useAuth();
-  const { darkMode } = useTheme();
+  const { darkMode, largeFont } = useTheme();
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -136,14 +136,17 @@ const Sidebar: React.FC = () => {
               primary={text}
               primaryTypographyProps={{
                 sx: {
-                  fontSize: "14px",
                   fontWeight: "500",
+                  fontSize: largeFont ? "1.1rem" : "0.9rem",
                 },
               }}
               sx={{
                 flex: 1,
                 marginLeft: "12px",
                 textWrap: "nowrap",
+                wordWrap: "break-word",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
                 display: { xs: "none", md: "block" },
                 color: darkMode ? "common.white" : "common.black",
               }}
@@ -167,6 +170,9 @@ const Sidebar: React.FC = () => {
               flex: 1,
               marginLeft: "12px",
               textWrap: "nowrap",
+              wordWrap: "break-word",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
               display: { xs: "none", md: "block" },
               color: darkMode ? "common.white" : "common.black",
             }}
