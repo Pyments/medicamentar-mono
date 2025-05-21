@@ -1,6 +1,7 @@
 import Header from "@components/Header";
 import SideBar from "@/components/SideBar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useSwrFetch } from "@hooks/swr/useSwrFetch";
 import CardUniversal from "@components/CardUniversal";
 import { useLocalStorage } from "@hooks/UseLocalStorage.tsx";
 import { SectionContainer } from "@components/SectionContainer";
@@ -44,37 +45,20 @@ interface User {
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
-  const [events, setEvents] = useState<EventData[]>([]);
-  const [user] = useLocalStorage<User | null>("user", null);
-  const token = user?.token.data;
   const [page, setPage] = useState(0);
-  const [_pageCount, setPageCount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-
-  const fetchEvents = async () => {
-    setLoading(true);
-
-    try {
-      const response = await axiosInstance.get(
-        `/events?page=${page}&size=9`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setPageCount(response.data.totalPages);
-      setEvents(response.data.data.events);
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-    } finally {
-      setLoading(false);
-    }
+  const [user] = useLocalStorage<User | null>("user", null);
+  
+  const { data, isLoading: loading, mutate } = useSwrFetch<{
+    totalPages: number;
+    data: { events: EventData[] };
+  }>('/events', { page, size: 9 });
+  
+  const events = data?.data?.events || [];
+  const _pageCount = data?.totalPages || 0;
+  
+  const fetchEvents = () => {
+    mutate();
   };
-
-  useEffect(() => {
-    if (token) {
-      fetchEvents();
-    }
-  }, [token, page]);
 
   const handlePagination = (
     _event: React.ChangeEvent<unknown>,
@@ -124,7 +108,7 @@ const Home: React.FC = () => {
               </Stack>
             </Grid>
           ) : paginatedEvents.length > 0 ? (
-            events.map((event) => {
+            events.map((event: EventData) => {
               const isMedication = "startDate" in event;
               const title = event.name || event.doctorName || "Sem título";
 

@@ -1,6 +1,7 @@
 import Header from "@components/Header";
 import SideBar from "@components/SideBar";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useSwrFetch } from "@hooks/swr/useSwrFetch";
 import { AddBtn } from "@components/AddBtn";
 import axiosInstance from "@utils/axiosInstance";
 import ExamModal from "@components/Modals/ExamModal";
@@ -22,7 +23,6 @@ import ModalDelete from "@components/Modals/ModalDelete";
 import ExamEditModal from "@components/Modals/ExamEditModal";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
-// import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
 import { PageTitle } from "@components/PageTitle";
 
 interface ExamData {
@@ -54,14 +54,17 @@ interface ModalState {
 const Exam = () => {
   const { darkMode } = useTheme();
   const [user] = useLocalStorage<User | null>("user", null);
-  const token = user?.token.data;
-  const [loading, setLoading] = useState(false);
-
-  const [events, setEvents] = useState<ExamData[]>([]);
+  
   const [pagination, setPagination] = useState({
     page: 0,
     pageCount: 0,
   });
+  
+  const { data, isLoading: loading, mutate } = useSwrFetch<{
+    data: { events: ExamData[], totalPages: number };
+  }>('/consultations', { page: pagination.page, size: 9 });
+  
+  const events = data?.data?.events || [];
   const [modals, setModals] = useState<ModalState>({
     add: false,
     delete: false,
@@ -85,45 +88,18 @@ const Exam = () => {
     });
   };
 
-  /* const sortedExams = useActiveAndSorted(events.exams, {
-    type: "exam",
-    dateField: "date",
-  });
-
-  const sortedConsultations = useActiveAndSorted(events.consultations, {
-    type: "exam",
-    dateField: "date",
-  }); */
-
-  const fetchExams = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(
-        `/consultations?page=${pagination.page}&size=9`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setEvents(response.data.data.events);
-      setPagination((prev) => ({
-        ...prev,
-        pageCount: response.data.data.totalPages || 0,
-      }));
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (token) {
-      fetchExams();
+    if (data?.data?.totalPages && data.data.totalPages !== pagination.pageCount) {
+      setPagination(prev => ({
+        ...prev,
+        pageCount: data.data.totalPages
+      }));
     }
-  }, [token, pagination.page]);
+  }, [data]);
+  
+  const fetchExams = async () => {
+    return mutate();
+  };
 
   const handlePagination = (
     _event: React.ChangeEvent<unknown>,
@@ -159,14 +135,14 @@ const Exam = () => {
   const handleDeleteExams = async () => {
     if (selected.id && selected.item) {
       closeDeleteModal();
-      setLoading(true);
+      const token = user?.token.data;
       const type = selected.item.type.toLowerCase();
       console.log(
         `Deleting ${type} with ID: ${selected.id}, Type: ${selected.item.type}`
       );
       try {
         await axiosInstance.delete(`/${type}/${selected.id}`, {
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         });
         fetchExams();
 
@@ -182,8 +158,6 @@ const Exam = () => {
           "error"
         );
         console.error(`Error deleting ${type}:`, error);
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -309,7 +283,7 @@ const Exam = () => {
             name: selected.item.name || "",
             description: selected.item.description,
             type: selected.item.type,
-            doctorName: selected.item.name
+            doctorName: selected.item.name,
           }}
           isOpen={modals.edit}
           fetchExams={fetchExams}

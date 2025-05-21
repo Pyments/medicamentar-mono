@@ -36,7 +36,6 @@ export default function SignIn() {
     password: string
   ): boolean => {
     const emailRegex = /\S+@\S+\.\S+/;
-    // const specialCharRegex = /^(?=.*[!@#$%^&()_+\-=[\]{};':"\\|,.<>/?]).*$/;
     if (email === "" || password === "") {
       setError("Preencha todos os campos");
       return false;

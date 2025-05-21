@@ -1,4 +1,3 @@
-// themeConfig.ts
 import {
   ThemeOptions,
   PaletteOptions,

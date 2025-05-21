@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useSwrFetch } from "@hooks/swr/useSwrFetch";
 import {
   Box,
   Grid,
@@ -23,8 +24,6 @@ import axiosInstance from "@utils/axiosInstance";
 import { AddBtn } from "@components/AddBtn";
 import { Feedback } from "@components/Feedback";
 import { Loader } from "@components/Loader";
-// import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
-// import { PageTitle } from "@components/PageTitle";
 
 interface MedicationData {
   id: string;
@@ -68,14 +67,33 @@ const Medicine = () => {
   const { darkMode } = useTheme();
   const [type, setType] = useState(0);
 
-  const [medications, setMedications] = useState<MedicationData[]>([]);
   const [user] = useLocalStorage<User | null>("user", null);
-  const token = user?.token.data;
 
   const [pagination, setPagination] = useState({
     page: 0,
     pageCount: 0,
   });
+
+  const {
+    data,
+    isLoading: loading,
+    mutate,
+  } = useSwrFetch<{
+    data: MedicationData[];
+    totalPages: number;
+  }>("/medication", { page: pagination.page, size: 9 });
+
+  const medications = data?.data || [];
+
+  useEffect(() => {
+    if (data?.totalPages && data.totalPages !== pagination.pageCount) {
+      setPagination((prev) => ({
+        ...prev,
+        pageCount: data.totalPages,
+      }));
+    }
+  }, [data]);
+
   const [feedback, setFeedback] = useState<FeedbackState>({
     open: false,
     message: "",
@@ -91,14 +109,6 @@ const Medicine = () => {
     id: string | null;
     item: MedicationData | null;
   }>({ id: null, item: null });
-
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (token) {
-      fetchMedications();
-    }
-  }, [token, pagination.page]);
 
   const showFeedback = (message: string, severity: AlertColor) => {
     setFeedback({
@@ -153,40 +163,21 @@ const Medicine = () => {
   };
 
   const fetchMedications = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(
-        `/medication?page=${pagination.page}&size=9`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setMedications(response.data.data);
-      setPagination((prev) => ({
-        ...prev,
-        pageCount: response.data.totalPages,
-      }));
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-    } finally {
-      setLoading(false);
-    }
+    return mutate();
   };
 
   const handleDeleteMedication = async () => {
     if (selected.id) {
       closeDeleteModal();
-      setLoading(true);
+      const token = user?.token.data;
       try {
         await axiosInstance.delete(`/medication/${selected.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMedications(medications.filter((med) => med.id !== selected.id));
+        mutate();
         showFeedback("Medicamento deletado com sucesso!", "success");
       } catch (error) {
         showFeedback("Erro ao deletar Medicamento!", "error");
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -225,18 +216,18 @@ const Medicine = () => {
         </Stack>
         <Grid container spacing={3} pb="75px">
           {loading ? (
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                sx={{ minHeight: "50vh", width: "100%" }}
-              >
-                <Loader
-                  sx={{ color: darkMode ? "common.white" : "primary.main" }}
-                />
-              </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ minHeight: "50vh", width: "100%" }}
+            >
+              <Loader
+                sx={{ color: darkMode ? "common.white" : "primary.main" }}
+              />
+            </Stack>
           ) : medications.length > 0 ? (
-            medications.map((medication) => (
+            medications.map((medication: MedicationData) => (
               <Grid item key={medication.id}>
                 <CardUniversal
                   id={medication.id}

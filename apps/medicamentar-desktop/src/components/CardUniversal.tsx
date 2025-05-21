@@ -48,12 +48,9 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
   amount,
   continuousUse,
   dose,
-  // endDate,
   name,
   nextDose,
-  //ophthalmicDetails,
   period,
-  // startDate,
   type,
   unity,
 

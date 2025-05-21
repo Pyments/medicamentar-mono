@@ -5,7 +5,8 @@ import { Loader } from "@components/Loader";
 import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useState } from "react";
+import { useSwrFetch } from "@hooks/swr/useSwrFetch";
 import { Box, Grid, Pagination, Stack } from "@mui/material";
 import { SectionContainer } from "@components/SectionContainer";
 import { ContainerUniversal } from "@components/ContainerUniversal";
@@ -19,32 +20,19 @@ const History = () => {
     "user",
     undefined
   );
-  const token = user?.token?.data;
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState<number>(0);
-
+  
+  const { data: historyData, isLoading: loading, mutate } = useSwrFetch<{
+    data: any[];
+    totalPages: number;
+  }>('/eventsLog', { page });
+  
+  const data = historyData?.data || [];
+  const pageCount = historyData?.totalPages || 0;
+  
   const getHistory = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(`/eventsLog?page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setData(response.data.data);
-      setPageCount(response.data.totalPages);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
+    return mutate();
   };
-
-  useEffect(() => {
-    getHistory();
-  }, [token, page]);
 
   const handlePagination = (
     _event: React.ChangeEvent<unknown>,

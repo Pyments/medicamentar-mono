@@ -1,6 +1,4 @@
-// import { useState } from "react";
 import {
-  // Box,
   Switch,
   FormGroup,
   IconButton,
@@ -18,15 +16,7 @@ import { PageTitle } from "@components/PageTitle";
 
 const Config = () => {
   const { darkMode, toggleTheme, largeFont, toggleFontSize } = useTheme();
-  /* const [switchStates, setSwitchStates] = useState({
-    letrasGigantes: false,
-  });
-   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSwitchStates({
-      ...switchStates,
-      [event.target.name]: event.target.checked,
-    });
-  }; */
+
   const navigate = useNavigate();
 
   return (
