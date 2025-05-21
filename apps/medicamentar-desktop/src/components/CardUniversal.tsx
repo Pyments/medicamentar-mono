@@ -369,6 +369,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               sx={{
                 fontSize: largeFont ? "1.3rem" : "1.1rem",
                 color: "common.black",
+                minHeight: "40px",
               }}
             >
               Uso contínuo
@@ -379,6 +380,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               sx={{
                 fontSize: largeFont ? "1.3rem" : "1.1rem",
                 color: "common.black",
+                minHeight: "40px",
               }}
             >
               {amount} {unity}
@@ -389,15 +391,34 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
               sx={{
                 fontSize: largeFont ? "1.3rem" : "1.1rem",
                 color: "common.black",
+                minHeight: "40px",
               }}
             >
               {dose} em {dose} horas
             </Typography>
           ) : null}
           {period ? (
-            <Typography sx={infoCard}>Período: {period} dias</Typography>
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.3rem" : "1.1rem",
+                color: "common.black",
+                minHeight: "40px",
+              }}
+            >
+              Período: {period} dias
+            </Typography>
           ) : null}
-          {local ? <Typography sx={infoCard}>{local}</Typography> : null}
+          {local ? (
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.3rem" : "1.1rem",
+                color: "common.black",
+                minHeight: "40px",
+              }}
+            >
+              {local}
+            </Typography>
+          ) : null}
           {type !== "MEDICATION" ? (
             <Typography sx={descriptionStyle}>{description}</Typography>
           ) : null}
