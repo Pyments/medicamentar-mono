@@ -9,7 +9,6 @@ import { Box, Grid, Pagination, Stack, Typography } from "@mui/material";
 import { ContainerUniversal } from "@components/ContainerUniversal";
 import { PageTitle } from "@components/PageTitle";
 
-import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { Loader } from "@components/Loader";
 import { useActiveAndSorted } from "@hooks/useActiveAndSorted";
@@ -122,7 +121,7 @@ const Home: React.FC = () => {
                     unity={event.details.unity}
                     description={event.description || undefined}
                     date={event.date || undefined}
-                    local={event.local || undefined}
+                    local={event.details.local || undefined}
                     startDate={
                       isMedication ? event.details.startDate : undefined
                     }
