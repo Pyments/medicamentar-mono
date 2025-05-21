@@ -368,17 +368,32 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           }}
         >
           {continuousUse ? (
-            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.3rem" : "1.1rem",
+                color: "common.black",
+              }}
+            >
               Uso contínuo
             </Typography>
           ) : null}
           {unity ? (
-            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.3rem" : "1.1rem",
+                color: "common.black",
+              }}
+            >
               {amount} {unity}
             </Typography>
           ) : null}
           {dose ? (
-            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
+            <Typography
+              sx={{
+                fontSize: largeFont ? "1.3rem" : "1.1rem",
+                color: "common.black",
+              }}
+            >
               {dose} em {dose} horas
             </Typography>
           ) : null}
@@ -447,7 +462,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                           ? "warning.main"
                           : cardColor === "#c8e6c9"
                             ? "success.main"
-                            : "text.primary",
+                            : "common.black",
                   }}
                 >
                   {timeRemaining}
