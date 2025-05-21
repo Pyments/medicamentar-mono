@@ -18,7 +18,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite --mode development & wait-on tcp:3000 && electron .",
-    "build": "tsc && vite build && electron-builder --config electron-builder.json5",
+    "build": "vite build && electron-builder --config electron-builder.json5",
     "app:dir": "electron-builder --dir",
     "app:dist": "electron-builder",
     "preview": "vite preview",
