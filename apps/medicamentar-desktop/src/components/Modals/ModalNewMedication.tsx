@@ -55,7 +55,6 @@ const frequencyOptions = [
   { value: 8, label: "A cada 8 Horas" },
   { value: 12, label: "A cada 12 Horas" },
   { value: 24, label: "A cada 24 Horas" },
-  { value: 168, label: "Semanal" },
 ];
 
 const periodOptions = [
@@ -115,7 +114,6 @@ const NewMedication = ({
     rightEyeQuantityType: "",
   });
 
-
   enum Unity {
     ML = 0,
     MG = 1,
@@ -141,24 +139,7 @@ const NewMedication = ({
     }
     _setEndDate(calcEndDate(startDate, newPeriod));
   };
-  /*  const validadeForm = () => {
-    const newErrors: FormErrors = {};
-    const requiredFields = {
-      name: "O nome do medicamento é obrigatório.",
-      dose: "A frequência (dose) é obrigatória.",
-      amount: "A quantidade é obrigatória.",
-      unity: "A unidade é obrigatória.",
-      period: "O período é obrigatório.",
-      startDate: "A data de início é obrigatória.",
-      continuo: "O uso contínuo é obrigatório.",
-    };
-    Object.entries(requiredFields).forEach(([field, message]) => {
-      if (!eval(field)) {
-        newErrors[field as keyof FormErrors] = message;
-      }
-    });
-    return newErrors;
-  }; */
+
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -171,8 +152,6 @@ const NewMedication = ({
 
   if (!isOpen) return null;
 
-  // Request
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validateForm();
@@ -181,7 +160,7 @@ const NewMedication = ({
       return;
     }
     setLoading(true);
-    const finalDose = type === 2 ? ophthalmologist.leftEyeFrequency : dose; 
+    const finalDose = type === 2 ? ophthalmologist.leftEyeFrequency : dose;
     try {
       await axiosInstance({
         headers: { Authorization: `Bearer ${user?.token.data}` },
@@ -214,7 +193,6 @@ const NewMedication = ({
       console.error("Erro na requisição:", error);
       console.log("Erro detalhado:", error.response?.data);
       showFeedback("Erro ao adicionar medicamento", "error");
-
     } finally {
       setLoading(false);
     }
@@ -344,7 +322,6 @@ const NewMedication = ({
                             leftEyeFrequency: numValue,
                           }));
                         }}
-
                         sx={{
                           fontSize: "0.9rem",
                           transition: "all 0.3s ease-in-out",
@@ -420,13 +397,15 @@ const NewMedication = ({
                   >
                     <FormControl fullWidth>
                       <Autocomplete
-                        value={dose?.toString()}
+                        value={dose !== null ? dose.toString() : ""}
                         onChange={(_event, newValue) => {
                           if (newValue) {
                             const numValue = Number(
                               newValue.replace(/[^0-9]/g, "")
                             );
                             setDose(Number(Math.max(1, numValue)));
+                          } else {
+                            setDose(null);
                           }
                         }}
                         freeSolo
@@ -436,10 +415,14 @@ const NewMedication = ({
                             {...params}
                             label="FREQUÊNCIA"
                             type="number"
-                            value={dose?.toString()}
                             onChange={(event) => {
-                              const numValue = Number(event.target.value);
-                              setDose(Number(Math.max(1, numValue)));
+                              const value = event.target.value;
+                              if (value === "") {
+                                setDose(null);
+                              } else {
+                                const numValue = Number(value);
+                                setDose(Number(Math.max(1, numValue)));
+                              }
                             }}
                             inputProps={{
                               ...params.inputProps,
@@ -645,7 +628,7 @@ const NewMedication = ({
                   <FormControl fullWidth>
                     <Autocomplete
                       disabled={continuo}
-                      value={period?.toString() || ""}
+                      value={period.toString()}
                       sx={{
                         opacity: continuo ? 0.5 : 1,
                       }}
@@ -655,6 +638,8 @@ const NewMedication = ({
                             newValue.replace(/[^0-9]/g, "")
                           );
                           handlePeriodChange(Math.max(1, numValue));
+                        } else {
+                          handlePeriodChange(1);
                         }
                       }}
                       freeSolo
@@ -663,12 +648,16 @@ const NewMedication = ({
                         <TextField
                           {...params}
                           type="number"
-                          value={period ? period.toString() : ""}
                           label="PERÍODO"
                           disabled={continuo}
                           onChange={(e) => {
-                            const numValue = Number(e.target.value);
-                            handlePeriodChange(Math.max(1, numValue));
+                            const value = e.target.value;
+                            if (value === "") {
+                              handlePeriodChange(1);
+                            } else {
+                              const numValue = Number(value);
+                              handlePeriodChange(Math.max(1, numValue));
+                            }
                           }}
                           inputProps={{
                             ...params.inputProps,

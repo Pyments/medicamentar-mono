@@ -145,9 +145,9 @@ const Home: React.FC = () => {
                     endDate={isMedication ? event.details.endDate : undefined}
                     continuousUse={event.details.continuousUse || undefined}
                     amount={event.details.amount || undefined}
-                    dose={isMedication ? Number(event.details.dose) : undefined}
+                    dose={Number(event.details.dose) || undefined}
                     nextDose={event.details.nextDose || undefined}
-                    period={isMedication ? event.details.period : undefined}
+                    period={event.details.period || undefined}
                     onComplete={() => fetchEvents()}
                   />
                 </Grid>

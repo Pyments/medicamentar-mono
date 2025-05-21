@@ -1,10 +1,4 @@
-import {
-  Box,
-  Card,
-  Tooltip,
-  Typography,
-  IconButton
-} from "@mui/material";
+import { Box, Card, Tooltip, Typography, IconButton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import EditOutlinedIcon from "@assets/icons/EditOutlined";
 import AccessAlarmOutlinedIcon from "@assets/icons/AccessAlarmOutlinedIcon";
@@ -95,7 +89,10 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
       let endpoint = "";
       if (isMedication) {
         endpoint = `/medication/${id}/complete`;
-      } else if (typeof type === 'string' && type.toLowerCase() === 'consultation') {
+      } else if (
+        typeof type === "string" &&
+        type.toLowerCase() === "consultation"
+      ) {
         endpoint = `/consultation/${id}/complete`;
       } else {
         endpoint = `/exam/${id}/complete`;
@@ -208,6 +205,19 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     }
   }, [nextDose, date]);
 
+  const scrollbar = {
+    "&::-webkit-scrollbar": {
+      width: "10px",
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      outline: "1px solid white",
+    },
+  };
+
   const cardRoot = {
     width: "300px",
     height: "100%",
@@ -242,28 +252,19 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     wordWrap: "break-word",
     fontSize: largeFont ? "1.4rem" : "1rem",
     color: darkMode ? "text.primary" : "background.default",
-    "&::-webkit-scrollbar": {
-      width: "10px",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0,0,0,.1)",
-      outline: "1px solid white",
-    },
+    ...scrollbar,
   };
+
   const descriptionStyle = {
-    my: "auto",
+    marginBottom: "auto",
     overflowY: "scroll",
     maxHeight: "100px",
     fontSize: largeFont ? "1.3rem" : "1rem",
     height: "100%",
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0,0,0,.1)",
-      outline: "1px solid slategrey",
-    },
+    textWrap: "pretty",
+    wordWrap: "break-word",
     color: darkMode ? "primary.dark" : "text.secondary",
+    ...scrollbar,
   };
 
   const infoBoxStyle = {
@@ -275,6 +276,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     alignItems: "center",
     justifyContent: "flex-start",
   };
+
   const cardButton = {
     display: "flex",
     paddingY: "8px",
@@ -284,6 +286,7 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     height: "fit-content",
     justifyContent: "center",
     backgroundColor: darkMode ? "text.primary" : "text.secondary",
+    transition: "background-color 200ms ease-out",
     "&:hover": {
       backgroundColor: darkMode ? "primary.lighter" : "primary.dark",
       color: darkMode ? "text.primary" : "text.secondary",
@@ -292,8 +295,12 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
 
   const infoCard = {
     fontSize: largeFont ? "1.3rem" : "1.1rem",
+    overflowY: "auto",
+    maxHeight: "100px",
     wordWrap: "break-word",
+    height: "fit-content",
     color: darkMode ? "common.black" : "common.black",
+    ...scrollbar,
   };
 
   const buttonText = {
@@ -307,15 +314,15 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
     textAlign: "left",
     fontWeight: "700",
     paddingLeft: "5px",
-    color: "common.black",
     fontSize: largeFont ? "1.2rem" : "1rem",
+    color: darkMode ? "primary.light" : "primary.main",
   };
 
   return (
     <Card sx={cardRoot}>
       <Box
         sx={{
-          paddingX: "2px",
+          paddingX: "6px",
           display: "flex",
           textWrap: "wrap",
           alignItems: "center",
@@ -343,7 +350,8 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
         sx={{
           flex: 1,
           display: "flex",
-          padding: "10px",
+          paddingX: "16px",
+          paddingY: "10px",
           alignItems: "center",
           flexDirection: "column",
           justifyContent: "start",
@@ -353,52 +361,85 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
           sx={{
             gap: "8px",
             width: "100%",
+            height: "100%",
             display: "flex",
             paddingX: "6px",
             flexDirection: "column",
           }}
         >
           {continuousUse ? (
-            <Typography sx={infoCard}>Uso contínuo</Typography>
+            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
+              Uso contínuo
+            </Typography>
           ) : null}
           {unity ? (
-            <Typography sx={infoCard}>
+            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
               {amount} {unity}
             </Typography>
           ) : null}
           {dose ? (
-            <Typography sx={infoCard}>
+            <Typography sx={{ fontSize: largeFont ? "1.3rem" : "1.1rem" }}>
               {dose} em {dose} horas
             </Typography>
           ) : null}
           {period ? (
             <Typography sx={infoCard}>Período: {period} dias</Typography>
           ) : null}
-          {local ? (
-            <Typography sx={{ ...descriptionStyle, textAlign: "center" }}>
-              {local}
-            </Typography>
-          ) : null}
-          {description ? (
+          {local ? <Typography sx={infoCard}>{local}</Typography> : null}
+          {type !== "MEDICATION" ? (
             <Typography sx={descriptionStyle}>{description}</Typography>
           ) : null}
-
-          {date ? (
-            <Box sx={infoBoxStyle}>
-              <AccessAlarmOutlinedIcon />
-              <Typography
-                sx={{
-                  flex: 1,
-                  fontWeight: "700",
-                  textAlign: "left",
-                  color: "common.black",
-                  fontSize: largeFont ? "1rem" : "12px",
-                }}
-              >
-                <Typography sx={dateText}>{longDate(date)}</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              marginTop: "10px",
+            }}
+          >
+            {date && type !== "MEDICATION" ? (
+              <Box sx={infoBoxStyle}>
+                <AccessAlarmOutlinedIcon />
                 <Typography
                   sx={{
-                    ...dateText,
+                    flex: 1,
+                    fontWeight: "700",
+                    textAlign: "left",
+                    color: "common.black",
+                    fontSize: largeFont ? "1rem" : "12px",
+                  }}
+                >
+                  <Typography sx={dateText}>{longDate(date)}</Typography>
+                  {type === "MEDICATION" ? null : (
+                    <>
+                      <Typography
+                        sx={{
+                          ...dateText,
+                          color:
+                            cardColor === "#ffcdd2"
+                              ? "error.main"
+                              : cardColor === "#fff9c4"
+                                ? "warning.main"
+                                : cardColor === "#c8e6c9"
+                                  ? "success.main"
+                                  : "common.black",
+                        }}
+                      >
+                        {dateTimeRemaining}
+                      </Typography>
+                    </>
+                  )}
+                </Typography>
+              </Box>
+            ) : null}
+            {nextDose && (
+              <>
+                <Typography sx={dateText}>
+                  Próxima dose: {longDate(nextDose)}
+                </Typography>
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    fontWeight: "bold",
                     color:
                       cardColor === "#ffcdd2"
                         ? "error.main"
@@ -406,38 +447,14 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
                           ? "warning.main"
                           : cardColor === "#c8e6c9"
                             ? "success.main"
-                            : "common.black",
+                            : "text.primary",
                   }}
                 >
-                  {dateTimeRemaining}
+                  {timeRemaining}
                 </Typography>
-              </Typography>
-            </Box>
-          ) : null}
-          {nextDose && (
-            <>
-              <Typography sx={{ width: "100%", textAlign: "center" }}>
-                Próxima dose: {longDate(nextDose)}
-              </Typography>
-              <Typography
-                sx={{
-                  width: "100%",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  color:
-                    cardColor === "#ffcdd2"
-                      ? "error.main"
-                      : cardColor === "#fff9c4"
-                        ? "warning.main"
-                        : cardColor === "#c8e6c9"
-                          ? "success.main"
-                          : "text.primary",
-                }}
-              >
-                {timeRemaining}
-              </Typography>
-            </>
-          )}
+              </>
+            )}
+          </Box>
         </Box>
       </Box>
       <Box sx={cardButton} onClick={() => setConfirmModalOpen(true)}>
@@ -447,7 +464,6 @@ const CardUniversal: React.FC<CardUniversalProps> = ({
             : "MARCAR COMO CONCLUÍDO"}
         </Typography>
       </Box>
-
       <CompleteModal
         isOpen={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
