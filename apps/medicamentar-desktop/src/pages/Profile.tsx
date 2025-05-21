@@ -20,6 +20,8 @@ import axiosInstance from "@utils/axiosInstance";
 import { useTheme } from "@constants/theme/useTheme";
 import { useLocalStorage } from "@hooks/UseLocalStorage";
 import { PageTitle } from "@components/PageTitle";
+import { Feedback } from "@components/Feedback";
+import { AlertColor } from "@mui/material";
 
 interface UserData {
   name: string;
@@ -55,6 +57,15 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [feedback, setFeedback] = useState<{
+    open: boolean;
+    severity: AlertColor;
+    message: string;
+  }>({
+    open: false,
+    severity: "info",
+    message: "",
+  });
 
   useEffect(() => {
     return () => {
@@ -110,8 +121,13 @@ const Profile = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+      
       console.log("PUT response:", response.data);
+      setFeedback({
+        open: true,
+        severity: "success",
+        message: "Perfil atualizado com sucesso!",
+      });
     } catch (error: any) {
       if (error.response?.status === 429) {
       } else if (error.response) {
@@ -119,6 +135,11 @@ const Profile = () => {
       } else {
         console.error("Erro de rede:", error);
       }
+      setFeedback({
+        open: true,
+        severity: "error",
+        message: "Erro ao atualizar perfil!",
+      });
     }
   };
 
@@ -467,6 +488,12 @@ const Profile = () => {
             </Button>
           </Grid>
         </Grid>
+        <Feedback 
+        open={feedback.open} 
+        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))} 
+        severity={feedback.severity} 
+        message={feedback.message}
+        />
       </SectionContainer>
     </ContainerUniversal>
   );
