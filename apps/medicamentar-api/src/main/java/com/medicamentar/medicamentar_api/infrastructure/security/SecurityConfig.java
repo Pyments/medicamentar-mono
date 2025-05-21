@@ -65,7 +65,7 @@ public WebMvcConfigurer corsConfigurer() {
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**") // Permite todas as rotas
                     .allowedOrigins("http://localhost:5173") // Adicione a origem correta
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permite métodos específicos
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH") // Permite métodos específicos
                     .allowedHeaders("*") // Permite todos os cabeçalhos
                     .allowCredentials(true); // Permite credenciais
         }

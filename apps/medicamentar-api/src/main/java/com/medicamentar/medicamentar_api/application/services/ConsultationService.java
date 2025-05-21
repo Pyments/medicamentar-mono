@@ -2,6 +2,7 @@ package com.medicamentar.medicamentar_api.application.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,40 @@ public class ConsultationService {
         response.setMessage("Exibindo consultas concluídas.");
         response.setTotalPages(consultations.getTotalPages());
         response.setTotalElements(consultations.getTotalElements());
+        return response;
+    }
+
+    public ServiceResponse<ConsultationResponse> updateConsultation(UUID consultationId, ConsultationRequest consultationRequest) {
+        var response = new ServiceResponse<ConsultationResponse>();
+        User currentUser = tokenService.getCurrentUser();
+
+        Optional<Consultation> consultationOptional = consultationRepo.findByIdAndUserAndDeletedAtIsNull(consultationId, currentUser);
+        if (!consultationOptional.isPresent()) {
+            response.setMessage("Consulta não encontrado ou sem permissão.");
+            response.setStatus(HttpStatus.FORBIDDEN);
+            return response;
+        }
+
+        Consultation consultation = consultationOptional.get();
+        consultation.setDate(consultationRequest.date());
+        consultation.setDoctorName(consultationRequest.doctorName());
+        consultation.setLocal(consultationRequest.local());
+        consultation.setDescription(consultationRequest.description());
+        this.consultationRepo.save(consultation);
+
+        var consultationResponse = new ConsultationResponse(
+                consultation.getId(),
+                consultation.getDate(),
+                consultation.getDoctorName(),
+                consultation.getLocal(),
+                consultation.getDescription(),
+                consultation.isCompleted());
+
+        this.eLogService.saveEvent(EventLogAction.Atualizado, consultation);
+        response.setData(consultationResponse);
+        response.setMessage("Consulta atualizada com sucesso!");
+        response.setStatus(HttpStatus.ACCEPTED);
+
         return response;
     }
 

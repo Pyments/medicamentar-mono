@@ -27,7 +27,7 @@ interface UserData {
   name: string;
   email: string; 
   age: number;
-  weigth: number;
+  weigth: string | number;
   bloodType: string;
   address: string;
   height: number;
@@ -46,7 +46,7 @@ const Profile = () => {
     name: "",
     email: "",
     age: 0,
-    weigth: 0,
+    weigth: "",
     bloodType: "",
     address: "",
     height: 0,
@@ -81,10 +81,20 @@ const Profile = () => {
         const response = await axiosInstance.get(`/user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUserData(response.data.data);
-      } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
-      }
+        const data = response.data.data;
+        setUserData({
+          name: data.name || "",
+          email: data.email || "",
+          age: data.age || 0,
+          weigth: data.weigth || 0,
+          bloodType: data.bloodType || "",
+          address: data.address || "",
+          height: data.height || 0,
+          profileImage: data.profileImage || "",
+        });
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
+    }
     };
 
     fetchProfile();
@@ -108,7 +118,7 @@ const Profile = () => {
       const formData = new FormData();
       formData.append("name", userData.name);
       formData.append("age", userData.age.toString());
-      formData.append("weigth", userData.weigth.toString());
+      formData.append("weigth", String(parseInt(userData.weigth as string) || 0));
       formData.append("bloodType", userData.bloodType);
       formData.append("address", userData.address);
       formData.append("height", userData.height.toString());
@@ -313,15 +323,11 @@ const Profile = () => {
             <TextField
               label="PESO"
               variant="outlined"
-              value={userData.weigth}
+              value={userData.weigth || "0"}
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d{0,3}$/.test(value)) {
-                  if (value === "") {
-                    handleChange("weigth", 0);
-                  } else {
-                    handleChange("weigth", parseInt(value));
-                  }
+                    handleChange("weigth", value);
                 }
               }}                     
               fullWidth

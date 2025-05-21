@@ -33,6 +33,7 @@ interface EventData {
   doctorName?: string;
   description?: string;
   isCompleted: boolean;
+  type: string;
 }
 
 interface User {
@@ -131,7 +132,7 @@ const Home: React.FC = () => {
                 <Grid item key={event.id}>
                   <CardUniversal
                     id={event.id}
-                    type={event.details.type}
+                    type={event.type}
                     isCompleted={event.isCompleted}
                     title={title}
                     unity={event.details.unity}
