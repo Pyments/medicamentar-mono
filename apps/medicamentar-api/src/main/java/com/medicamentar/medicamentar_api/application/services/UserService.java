@@ -1,5 +1,6 @@
 package com.medicamentar.medicamentar_api.application.services;
 
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,12 @@ import com.medicamentar.medicamentar_api.domain.repositories.UserRepository;
 public class UserService {
     private final UserRepository userRepo;
     private final EventLogService eLogService;
-    private final ImgurService imgurService;
+    private final UploadImageService uploadImageService;
 
-    public UserService(UserRepository userRepo, EventLogService eLogService, ImgurService imgurService){
+    public UserService(UserRepository userRepo, EventLogService eLogService, UploadImageService uploadImageService){
         this.userRepo = userRepo;
         this.eLogService = eLogService;
-        this.imgurService = imgurService;
+        this.uploadImageService = uploadImageService;
     }
 
     public ServiceResponse<UserResponse> getUserInfo(String email) {
@@ -73,7 +74,8 @@ public class UserService {
             user.setHeight(updateProfile.height());
 
             if (updateProfile.profileImage() != null && !updateProfile.profileImage().isEmpty()) {
-                String imageUrl = imgurService.storeFile(updateProfile.profileImage());
+                // String imageUrl = imgurService.storeFile(updateProfile.profileImage());
+                String imageUrl = uploadImageService.uploadImage(updateProfile.profileImage());
                 user.setProfileImage(imageUrl);
             }
         
