@@ -94,7 +94,6 @@ public class EventService {
                     .collect(Collectors.toList());
 
             List<UnifiedEventResponse> allEvents = new ArrayList<>();
-            ZonedDateTime now = ZonedDateTime.now();
             
             // Converter medicamentos
             medicationsResponses.forEach(med -> {
@@ -121,7 +120,7 @@ public class EventService {
 
             examsResponses.forEach(exam -> {
                 ZonedDateTime examDate = exam.date();
-                if (!exam.isCompleted() && examDate != null && examDate.isAfter(now)) {
+                if (!exam.isCompleted() && examDate != null) {
                     allEvents.add(new UnifiedEventResponse(
                         exam.id(),
                         exam.name(),
@@ -136,7 +135,7 @@ public class EventService {
 
             consultationsResponses.forEach(cons -> {
                 ZonedDateTime consultationDate = cons.date();
-                if (!cons.isCompleted() && consultationDate != null && consultationDate.isAfter(now)) {
+                if (!cons.isCompleted() && consultationDate != null) {
                     allEvents.add(new UnifiedEventResponse(
                         cons.id(),
                         cons.doctorName(),

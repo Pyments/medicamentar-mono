@@ -26,12 +26,10 @@ public class ConsultationsExamsService {
         PaginatedResponse<List<ExamResponse>> examsResponse = examService.getAllexams(page, size);
 
         List<UnifiedConsultationExamResponse> allEvents = new ArrayList<>();
-        ZonedDateTime now = ZonedDateTime.now();
 
-        // Converter consultas
         if (consultationsResponse.getData() != null) {
             consultationsResponse.getData().forEach(cons -> {
-                if (!cons.isCompleted() && cons.date() != null && cons.date().isAfter(now)) {
+                if (!cons.isCompleted() && cons.date() != null) {
                     allEvents.add(new UnifiedConsultationExamResponse(
                         cons.id(),
                         cons.doctorName(),
@@ -48,7 +46,7 @@ public class ConsultationsExamsService {
         // Converter exames
         if (examsResponse.getData() != null) {
             examsResponse.getData().forEach(exam -> {
-                if (!exam.isCompleted() && exam.date() != null && exam.date().isAfter(now)) {
+                if (!exam.isCompleted() && exam.date() != null) {
                     allEvents.add(new UnifiedConsultationExamResponse(
                         exam.id(),
                         exam.name(),
